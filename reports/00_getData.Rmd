@@ -1,0 +1,74 @@
+---
+title: "Follow-Up Survey"
+author: "Dominick Lemas"
+date: "02/22/2021"
+output: html_document
+
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:            Dominick Lemas
+# Start Date:        Feb 22, 2021 
+# Date Modify:       Oct 18, 2020
+# IRB:               
+#                   
+#
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+```
+
+
+```{r, message=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+library(keyringr)
+library(redcapAPI)
+library(REDCapR)
+library(readxl)
+library(tidyverse)
+```
+
+```{r, message=FALSE}
+# Windows
+source("~/BEACH-reports/code/utils.R")
+api_token=get_API_token("beach_api")
+```
+
+
+```{r, message=FALSE}
+# API and URL
+uri='https://redcap.ctsi.ufl.edu/redcap/api/'
+rcon <- redcapConnection(url=uri, token=api_token)
+
+vars=c("part_name","part_baby_name","part_phone","part_email","part_address","part_city",
+       "beach_part_consent")
+
+# Access data
+data=redcap_read_oneshot(
+  uri,
+  api_token,
+  fields = vars)$data
+
+data_raw=data %>%
+  filter(beach_part_consent=="TRUE") %>%
+  as_tibble()
+
+
+```
+
