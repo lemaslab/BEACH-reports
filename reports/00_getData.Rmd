@@ -42,32 +42,43 @@ library(redcapAPI)
 library(REDCapR)
 library(readxl)
 library(tidyverse)
-```
-
-```{r, message=FALSE}
-# Windows
 source("~/BEACH-reports/code/utils.R")
-api_token=get_API_token("beach_api")
+
 ```
 
-
 ```{r, message=FALSE}
-# API and URL
-uri='https://redcap.ctsi.ufl.edu/redcap/api/'
-rcon <- redcapConnection(url=uri, token=api_token)
 
-vars=c("part_name","part_baby_name","part_phone","part_email","part_address","part_city",
-       "beach_part_consent")
+# API & URL
+#----------
+url <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+token=get_API_token("beach_api")
 
-# Access data
-data=redcap_read_oneshot(
-  uri,
-  api_token,
-  fields = vars)$data
 
-data_raw=data %>%
-  filter(beach_part_consent=="TRUE") %>%
-  as_tibble()
+# PULL REPORT
+#------------
+
+url <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+formData <- list("token"=token,
+    content='report',
+    format='json',
+    report_id='9356',     # 3rd Trimester
+    csvDelimiter='',
+    rawOrLabel='raw',
+    rawOrLabelHeaders='raw',
+    exportCheckboxLabel='false',
+    returnFormat='json'
+)
+response <- httr::POST(url, body = formData, encode = "form")
+result <- httr::content(response)
+# print(result)
+
+# CONVERT LIST to TIBBLE
+#-----------------------
+
+result_tib <- result %>% unlist(recursive = FALSE) %>% 
+    enframe() %>% 
+    unnest()
+
 
 
 ```
