@@ -53,33 +53,30 @@ source("~/BEACH-reports/code/utils.R")
 # API & URL
 #----------
 url <- "https://redcap.ctsi.ufl.edu/redcap/api/"
-token=get_API_token("beach_api")
+api_token=get_API_token("beach_api")
 
 
-# PULL REPORT
-#------------
+# API and URL
+uri='https://redcap.ctsi.ufl.edu/redcap/api/'
+rcon <- redcapConnection(url=uri, token=api_token)
 
-url <- "https://redcap.ctsi.ufl.edu/redcap/api/"
-formData <- list("token"=token,
-    content='report',
-    format='json',
-    report_id='9356',     # 3rd Trimester
-    csvDelimiter='',
-    rawOrLabel='raw',
-    rawOrLabelHeaders='raw',
-    exportCheckboxLabel='false',
-    returnFormat='json'
-)
-response <- httr::POST(url, body = formData, encode = "form")
-result <- httr::content(response)
-# print(result)
+# variables of interest
+desired_fields_v1=c("test_id","prescreen_prego","prescreen_height","prescreen_heightinches")
 
-# CONVERT LIST to TIBBLE
-#-----------------------
+desired_records_v1=c("BLS001A","BLS002A","BLS090A")
 
-result_tib <- result %>% unlist(recursive = FALSE) %>% 
-    enframe() %>% 
-    unnest()
+
+# Access data
+data = redcap_read_oneshot(
+  uri,
+  api_token,
+  fields = desired_fields_v1,
+  records = desired_records_v1,
+  raw_or_label_headers = "raw")$data
+
+data = data %>%
+  as_tibble() %>%
+  filter(redcap_repeat_instrument =="demographics") 
 
 
 
