@@ -13,8 +13,8 @@ output: html_document
 # **************************************************************************** #
 
 # Author:            Dominick Lemas
-# Start Date:        Feb 22, 2021 
-# Date Modify:       Oct 18, 2020
+# Start Date:        Nov 17, 2021 
+# Date Modify:       
 # IRB:               
 #                   
 #
@@ -52,18 +52,17 @@ source("~/BEACH-reports/code/utils.R")
 
 # API & URL
 #----------
-url <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
 api_token=get_API_token("beach_api")
-
-
-# API and URL
-uri='https://redcap.ctsi.ufl.edu/redcap/api/'
 rcon <- redcapConnection(url=uri, token=api_token)
 
-# variables of interest
-desired_fields_v1=c("test_id","prescreen_prego","prescreen_height","prescreen_heightinches")
+# variables of interest: this is where you include variables. 
+desired_fields_v1=c("test_id","beachphone_prepreg_bmi","momehr_encounter_bmi")
 
-desired_records_v1=c("BLS001A","BLS002A","BLS090A")
+# this is where you would include all participants. 
+desired_records_v1=c("BLS001A","BLS002A","BLS003A",
+                     "BLS006A","BLS008A","BLS010A",
+                     "BLS011A","BLS012A","BLS090A")
 
 
 # Access data
@@ -72,11 +71,9 @@ data = redcap_read_oneshot(
   api_token,
   fields = desired_fields_v1,
   records = desired_records_v1,
-  raw_or_label_headers = "raw")$data
-
-data = data %>%
+  raw_or_label_headers = "raw")$data %>%
   as_tibble() %>%
-  filter(redcap_repeat_instrument =="demographics") 
+  filter(redcap_event_name=="baseline_arm_1") 
 
 
 
