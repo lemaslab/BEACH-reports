@@ -1,66 +1,3 @@
-Instructions
-==========
-
-Starting
---------
-* Download the [latest release](https://github.com/SchlossLab/new_project/releases/latest)
-to the directory and decompress
-
-* Rename the decompressed/untarred file to the name of your project. Name the
-folder in the format `LastName_BriefDescription_Journal_Year`. For example,
-"Kozich_MiSeqSOP_AEM_2013" will work. Move into the folder.
-
-* Open the README.md document in an editor. Change the first line to
-reflect the title of your research study, and the content from this section to
-the end. You can, but are not obligated to keep the Acknowledgements section.
-You should keep the directory tree
-
-* In the directory tree of the README.md file, customize the comments to fit
-your project. Update this tree as the project proceeds.
-
-* At the terminal do the following to replace the license for the template's repository with the license for your project
-
-  ```
-  mv newproject_LICENSE.md LICENSE.md
-  ```
-
-* At the prompt type:
-
-  ```
-  git init ./
-  git add .
-  git commit -m "Initial commit"
-  ```
-
-* Go to the [SchlossLab repository](https://github.com/schlosslab) on GitHub and
-create a new repository with the same name as your folder. Click the "Create
-Repository" button.
-* Follow the instructions for pushing an existing repository from the command
-line. For example (be sure to replace `LastName_BriefDescription_Journal_Year`
-with the appropriate text:
-
-  ```
-  git remote add origin https://github.com/SchlossLab/LastName_BriefDescription_Journal_Year.git
-  git push -u origin master
-  ```
-
-* You will want to update the README file as you go through your work. It is
-likely that you'll need to provide a link to the published paper, the title, the abstract of the study, and instructions for how to generate the paper.
-
-* Once you understand all of this, you can run
-
-  ```
-  git rm INSTRUCTIONS.md
-  git commit -m "Remove instructions document"
-	```
-
-Citations
-----------------------
-
-You should obviously think about where you want your work published. Various formatting files are available as `csl` files that will play nicely with rmakrdown, Word, and LaTeX. You can find these files at the [CSL GitHub repository](https://github.com/citation-style-language/styles). As an example, we commonly use style guides for the [ASM Journals](https://github.com/citation-style-language/styles/search?q=asm&type=Code&utf8=✓)
-
-
-
 Guiding themes
 ----------------------
 
@@ -86,15 +23,15 @@ As each project is developed, the lead author should approach the project from t
 
 * **No hardcoding numbers in text:** All numbers from your study that appear in the final manuscript should have been generated using R code in the Rmd file. Use the R `stopifnot` function to make sure you are generating the expected outputs from your Rmd file (e.g. number of significant OTUs).
 
-* **Raw data should stay raw:** All raw data should live in `data/raw/`. This includes metadata received from collaborators and fastq data taken from the sequencer. Data should only be manipulated using code and outputted to a separate folder. Most of our sequence processing will be done using `mothur` and the intermediate files should be stored in `data/mothur/`.
+* **Raw data should stay raw:** All raw data should live in `data/raw/`. This includes metadata received from collaborators and fastq data taken from the sequencer. Data should only be manipulated using code and outputted to a separate folder (`data/processed/`).
 
 * **Create tables in separate *.Rmd files:** The code and captions for tables should be stored in `results/tables/` and should be rendered to PDFs keeping the `TeX` formatted intermediate files.
 
-* **Create figures in scripts:** The code for figures should be stored in `code/` and the output should be in the size and specifications set by the target journal.
+* **Create figures in scripts:** The code for figures should be stored in `code/figures` and the output should be in the size and specifications set by the target journal.
 
-* **Manuscript documents are stored in submission folder:** Manuscripts should use BibTeX and csl formatting. They should not use EndNote. The preferred output format is a PDF. Even if a journal requests a Word-formatted file for final acceptance, they likely accept TeX instead if asked.
+* **Manuscript documents are stored in `documents/manuscript` folder:** Manuscripts should be in Miscrosoft Word format. 
 
-* **Maintain as much of the exploratory phase as possible:** There is an exploratory folder for experimentation and maintaining notebooks for situations where it is not possible to automate an analysis. Everything in the scratch directory can be deleted at any time without negative impact.
+* **Maintain as much of the exploratory phase as possible:** There is an exploratory folder for experimentation (`code/demo`) and maintaining notebooks (`code/notebook`) for situations where it is not possible to automate an analysis. Everything in the `code/scratch` directory can be deleted at any time without negative impact.
 
 * **Keep all analysis under version control:** Commit your code after any significant changes to your project. Push the code to the GitHub repository at least daily.
 
@@ -114,7 +51,7 @@ Resources
 Acknowledgements
 ----------------
 
-The initial file and directory structure of this project was developed by a group of participants in the Reproducible Science Curriculum Workshop, held at [NESCent] in December 2014 ([rr-init repository]). The structure is based on, and heavily follows the one proposed by [Noble 2009], with a few but small modifications. All copyright and related and neighboring rights to the original template were dedicated to the public domain worldwide under the [CC0 Public Domain Dedication]. The template and its derivatives are distributed without any warranty. It has been further modified by Pat Schloss to fit the needs of his research group.
+The initial file and directory structure of this project was developed by a group of participants in the Reproducible Science Curriculum Workshop, held at [NESCent] in December 2014 ([rr-init repository]). The structure is based on, and heavily follows the one proposed by [Noble 2009], with a few but small modifications. All copyright and related and neighboring rights to the original template were dedicated to the public domain worldwide under the [CC0 Public Domain Dedication]. The template and its derivatives are distributed without any warranty. It has been further modified by Dominick Lemas to fit the needs of his research group.
 
 [rr-init repository]: https://github.com/Reproducible-Science-Curriculum/rr-init
 [latest release]: https://github.com/Reproducible-Science-Curriculum/rr-init/releases/latest
