@@ -1,7 +1,7 @@
 ---
-title: "BEACH Data Inventory"
+title: "BEACH Study Overview"
 author: "Dominick Lemas"
-date: "09/02/2021"
+date: "07/12/2022"
 output: html_document
 
 ---
@@ -12,12 +12,11 @@ output: html_document
 # ***************                Project Overview              *************** #
 # **************************************************************************** #
 
-# Author:            Dominick Lemas
-# Start Date:        Nov 17, 2021 
-# Date Modify:       
-# IRB:               
-#                   
-#
+# Author:      Dominick Lemas
+# Date:        Sept 29, 2020 
+# Modify:      Feb 10, 2020
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
 # version: R version 4.0.2 (2020-06-22)
 # version: Rstudio version Version 1.3.959 
 
@@ -40,42 +39,95 @@ output: html_document
 # **************************************************************************** #
 
 library(keyringr)
+library(tidyverse)
 library(redcapAPI)
 library(REDCapR)
-library(readxl)
-library(tidyverse)
-source("~/BEACH-reports/code/utils.R")
+library(dplyr)
+library(plyr)
+
+# redcapAPI install problem: first install "chron" and "labelVector" and then "redcapapi" from tar.gz
+# REDCapR install problem: install "REDCapR" from tar.gz 
+
 
 ```
 
 ```{r, message=FALSE}
-
-# API & URL
-#----------
-uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+# Windows
+source("~/BEACH-reports/code/utils/utils.R")
 api_token=get_API_token("beach_api")
+```
+
+```{r}
+#Windows users with spaces in file path
+# api_token <- decrypt_dpapi_pw("C:\\Users\\'Claire Layton'\\DPAPI\\passwords\\DESKTOP-OEIJUDH\\redcap_ehr.txt")
+# print(api_token)
+
+```
+
+```{r, message=FALSE}
+# Mac, you need to store your API code in your keychain first
+# api_token <- decrypt_kc_pw("redcap_ehr")
+```
+
+```{r, message=FALSE}
+# API and URL
+uri='https://redcap.ctsi.ufl.edu/redcap/api/'
 rcon <- redcapConnection(url=uri, token=api_token)
 
-# variables of interest: this is where you include variables. 
-desired_fields_v1=c("test_id","beachphone_prepreg_bmi","momehr_encounter_bmi")
+# variables of interest
+fields_v1=c("test_id", "beach_closeout_start", "beach_baseline_closeout",  
+            "beach_3tri_closeout","beach_2wk_closeout","beach_2mo_closeout",
+            "beach_6mo_closeout","beach_12mo_closeout","beach_exit_closeout",
+            "beach_closeout_complete")
 
-# this is where you would include all participants. 
-desired_records_v1=c("BLS001A","BLS002A","BLS003A",
-                     "BLS006A","BLS008A","BLS010A",
-                     "BLS011A","BLS012A","BLS090A")
+# fields_v1=c("test_id")
 
+# records_v1=c("BLS001A","BLS002A")
+
+forms=c("participant_study_overview")
+
+events=c("baseline_arm_1")
+
+# subset by variables, records, events 
+data = redcap_read(
+  redcap_uri=uri,
+  token = api_token,
+  fields = fields_v1,
+ # records = records_v1,
+  events = events,
+  raw_or_label_headers = "raw")$data
+
+# subset by form (all records) 
+data = redcap_read(
+  redcap_uri=uri,
+  token = api_token,
+  fields = fields_v1,
+  forms = forms,
+  events = events,
+  raw_or_label_headers = "raw")$data
 
 # Access data
 data = redcap_read_oneshot(
   uri,
   api_token,
-  fields = desired_fields_v1,
-  records = desired_records_v1,
-  raw_or_label_headers = "raw")$data %>%
+  fields = fields_v1,
+  records = records_v1,
+  forms = forms,
+  raw_or_label_headers = "raw")$data
+
+```
+
+
+```{r, message=FALSE}
+data = data %>%
   as_tibble() %>%
-  filter(redcap_event_name=="baseline_arm_1") 
+  filter(redcap_repeat_instrument =="demographics") 
 
+#Get initial counts of babies and moms before any kind of subsetting
+counts_unique_baby_ids = ddply(data,  .(part_id), nrow)
+#16,711 unique babies and 13,856 unique moms
 
-
+# Save the data in your local laptop (Github path: /data)
+save(list=c("data"),file="~/mombaby-ehr-SDoH/data/raw/data.RData")
 ```
 
