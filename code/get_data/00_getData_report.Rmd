@@ -1,7 +1,7 @@
 ---
-title: "BEACH Data Inventory"
+title: "BEACH Data: Participant Overview Report"
 author: "Dominick Lemas"
-date: "09/02/2021"
+date: "07/19/2022"
 output: html_document
 
 ---
@@ -44,7 +44,7 @@ library(redcapAPI)
 library(REDCapR)
 library(readxl)
 library(tidyverse)
-source("~/BEACH-reports/code/utils.R")
+source("~/BEACH-reports/code/utils/utils.R")
 
 ```
 
@@ -63,6 +63,7 @@ desired_fields_v1=c("test_id","beachphone_prepreg_bmi","momehr_encounter_bmi")
 desired_records_v1=c("BLS001A","BLS002A","BLS003A",
                      "BLS006A","BLS008A","BLS010A",
                      "BLS011A","BLS012A","BLS090A")
+report_id="2961"
 
 
 # Access data
@@ -75,7 +76,7 @@ data = redcap_read_oneshot(
   as_tibble() %>%
   filter(redcap_event_name=="baseline_arm_1") 
 
-
+# this code works!
 
 ```
 
