@@ -78,8 +78,30 @@ report <-
 #------------
 
 data = report %>%
-  select(test_id,beach_closeout_start,beach_baseline_closeout, beach_3tri_closeout,
-         beach_2wk_closeout, beach_2mo_closeout, beach_6mo_closeout, 
-         beach_12mo_closeout, beach_exit_closeout)
+  select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance,    # drop out variables not needed
+         -clinical_health_update_2wk_v4_042218_complete,
+         -health_update_3rd_trimester_v5082518_complete,-biosample_notes,
+         -infant_postnatal_care_other,-mom_healthcare_other,
+         -exitsurvey_resultsinfo) %>% 
+  gather("infant_race", "value", infant_race_nih___1:infant_race_nih___6) %>%
+  filter(value==1) %>%
+  mutate(infant_race=recode_factor(infant_race,
+                                     "infant_race_nih___1" = "NativeAmerican", 
+                                     "infant_race_nih___2" = "Asian", 
+                                     "infant_race_nih___3" = "Black", 
+                                     "infant_race_nih___4" = "PacificIsland", 
+                                     "infant_race_nih___5" = "White",
+                                     "infant_race_nih___6" = "NA")) %>%
+  select(-value) %>%
+  gather("encounter_type", "value", encounter_type___1:encounter_type___6) %>%
+  filter(value==1) %>%
+  mutate(encounter_type=recode_factor(encounter_type,
+                                     "encounter_type___1" = "random contact", 
+                                     "encounter_type___2" = "pre-screen survey", 
+                                     "encounter_type___3" = "phone screen", 
+                                     "encounter_type___4" = "IDR", 
+                                     "encounter_type___5" = "consent",
+                                     "encounter_type___6" = "complete")) %>%
+  select(-value)
 
 ```
