@@ -102,6 +102,15 @@ data = report %>%
                                      "encounter_type___4" = "IDR", 
                                      "encounter_type___5" = "consent",
                                      "encounter_type___6" = "complete")) %>%
+  select(-value) %>%
+  gather("biosample_visits", "value", biosample_visits___1 :biosample_visits___5) %>%
+  filter(value==1) %>%
+  mutate(biosample_visits=recode_factor(biosample_visits,
+                                     "biosample_visits___1" = "3rd-tri", 
+                                     "biosample_visits___2" = "2-wk", 
+                                     "biosample_visits___3" = "2-mo", 
+                                     "biosample_visits___4" = "6-mo", 
+                                     "biosample_visits___5" = "12-mo")) %>%
   select(-value)
 
 ```
