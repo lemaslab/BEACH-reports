@@ -111,6 +111,61 @@ data = report %>%
                                      "biosample_visits___3" = "2-mo", 
                                      "biosample_visits___4" = "6-mo", 
                                      "biosample_visits___5" = "12-mo")) %>%
+  select(-value) %>%
+  gather("infant_postnatal_care", "value", infant_postnatal_care___1 :infant_postnatal_care___6) %>%
+  filter(value==1) %>%
+  mutate(infant_postnatal_care=recode_factor(infant_postnatal_care,
+                                     "infant_postnatal_care___1" = "UF Health", 
+                                     "infant_postnatal_care___2" = "North Florida", 
+                                     "infant_postnatal_care___3" = "Alliance Pediatrics", 
+                                     "infant_postnatal_care___4" = "other", 
+                                     "infant_postnatal_care___5" = "other2",
+                                     "infant_postnatal_care___6" = "unknown")) %>%
+  select(-value) %>%
+  gather("biosample_data_clean", "value", biosample_data_clean_baby___1 :biosample_data_clean_baby___3) %>%
+  filter(value==1) %>%
+  mutate(biosample_data_clean=recode_factor(biosample_data_clean,
+                                     "biosample_data_clean_baby___1" = "yes", 
+                                     "biosample_data_clean_baby___2" = "no", 
+                                     "biosample_data_clean_baby___3" = "NA")) %>%
+  select(-value) %>%
+  gather("infant_delivery", "value", infant_delivery___1 :infant_delivery___6) %>%
+  filter(value==1) %>%
+  mutate(infant_delivery=recode_factor(infant_delivery,
+                                     "infant_delivery___1" = "UF Health", 
+                                     "infant_delivery___2" = "North Florida", 
+                                     "infant_delivery___3" = "Alliance Pediatrics",
+                                     "infant_delivery___4" = "other",
+                                     "infant_delivery___5" = "other2",
+                                     "infant_delivery___6" = "unknown")) %>%
+  select(-value) %>%
+  gather("maternal_race", "value", maternal_race_nih___1 :maternal_race_nih___6) %>%
+  filter(value==1) %>%
+  mutate(maternal_race=recode_factor(maternal_race,
+                                     "maternal_race_nih___1" = "NativeAmerican", 
+                                     "maternal_race_nih___2" = "Asian", 
+                                     "maternal_race_nih___3" = "Black",
+                                     "maternal_race_nih___4" = "PacificIsland",
+                                     "maternal_race_nih___5" = "White",
+                                     "maternal_race_nih___6" = "NA")) %>%
+  select(-value) %>%
+  gather("mom_healthcare", "value", mom_healthcare___1 :mom_healthcare___6) %>%
+  filter(value==1) %>%
+  mutate(mom_healthcare=recode_factor(mom_healthcare,
+                                     "mom_healthcare___1" = "UF Health", 
+                                     "mom_healthcare___2" = "North Florida", 
+                                     "mom_healthcare___3" = "Alliance Pediatrics",
+                                     "mom_healthcare___4" = "other",
+                                     "mom_healthcare___5" = "other2",
+                                     "mom_healthcare___6" = "unknown")) %>%
   select(-value)
+
+
+```
+
+```{r, message=FALSE}
+
+# data visualizations
+table(data$maternal_race)
 
 ```
