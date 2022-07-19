@@ -54,29 +54,32 @@ source("~/BEACH-reports/code/utils/utils.R")
 #----------
 uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
 api_token=get_API_token("beach_api")
-rcon <- redcapConnection(url=uri, token=api_token)
 
-# variables of interest: this is where you include variables. 
-desired_fields_v1=c("test_id","beachphone_prepreg_bmi","momehr_encounter_bmi")
+# REPORT IDS
+#-----------
 
-# this is where you would include all participants. 
-desired_records_v1=c("BLS001A","BLS002A","BLS003A",
-                     "BLS006A","BLS008A","BLS010A",
-                     "BLS011A","BLS012A","BLS090A")
-report_id="2961"
+# Study Overview
+report_id<-21221L
 
-
-# Access data
-data = redcap_read_oneshot(
-  uri,
-  api_token,
-  fields = desired_fields_v1,
-  records = desired_records_v1,
-  raw_or_label_headers = "raw")$data %>%
-  as_tibble() %>%
-  filter(redcap_event_name=="baseline_arm_1") 
-
-# this code works!
+# PULL DATA
+#-----------
+report <-
+  REDCapR::redcap_report(
+    redcap_uri = uri,
+    token      = api_token,
+    report_id  = report_id
+  )$data
 
 ```
 
+```{r, message=FALSE}
+
+# FORMAT DATA
+#------------
+
+data = report %>%
+  select(test_id,beach_closeout_start,beach_baseline_closeout, beach_3tri_closeout,
+         beach_2wk_closeout, beach_2mo_closeout, beach_6mo_closeout, 
+         beach_12mo_closeout, beach_exit_closeout)
+
+```

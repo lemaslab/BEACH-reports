@@ -70,55 +70,35 @@ api_token=get_API_token("beach_api")
 ```
 
 ```{r, message=FALSE}
-# API and URL
-uri='https://redcap.ctsi.ufl.edu/redcap/api/'
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
 rcon <- redcapConnection(url=uri, token=api_token)
 
-# variables of interest
-fields_v1=c("test_id", "beach_closeout_start", "beach_baseline_closeout",  
-            "beach_3tri_closeout","beach_2wk_closeout","beach_2mo_closeout",
-            "beach_6mo_closeout","beach_12mo_closeout","beach_exit_closeout",
-            "beach_closeout_complete")
+# variables of interest: this is where you include variables. 
+desired_fields_v1=c("test_id","beachphone_prepreg_bmi","momehr_encounter_bmi")
 
-# fields_v1=c("test_id")
-
-# records_v1=c("BLS001A","BLS002A")
-
-forms=c("participant_study_overview")
-
-events=c("baseline_arm_1")
-
-# subset by variables, records, events 
-data = redcap_read(
-  redcap_uri=uri,
-  token = api_token,
-  fields = fields_v1,
- # records = records_v1,
-  events = events,
-  raw_or_label_headers = "raw")$data
-
-# subset by form (all records) 
-data = redcap_read(
-  redcap_uri=uri,
-  token = api_token,
-  fields = fields_v1,
-  forms = forms,
-  events = events,
-  raw_or_label_headers = "raw")$data
-
+# this is where you would include all participants. 
+desired_records_v1=c("BLS001A","BLS002A","BLS003A",
+                     "BLS006A","BLS008A","BLS010A",
+                     "BLS011A","BLS012A","BLS090A")
 # Access data
 data = redcap_read_oneshot(
   uri,
   api_token,
-  fields = fields_v1,
-  records = records_v1,
-  forms = forms,
-  raw_or_label_headers = "raw")$data
+  fields = desired_fields_v1,
+  records = desired_records_v1,
+  raw_or_label_headers = "raw")$data %>%
+  as_tibble() %>%
+  filter(redcap_event_name=="baseline_arm_1") 
 
 ```
 
 
 ```{r, message=FALSE}
+
 data = data %>%
   as_tibble() %>%
   filter(redcap_repeat_instrument =="demographics") 
