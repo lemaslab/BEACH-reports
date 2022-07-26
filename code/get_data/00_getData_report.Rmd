@@ -28,7 +28,7 @@ output: html_document
 # PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
 # Note: vpn must be active
 
-# keyringr: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
 
 ```
 
