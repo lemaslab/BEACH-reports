@@ -12,7 +12,7 @@ output: html_document
 # ***************                Project Overview              *************** #
 # **************************************************************************** #
 
-# Author:            Dominick Lemas
+# Author:            Dominick Lemas- this is a small change
 # Start Date:        Nov 17, 2021 
 # Date Modify:       
 # IRB:               
