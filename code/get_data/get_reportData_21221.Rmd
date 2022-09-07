@@ -1,6 +1,6 @@
 ---
-title: "BEACH Report Data: Study Overview (21221L)"
-author: "Dominick Lemas"
+title: "GET Data: BEACH Study Overview Report (21221L)"
+author: "Dominick J. Lemas"
 date: "07/19/2022"
 output: html_document
 
@@ -43,7 +43,7 @@ output: html_document
 library(keyringr)
 library(redcapAPI)
 library(REDCapR)
-library(readxl)
+#library(readxl)
 library(tidyverse)
 source("~/BEACH-reports/code/utils/utils.R")
 
@@ -82,6 +82,9 @@ report = report_raw %>%
          -infant_postnatal_care_other,-mom_healthcare_other,
          -exitsurvey_resultsinfo)
 
+```
+
+```{r, message=FALSE}
 
 # **************************************************************************** #
 # ***************              Save Data Local                 *************** #
