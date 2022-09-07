@@ -1,5 +1,5 @@
 ---
-title: "FORMAT BEACH Report Data: Study Overview (21221L)"
+title: "FORMAT Data: BEACH Study Overview (21221L)"
 author: "Dominick Lemas"
 date: "09/07/2022"
 output: html_document
@@ -61,12 +61,7 @@ load("~/BEACH-reports/data/raw/report_21221.RData")
 # FORMAT DATA
 #------------
 
-data = report %>%
-  select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance,    # drop out variables not needed
-         -clinical_health_update_2wk_v4_042218_complete,
-         -health_update_3rd_trimester_v5082518_complete,-biosample_notes,
-         -infant_postnatal_care_other,-mom_healthcare_other,
-         -exitsurvey_resultsinfo) %>% 
+data = report  %>% 
   gather("infant_race", "value", infant_race_nih___1:infant_race_nih___6) %>%
   filter(value==1) %>%
   mutate(infant_race=recode_factor(infant_race,
