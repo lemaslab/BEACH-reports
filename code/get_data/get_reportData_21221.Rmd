@@ -1,5 +1,5 @@
 ---
-title: "BEACH Data: Participant Overview Report"
+title: "BEACH Report Data: Study Overview (21221L)"
 author: "Dominick Lemas"
 date: "07/19/2022"
 output: html_document
@@ -12,10 +12,11 @@ output: html_document
 # ***************                Project Overview              *************** #
 # **************************************************************************** #
 
-# Author:            Dominick Lemas- this is a small change
-# Start Date:        Nov 17, 2021 
-# Date Modify:       
-# IRB:               
+# Author:            Dominick J. Lemas
+# Start Date:        07/19/2022 
+# Date Modify:       09/07/2022
+# Project:           The Breastfeeding and EArly Child Health
+# IRB:               IRB201601034
 #                   
 #
 # version: R version 4.0.2 (2020-06-22)
