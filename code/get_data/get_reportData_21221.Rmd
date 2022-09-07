@@ -51,6 +51,10 @@ source("~/BEACH-reports/code/utils/utils.R")
 
 ```{r, message=FALSE}
 
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
 # API & URL
 #----------
 uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
@@ -64,109 +68,26 @@ report_id<-21221L
 
 # PULL DATA
 #-----------
-report <-
+report_raw <-
   REDCapR::redcap_report(
     redcap_uri = uri,
     token      = api_token,
     report_id  = report_id
-  )$data
+  )$data 
 
-```
-
-```{r, message=FALSE}
-
-# FORMAT DATA
-#------------
-
-data = report %>%
+report = report_raw %>%
   select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance,    # drop out variables not needed
          -clinical_health_update_2wk_v4_042218_complete,
          -health_update_3rd_trimester_v5082518_complete,-biosample_notes,
          -infant_postnatal_care_other,-mom_healthcare_other,
-         -exitsurvey_resultsinfo) %>% 
-  gather("infant_race", "value", infant_race_nih___1:infant_race_nih___6) %>%
-  filter(value==1) %>%
-  mutate(infant_race=recode_factor(infant_race,
-                                     "infant_race_nih___1" = "NativeAmerican", 
-                                     "infant_race_nih___2" = "Asian", 
-                                     "infant_race_nih___3" = "Black", 
-                                     "infant_race_nih___4" = "PacificIsland", 
-                                     "infant_race_nih___5" = "White",
-                                     "infant_race_nih___6" = "NA")) %>%
-  select(-value) %>%
-  gather("encounter_type", "value", encounter_type___1:encounter_type___6) %>%
-  filter(value==1) %>%
-  mutate(encounter_type=recode_factor(encounter_type,
-                                     "encounter_type___1" = "random contact", 
-                                     "encounter_type___2" = "pre-screen survey", 
-                                     "encounter_type___3" = "phone screen", 
-                                     "encounter_type___4" = "IDR", 
-                                     "encounter_type___5" = "consent",
-                                     "encounter_type___6" = "complete")) %>%
-  select(-value) %>%
-  gather("biosample_visits", "value", biosample_visits___1 :biosample_visits___5) %>%
-  filter(value==1) %>%
-  mutate(biosample_visits=recode_factor(biosample_visits,
-                                     "biosample_visits___1" = "3rd-tri", 
-                                     "biosample_visits___2" = "2-wk", 
-                                     "biosample_visits___3" = "2-mo", 
-                                     "biosample_visits___4" = "6-mo", 
-                                     "biosample_visits___5" = "12-mo")) %>%
-  select(-value) %>%
-  gather("infant_postnatal_care", "value", infant_postnatal_care___1 :infant_postnatal_care___6) %>%
-  filter(value==1) %>%
-  mutate(infant_postnatal_care=recode_factor(infant_postnatal_care,
-                                     "infant_postnatal_care___1" = "UF Health", 
-                                     "infant_postnatal_care___2" = "North Florida", 
-                                     "infant_postnatal_care___3" = "Alliance Pediatrics", 
-                                     "infant_postnatal_care___4" = "other", 
-                                     "infant_postnatal_care___5" = "other2",
-                                     "infant_postnatal_care___6" = "unknown")) %>%
-  select(-value) %>%
-  gather("biosample_data_clean", "value", biosample_data_clean_baby___1 :biosample_data_clean_baby___3) %>%
-  filter(value==1) %>%
-  mutate(biosample_data_clean=recode_factor(biosample_data_clean,
-                                     "biosample_data_clean_baby___1" = "yes", 
-                                     "biosample_data_clean_baby___2" = "no", 
-                                     "biosample_data_clean_baby___3" = "NA")) %>%
-  select(-value) %>%
-  gather("infant_delivery", "value", infant_delivery___1 :infant_delivery___6) %>%
-  filter(value==1) %>%
-  mutate(infant_delivery=recode_factor(infant_delivery,
-                                     "infant_delivery___1" = "UF Health", 
-                                     "infant_delivery___2" = "North Florida", 
-                                     "infant_delivery___3" = "Alliance Pediatrics",
-                                     "infant_delivery___4" = "other",
-                                     "infant_delivery___5" = "other2",
-                                     "infant_delivery___6" = "unknown")) %>%
-  select(-value) %>%
-  gather("maternal_race", "value", maternal_race_nih___1 :maternal_race_nih___6) %>%
-  filter(value==1) %>%
-  mutate(maternal_race=recode_factor(maternal_race,
-                                     "maternal_race_nih___1" = "NativeAmerican", 
-                                     "maternal_race_nih___2" = "Asian", 
-                                     "maternal_race_nih___3" = "Black",
-                                     "maternal_race_nih___4" = "PacificIsland",
-                                     "maternal_race_nih___5" = "White",
-                                     "maternal_race_nih___6" = "NA")) %>%
-  select(-value) %>%
-  gather("mom_healthcare", "value", mom_healthcare___1 :mom_healthcare___6) %>%
-  filter(value==1) %>%
-  mutate(mom_healthcare=recode_factor(mom_healthcare,
-                                     "mom_healthcare___1" = "UF Health", 
-                                     "mom_healthcare___2" = "North Florida", 
-                                     "mom_healthcare___3" = "Alliance Pediatrics",
-                                     "mom_healthcare___4" = "other",
-                                     "mom_healthcare___5" = "other2",
-                                     "mom_healthcare___6" = "unknown")) %>%
-  select(-value)
+         -exitsurvey_resultsinfo)
 
 
-```
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
 
-```{r, message=FALSE}
-
-# data visualizations
-table(data$maternal_race)
+# Save the data in your local laptop (Github path: /data)
+save(list=c("report"),file="~/BEACH-reports/data/raw/report_21221.RData")
 
 ```
