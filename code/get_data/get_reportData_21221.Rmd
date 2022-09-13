@@ -68,7 +68,6 @@ api_token=get_API_token("beach_api")
 # Study Overview
 report_id<-21221L
 
-ds=NULL
 
 # PULL DATA
 #-----------
