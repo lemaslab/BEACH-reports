@@ -59,8 +59,12 @@ source("~/BEACH-reports/code/utils/utils.R")
 
 # API & URL
 #----------
+# If you are using Windows. please run
 uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
 api_token=get_API_token("beach_api")
+
+# If you are using Mac, you need to store your API code in your keychain first and name it Redcap_BEACH and run
+api_token <- decrypt_kc_pw("Redcap_BEACH")
 
 # REPORT IDS
 #-----------
