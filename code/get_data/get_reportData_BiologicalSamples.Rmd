@@ -1,0 +1,98 @@
+---
+title: "GET Data: BEACH Study Overview Report (Biological Samples)"
+author: "Dominick J. Lemas"
+date: "07/19/2022"
+output: html_document
+
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:            Ke Xu
+# Start Date:        09/14/2022 
+# Date Modify:       09/14/2022
+# Project:           The Breastfeeding and EArly Child Health
+# IRB:               IRB201601034
+#                   
+#
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
+
+```
+
+
+```{r, message=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+library(keyringr)
+library(redcapAPI)
+library(REDCapR)
+library(tidyverse)
+source("~/BEACH-reports/code/utils/utils.R")
+
+```
+
+```{r, message=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+# API & URL
+#----------
+# If you are using Windows. please run
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+
+# If you are using Mac, you need to store your API code in your keychain first and name it Redcap_BEACH and run
+api_token <- decrypt_kc_pw("Redcap_BEACH")
+
+# REPORT IDS
+#-----------
+
+# Study Overview
+report_id<-30407L
+
+
+# PULL DATA
+#-----------
+report_raw <-
+  REDCapR::redcap_report(
+    redcap_uri = uri,
+    token      = api_token,
+    report_id  = report_id
+  )$data 
+
+report = report_raw %>%
+  select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance,    # drop out variables not needed
+         -redcap_survey_identifier,
+         -health_update_3rd_trimester_v5082518_timestamp)
+
+```
+
+```{r, message=FALSE}
+
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+
+# Save the data in your local laptop (Github path: /data)
+save(list=c("report"),file="~/BEACH-reports/data/raw/report_30407.RData")
+
+```
