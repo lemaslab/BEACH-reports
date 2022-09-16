@@ -39,7 +39,7 @@ output: html_document
 # ***************                Library                       *************** #
 # **************************************************************************** #
 
-library(readxl)
+#library(readxl)
 library(tidyverse)
 # source("~/BEACH-reports/code/utils/utils.R")
 
