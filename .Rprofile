@@ -23,8 +23,3 @@ cat('Project home directory is available as PROJHOME or via get("PROJHOME","RPRO
 rm(RPROJ)
 ############################################################
 
-local({
-  r <- getOption("repos")
-  r["CRAN"] <- "http://cran.cnr.berkeley.edu/"
-  options(repos = r)
-})
