@@ -54,8 +54,10 @@ library(tidyverse)
 load("~/BEACH-reports/data/raw/report_21221.RData")
 
 enroll = report %>% select(test_id, maternal_sex_nih, mom_ethnicity_nih, 
-                                maternal_race_nih___1, maternal_race_nih___2, maternal_race_nih___3,
-                                maternal_race_nih___4, maternal_race_nih___5, maternal_race_nih___6,
+                                maternal_race_nih___1, maternal_race_nih___2,
+                                maternal_race_nih___3,
+                                maternal_race_nih___4, maternal_race_nih___5, 
+                                maternal_race_nih___6,
                                 infant_sex_nih, infant_ethnicity_nih,  
                                 infant_race_nih___1, infant_race_nih___2, infant_race_nih___3,
                                 infant_race_nih___4, infant_race_nih___5, infant_race_nih___6)
@@ -103,24 +105,6 @@ data_all = rbind(maternal,infant)
 
 ```
 
-```{r, message=FALSE}
-
-# Do we have missing maternal/infant race?
-missing_race=data_all %>%
-  mutate(no_race_data=rowSums(data_all[5:10])) %>%
-  select(test_id,participant_type,no_race_data) %>%
-  filter(no_race_data==0)
-
-# time-stamp
-now <- Sys.time()
-file_name_time=paste0(format(now, "%Y%m%d_"), "missing_race.csv")
-path_name_time=paste0("~/BEACH-reports/output/results/tables/",file_name_time)
-write_csv(missing_race, path_name_time)
-
-
-```
-
-
 
 ```{r, message=FALSE}
 
@@ -151,8 +135,8 @@ data = data_all  %>%
 # **************************************************************************** #
 
 # Save the data in your local laptop (Github path: /data)
-save(list=c("report"),file="~/BEACH-reports/data/raw/report_21221.RData")
+save(list=c("data"),file="~/BEACH-reports/data/processed/final_report_21221.RData")
 
 ```
 
-```
+
