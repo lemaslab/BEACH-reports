@@ -77,8 +77,8 @@ ds$race=as.character(ds$race)
 
 ds_lu_gender <- tibble::tribble(
   ~input,   ~displayed            ,
-  "0"   ,  "Female"               ,
-  "1"   ,  "Male"                 ,
+  "1"   ,  "Female"               ,
+  "2"   ,  "Male"                 ,
   "NA"   ,  "Unknown/Not Reported"
 )
 knitr::kable(ds_lu_gender, caption = "Gender Mapping")
