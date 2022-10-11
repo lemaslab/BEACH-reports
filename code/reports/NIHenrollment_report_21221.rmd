@@ -66,6 +66,7 @@ ds$gender=as.character(ds$gender)
 ds$ethnicity=as.character(ds$ethnicity)
 ds$race=as.character(ds$race)
 
+ds[ds$gender=="<NA>"]=NA
 
 ```
 
@@ -79,7 +80,7 @@ ds_lu_gender <- tibble::tribble(
   ~input,   ~displayed            ,
   "1"   ,  "Female"               ,
   "2"   ,  "Male"                 ,
-  "NA"   ,  "Unknown/Not Reported"
+  "<NA>"   ,  "Unknown/Not Reported"
 )
 knitr::kable(ds_lu_gender, caption = "Gender Mapping")
 

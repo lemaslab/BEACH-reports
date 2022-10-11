@@ -6,7 +6,7 @@ output: html_document
 
 ---
 
-```{r, include=FALSE}
+```{r, include=FALSE,echo=FALSE}
 ##-------------- 
 # **************************************************************************** #
 # ***************                Project Overview              *************** #
@@ -33,7 +33,7 @@ output: html_document
 ```
 
 
-```{r, message=FALSE}
+```{r, message=FALSE,echo=FALSE}
 
 # **************************************************************************** #
 # ***************                Library                       *************** #
@@ -44,6 +44,24 @@ library(tidyverse)
 # source("~/BEACH-reports/code/utils/utils.R")
 
 ```
+
+
+Overview
+
+Distribution of variables for participants. (Pearson’s Chi-squared test for categorical variables; Fisher’s exact test or Wilcoxon rank sum test for continuous variables.)
+(Since participants in different visit type have different metadata, so I kept samples with unique participants with unique visit type.)
+PCoA plots (R package: microbial, statistic analysis: PERMANOVA)
+Shannon index α diversity analysis (R package: microbial, statistic analysis: Wilcoxon rank-sum test)
+Differential analysis (R package: edgeR, statistic analysis: Exact test)
+LEfSe analysis and Cladogram plots (Performed on the website http://huttenhower.sph.harvard.edu/galaxy/)
+Results
+Distance of gut microbial community bwtween breastfeeding types changed (PCoA analysis: T1: P>0.05, T2: P<0.05)
+Diversity of gut microbial community bwtween breastfeeding types changed (Alpha diversity analysis: T1: P>0.05, T2: P<0.05)
+Deferentially abundant microbiom changed (EdgeR analysis: Class, Order, Family, Genus; lEfSe analysis: Phylum, Class, Order, Family, Genus)
+Conclusion
+The maternal (gut) microbiome changes during postnatal period according to lactation status.
+
+
 
 ```{r, message=FALSE}
 
