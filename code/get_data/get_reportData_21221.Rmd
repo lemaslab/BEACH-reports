@@ -15,7 +15,7 @@ output: html_document
 # Author:            Dominick J. Lemas
 # Start Date:        07/19/2022 
 # Date Modify:       09/07/2022
-# Project:           The Breastfeeding and EArly Child Health
+# Project:           The Breastfeeding and EArly Child Health Study
 # IRB:               IRB201601034
 #                   
 #
@@ -31,13 +31,19 @@ output: html_document
 
 # keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
 
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
 ```
+#### __Project Details__
+Title: `r project_name`  
+IRB Number: `r irb_number`
 
 #### __Data Processing Summary__
 ![](redcap_workflow.png)
 
 
-```{r, message=FALSE}
+```{r, message=FALSE, include=FALSE}
 
 # **************************************************************************** #
 # ***************                Library                       *************** #
@@ -51,7 +57,7 @@ source("~/BEACH-reports/code/utils/utils.R")
 
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
 # ***************              Extract Data                    *************** #
@@ -67,6 +73,7 @@ api_token=get_API_token("beach_api")
 
 # Study Overview
 report_id<-21221L
+report_name= "BEACH Study Overview"
 
 
 # PULL DATA
@@ -86,6 +93,10 @@ report = report_raw %>%
          -exitsurvey_resultsinfo)
 
 ```
+
+#### __Redcap Database__ ####
+
+Redcap URL: `r uri`
 
 ```{r, message=FALSE}
 
