@@ -35,13 +35,6 @@ project_name="The Breastfeeding and EArly Child Health Study"
 irb_number="IRB201601034"
 
 ```
-#### __Project Details__
-Title: `r project_name`  
-IRB Number: `r irb_number`
-
-#### __Data Processing Summary__
-![](redcap_workflow.png)
-
 
 ```{r, message=FALSE, include=FALSE}
 
@@ -93,12 +86,29 @@ report = report_raw %>%
          -exitsurvey_resultsinfo)
 
 ```
+#### __Project Details__
+Title: `r project_name`  
+IRB Number: `r irb_number`  
+Redcap URL: `r uri`  
+Report Name: `r report_name`  
+Report ID: `r report_id`
 
-#### __Redcap Database__ ####
+#### __Data Processing Summary__
+Variables of interest are stored as RedCap reports. Data is extracted from REdcap via REDCapR using URL and API token. The extracted data is lightly formatted and output as an *.rda object for downstream analysis.  
+![](redcap_workflow.png)
 
-Redcap URL: `r uri`
 
-```{r, message=FALSE}
+#### __Data Description__
+```{r, message=FALSE, echo=FALSE}
+
+part_length=unique(length(report$test_id))
+hist(report$beach_final_bmi)
+
+```
+
+Participant Count: `r part_length`
+
+```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
 # ***************              Save Data Local                 *************** #
@@ -107,4 +117,10 @@ Redcap URL: `r uri`
 # Save the data in your local laptop (Github path: /data)
 save(list=c("report"),file="~/BEACH-reports/data/raw/report_21221.RData")
 
+output_directory="~/BEACH-reports/data/raw/"
+output_file_name="report_21221.RData"
+
 ```
+#### __Project Outputs__
+Output Directory: `r output_directory`  
+Output File Name: `r output_file_name`
