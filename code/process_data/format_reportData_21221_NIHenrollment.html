@@ -13,7 +13,7 @@
 
 <meta name="date" content="2022-09-07" />
 
-<title>FORMAT Data: BEACH Study Overview (21221L)</title>
+<title>FORMAT Data: NIH Enrollment Report</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -363,100 +363,34 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">FORMAT Data: BEACH Study Overview
-(21221L)</h1>
+<h1 class="title toc-ignore">FORMAT Data: NIH Enrollment Report</h1>
 <h4 class="author">Dominick Lemas</h4>
 <h4 class="date">09/07/2022</h4>
 
 </div>
 
 
-<p>Overview</p>
-<p>Distribution of variables for participants. (Pearson’s Chi-squared
-test for categorical variables; Fisher’s exact test or Wilcoxon rank sum
-test for continuous variables.) (Since participants in different visit
-type have different metadata, so I kept samples with unique participants
-with unique visit type.) PCoA plots (R package: microbial, statistic
-analysis: PERMANOVA) Shannon index α diversity analysis (R package:
-microbial, statistic analysis: Wilcoxon rank-sum test) Differential
-analysis (R package: edgeR, statistic analysis: Exact test) LEfSe
-analysis and Cladogram plots (Performed on the website <a href="http://huttenhower.sph.harvard.edu/galaxy/" class="uri">http://huttenhower.sph.harvard.edu/galaxy/</a>) Results
-Distance of gut microbial community bwtween breastfeeding types changed
-(PCoA analysis: T1: P&gt;0.05, T2: P&lt;0.05) Diversity of gut microbial
-community bwtween breastfeeding types changed (Alpha diversity analysis:
-T1: P&gt;0.05, T2: P&lt;0.05) Deferentially abundant microbiom changed
-(EdgeR analysis: Class, Order, Family, Genus; lEfSe analysis: Phylum,
-Class, Order, Family, Genus) Conclusion The maternal (gut) microbiome
-changes during postnatal period according to lactation status.</p>
-<pre class="r"><code># **************************************************************************** #
-# ***************              Load/Trim Data                  *************** #
-# **************************************************************************** #
-
-load(&quot;~/BEACH-reports/data/raw/report_21221.RData&quot;)
-
-enroll = report %&gt;% select(test_id, maternal_sex_nih, mom_ethnicity_nih, 
-                                maternal_race_nih___1, maternal_race_nih___2,
-                                maternal_race_nih___3,
-                                maternal_race_nih___4, maternal_race_nih___5, 
-                                maternal_race_nih___6,
-                                infant_sex_nih, infant_ethnicity_nih,  
-                                infant_race_nih___1, infant_race_nih___2, infant_race_nih___3,
-                                infant_race_nih___4, infant_race_nih___5, infant_race_nih___6)</code></pre>
-<pre class="r"><code># create long dataset where each row is a unique mom or infant. The number of 
-# rows will represent the total number of mom-baby participants that have signed
-# ICF and we have collected data on the infant. 
-
-maternal=enroll %&gt;%
-  mutate(participant_type=&quot;maternal&quot;) %&gt;%
-  select(test_id, participant_type, maternal_sex_nih, mom_ethnicity_nih, 
-         maternal_race_nih___1,
-         maternal_race_nih___2, maternal_race_nih___3, maternal_race_nih___4,
-         maternal_race_nih___5, maternal_race_nih___6) %&gt;%
-  rename(sex_nih=maternal_sex_nih,
-         ethnicity_nih=mom_ethnicity_nih, 
-         race_nih___1=maternal_race_nih___1,
-         race_nih___2=maternal_race_nih___2, 
-         race_nih___3=maternal_race_nih___3, 
-         race_nih___4=maternal_race_nih___4,
-         race_nih___5=maternal_race_nih___5, 
-         race_nih___6=maternal_race_nih___6)
-  
-infant= enroll %&gt;%
-  mutate(participant_type=&quot;infant&quot;) %&gt;%
-  select(test_id, participant_type, infant_sex_nih, infant_ethnicity_nih, 
-         infant_race_nih___1,
-         infant_race_nih___2, infant_race_nih___3, infant_race_nih___4,
-         infant_race_nih___5, infant_race_nih___6) %&gt;%
-  rename(sex_nih=infant_sex_nih,
-         ethnicity_nih=infant_ethnicity_nih, 
-         race_nih___1=infant_race_nih___1,
-         race_nih___2=infant_race_nih___2, 
-         race_nih___3=infant_race_nih___3, 
-         race_nih___4=infant_race_nih___4,
-         race_nih___5=infant_race_nih___5, 
-         race_nih___6=infant_race_nih___6)
-
-data_all = rbind(maternal,infant)</code></pre>
-<pre class="r"><code># FORMAT DATA
-#------------
-
-data = data_all  %&gt;% 
-  gather(&quot;race&quot;, &quot;value&quot;, race_nih___1:race_nih___6) %&gt;%
-  filter(value==1) %&gt;%
-  mutate(race=recode_factor(race,
-                                     &quot;race_nih___1&quot; = &quot;NativeAmerican&quot;, 
-                                     &quot;race_nih___2&quot; = &quot;Asian&quot;, 
-                                     &quot;race_nih___3&quot; = &quot;Black&quot;, 
-                                     &quot;race_nih___4&quot; = &quot;PacificIsland&quot;, 
-                                     &quot;race_nih___5&quot; = &quot;White&quot;,
-                                     &quot;race_nih___6&quot; = &quot;NA&quot;)) %&gt;%
-  select(-value) </code></pre>
-<pre class="r"><code># **************************************************************************** #
-# ***************              Save Data Local                 *************** #
-# **************************************************************************** #
-
-# Save the data in your local laptop (Github path: /data)
-save(list=c(&quot;data&quot;),file=&quot;~/BEACH-reports/data/processed/final_report_21221.RData&quot;)</code></pre>
+<div id="project-details" class="section level4">
+<h4><strong>Project Details</strong></h4>
+<p>Title: The Breastfeeding and EArly Child Health Study<br />
+IRB Number: IRB201601034<br />
+Report Name (source-data): BEACH Study Overview<br />
+Report ID (source-data): 21221<br />
+Upstream Code: ~/code/get_data/get_reportData_21221.Rmd<br />
+Input Data: report_21221.RData</p>
+</div>
+<div id="data-processing-summary" class="section level4">
+<h4><strong>Data Processing Summary</strong></h4>
+<p>The data processing</p>
+</div>
+<div id="data-description" class="section level4">
+<h4><strong>Data Description</strong></h4>
+</div>
+<div id="project-outputs" class="section level4">
+<h4><strong>Project Outputs</strong></h4>
+<p>Output Directory: ~/BEACH-reports/data/processed/<br />
+Output File Name: 21221_NIHenrollment_clean.RData</p>
+</div>
 
 
 
