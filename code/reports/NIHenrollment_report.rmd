@@ -62,7 +62,7 @@ library(tidyverse)
 # ***************              Load/Trim Data                  *************** #
 # **************************************************************************** #
 
-load("~/GitHub/BEACH-reports/data/processed/21221_NIHenrollment_clean.RData")
+load("~/BEACH-reports/data/processed/21221_NIHenrollment_clean.RData")
 
 ds=data %>%
   rename(gender=sex_nih,
@@ -133,7 +133,7 @@ ds_lu_ethnicity <- tibble::tribble(
 ```
 
 
-```{r, message=FALSE}
+```{r, echo=FALSE}
 
 # **************************************************************************** #
 # ***************         NIH enrollment table                 *************** #
