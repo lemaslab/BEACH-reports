@@ -40,7 +40,7 @@ input_file="report_21221.RData"
 ```
 
 
-```{r, message=FALSE,echo=FALSE,,include=FALSE}
+```{r, message=FALSE,echo=FALSE,include=FALSE}
 
 # **************************************************************************** #
 # ***************                Library                       *************** #
