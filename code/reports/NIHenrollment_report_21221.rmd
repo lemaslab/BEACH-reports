@@ -71,7 +71,9 @@ ds$race=as.character(ds$race)
 
 ```{r, message=FALSE}
 
-# data labels
+# **************************************************************************** #
+# ***************              Data Labels                     *************** #
+# **************************************************************************** #
 
 # gender
 
@@ -108,6 +110,15 @@ ds_lu_ethnicity <- tibble::tribble(
 knitr::kable(ds_lu_ethnicity, caption = "Ethnicity Mapping")
 
 
+```
+
+
+```{r, message=FALSE}
+
+# **************************************************************************** #
+# ***************         NIH enrollment table                 *************** #
+# **************************************************************************** #
+
 ds_summary_long <- codified::table_nih_enrollment(
   d              = ds,
   d_lu_gender    = ds_lu_gender,
@@ -118,7 +129,6 @@ ds_summary_long <- codified::table_nih_enrollment(
 knitr::kable(ds_summary_long, caption = "Counts of Each Subgroup")
 
 
-# NIH enrollment table
 
 codified::table_nih_enrollment_pretty(
   d              = ds,
@@ -126,10 +136,5 @@ codified::table_nih_enrollment_pretty(
   d_lu_race      = ds_lu_race,
   d_lu_ethnicity = ds_lu_ethnicity
 )
-
-
 ```
-
-
-
 
