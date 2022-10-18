@@ -1,5 +1,5 @@
 ---
-title: "GET RedCap Data: BEACH Study Overview Report"
+title: "Get RedCap Data: BEACH Study Overview Report"
 author: "Dominick J. Lemas"
 date: "07/19/2022"
 output: html_document
