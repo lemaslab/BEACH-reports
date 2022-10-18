@@ -32,7 +32,7 @@ output: html_document
 
 project_name="The Breastfeeding and EArly Child Health Study"
 irb_number="IRB201601034"
-upstream_code="~/code/get_data/get_RedCapData_21221.Rmd"
+upstream_code="~/code/get/get_RedCapData_21221.Rmd"
 report_id<-21221L
 report_name= "BEACH Study Overview"
 input_file="report_21221.RData"
