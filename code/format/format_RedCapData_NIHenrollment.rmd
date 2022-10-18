@@ -1,7 +1,7 @@
 ---
-title: "FORMAT Data: NIH Enrollment Report"
+title: "Format RedCap Data: NIH Enrollment Report"
 author: "Dominick Lemas"
-date: "09/07/2022"
+date: "10/18/2022"
 output: html_document
 
 ---
@@ -14,7 +14,7 @@ output: html_document
 
 # Author:            Dominick J. Lemas
 # Start Date:        09/07/2022 
-# Date Modify:       
+# Date Modify:       10/18/2022
 # Project:           The Breastfeeding and EArly Child Health
 # IRB:               IRB201601034
 #                   
@@ -32,7 +32,7 @@ output: html_document
 
 project_name="The Breastfeeding and EArly Child Health Study"
 irb_number="IRB201601034"
-upstream_code="~/code/get_data/get_reportData_21221.Rmd"
+upstream_code="~/code/get_data/get_RedCapData_21221.Rmd"
 report_id<-21221L
 report_name= "BEACH Study Overview"
 input_file="report_21221.RData"
