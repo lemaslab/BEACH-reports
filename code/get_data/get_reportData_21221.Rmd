@@ -1,5 +1,5 @@
 ---
-title: "GET Data: BEACH Study Overview Report (21221L)"
+title: "GET Data: BEACH Study Overview Report"
 author: "Dominick J. Lemas"
 date: "07/19/2022"
 output: html_document
@@ -15,7 +15,7 @@ output: html_document
 # Author:            Dominick J. Lemas
 # Start Date:        07/19/2022 
 # Date Modify:       09/07/2022
-# Project:           The Breastfeeding and EArly Child Health
+# Project:           The Breastfeeding and EArly Child Health Study
 # IRB:               IRB201601034
 #                   
 #
@@ -31,13 +31,12 @@ output: html_document
 
 # keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
 
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
 ```
 
-#### __Data Processing Summary__
-![](redcap_workflow.png)
-
-
-```{r, message=FALSE}
+```{r, message=FALSE, include=FALSE}
 
 # **************************************************************************** #
 # ***************                Library                       *************** #
@@ -51,7 +50,7 @@ source("~/BEACH-reports/code/utils/utils.R")
 
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
 # ***************              Extract Data                    *************** #
@@ -67,6 +66,7 @@ api_token=get_API_token("beach_api")
 
 # Study Overview
 report_id<-21221L
+report_name= "BEACH Study Overview"
 
 
 # PULL DATA
@@ -86,8 +86,7 @@ report = report_raw %>%
          -exitsurvey_resultsinfo)
 
 ```
-
-```{r, message=FALSE}
+```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
 # ***************              Save Data Local                 *************** #
@@ -96,4 +95,31 @@ report = report_raw %>%
 # Save the data in your local laptop (Github path: /data)
 save(list=c("report"),file="~/BEACH-reports/data/raw/report_21221.RData")
 
+output_directory="~/BEACH-reports/data/raw/"
+output_file_name="report_21221.RData"
+
 ```
+
+#### __Project Details__
+Title: `r project_name`  
+IRB Number: `r irb_number`  
+Redcap URL: `r uri`  
+Report Name: `r report_name`  
+Report ID: `r report_id`
+
+#### __Data Processing Summary__
+Variables of interest are stored as RedCap reports. Data is extracted from REdcap via REDCapR using URL and API token. The extracted data is lightly formatted and output as an *.rda object for downstream analysis.  
+![](redcap_workflow.png)
+
+#### __Data Description__
+
+```{r, message=FALSE, echo=FALSE}
+
+part_length=unique(length(report$test_id))
+hist(report$beach_final_bmi)
+
+```
+  
+#### __Project Outputs__  
+Output Directory: `r output_directory`  
+Output File Name: `r output_file_name`

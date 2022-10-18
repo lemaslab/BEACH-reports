@@ -1,5 +1,5 @@
 ---
-title: "Enrollment Report: BEACH Study Overview (21221L)"
+title: "NIH Enrollment Report"
 author: "Dominick Lemas"
 date: "10/04/2022"
 output: html_document
@@ -32,10 +32,17 @@ output: html_document
 
 # PLAN: Complete NIH Enrollment Table.
 
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+upstream_code="~/code/process_data/format_reportData_21221_NIHenrollment.Rmd"
+report_id<-21221L
+report_name= "BEACH Study Overview"
+input_file="21221_NIHenrollment_clean.RData"
+
 ```
 
 
-```{r, message=FALSE}
+```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
 # ***************                Library                       *************** #
@@ -49,13 +56,13 @@ library(tidyverse)
 
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
 # ***************              Load/Trim Data                  *************** #
 # **************************************************************************** #
 
-load("~/BEACH-reports/data/processed/final_report_21221.RData")
+load("~/BEACH-reports/data/processed/21221_NIHenrollment_clean.RData")
 
 ds=data %>%
   rename(gender=sex_nih,
@@ -66,10 +73,22 @@ ds$gender=as.character(ds$gender)
 ds$ethnicity=as.character(ds$ethnicity)
 ds$race=as.character(ds$race)
 
+# ds[ds$gender=="<NA>"]=NA
 
 ```
 
-```{r, message=FALSE}
+#### __Project Details__
+Title: `r project_name`  
+IRB Number: `r irb_number`  
+Report Name (source-data): `r report_name`  
+Report ID (source-data): `r report_id`  
+Upstream Code: `r upstream_code`  
+Input Data: `r input_file`
+
+#### __Data Description__
+
+
+```{r, message=FALSE,echo=FALSE}
 
 # **************************************************************************** #
 # ***************              Data Labels                     *************** #
@@ -79,11 +98,12 @@ ds$race=as.character(ds$race)
 
 ds_lu_gender <- tibble::tribble(
   ~input,   ~displayed            ,
-  "0"   ,  "Female"               ,
-  "1"   ,  "Male"                 ,
-  "NA"   ,  "Unknown/Not Reported"
+  "1"   ,  "Female"               ,
+  "2"   ,  "Male"                 ,
+  "<NA>"   ,  "Unknown/Not Reported"
 )
-knitr::kable(ds_lu_gender, caption = "Gender Mapping")
+
+# knitr::kable(ds_lu_gender, caption = "Gender Mapping")
 
 # race
 
@@ -97,7 +117,8 @@ ds_lu_race <- tibble::tribble(
   "M"    , "More than One Race"                         ,
   "NA"    , "Unknown or Not Reported"
 )
-knitr::kable(ds_lu_race, caption = "Race Mapping")
+
+# knitr::kable(ds_lu_race, caption = "Race Mapping")
 
 # ethnicity
 
@@ -107,8 +128,7 @@ ds_lu_ethnicity <- tibble::tribble(
   "1"   ,  "Hispanic or Latino"             ,
   "0"   ,  "Unknown/Not Reported Ethnicity"
 )
-knitr::kable(ds_lu_ethnicity, caption = "Ethnicity Mapping")
-
+# knitr::kable(ds_lu_ethnicity, caption = "Ethnicity Mapping")
 
 ```
 
