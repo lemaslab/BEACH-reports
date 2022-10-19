@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title><strong>Project Details</strong></title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h4><strong>Project Details</strong></h4>
+
+<p>Title: The Breastfeeding and EArly Child Health Study<br/>
+IRB Number: IRB201601034<br/>
+Report Name (source-data): BEACH Study Overview<br/>
+Report ID (source-data): 21221<br/>
+Upstream Code: ~/code/process_data/format_reportData_21221_NIHenrollment.Rmd<br/>
+Input Data: 21221_NIHenrollment_clean.RData</p>
+
+<h4><strong>Data Description</strong></h4>
+
+<table>
+<caption>Counts of Each Subgroup</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> gender </th>
+   <th style="text-align:left;"> race </th>
+   <th style="text-align:left;"> ethnicity </th>
+   <th style="text-align:right;"> n </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> American Indian/Alaska Native </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> American Indian/Alaska Native </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> American Indian/Alaska Native </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Asian </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Asian </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Asian </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Black or African American </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 16 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Black or African American </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Black or African American </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> White </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 79 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> White </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 16 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> White </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> More than One Race </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> More than One Race </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> More than One Race </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Unknown or Not Reported </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Unknown or Not Reported </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Female </td>
+   <td style="text-align:left;"> Unknown or Not Reported </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> American Indian/Alaska Native </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> American Indian/Alaska Native </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> American Indian/Alaska Native </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Asian </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Asian </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Asian </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Black or African American </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Black or African American </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Black or African American </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> White </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 23 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> White </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> White </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> More than One Race </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> More than One Race </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> More than One Race </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Unknown or Not Reported </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Unknown or Not Reported </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Male </td>
+   <td style="text-align:left;"> Unknown or Not Reported </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> American Indian/Alaska Native </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> American Indian/Alaska Native </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> American Indian/Alaska Native </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Asian </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Asian </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Asian </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Black or African American </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Black or African American </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Black or African American </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> White </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> White </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> White </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> More than One Race </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> More than One Race </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> More than One Race </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Unknown or Not Reported </td>
+   <td style="text-align:left;"> Not Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Unknown or Not Reported </td>
+   <td style="text-align:left;"> Hispanic or Latino </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown/Not Reported </td>
+   <td style="text-align:left;"> Unknown or Not Reported </td>
+   <td style="text-align:left;"> Unknown/Not Reported Ethnicity </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+</tbody>
+</table>
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="9"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Ethnic Categories</div></th>
+</tr>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="1"></th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Not Hispanic or Latino</div></th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Hispanic or Latino</div></th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">Unknown/Not Reported Ethnicity</div></th>
+</tr>
+  <tr>
+   <th style="text-align:left;"> Racial
+Categories </th>
+   <th style="text-align:right;"> Female </th>
+   <th style="text-align:right;"> Male </th>
+   <th style="text-align:right;"> Unknown/<br>Not Reported </th>
+   <th style="text-align:right;"> Female </th>
+   <th style="text-align:right;"> Male </th>
+   <th style="text-align:right;"> Unknown/<br>Not Reported </th>
+   <th style="text-align:right;"> Female </th>
+   <th style="text-align:right;"> Male </th>
+   <th style="text-align:right;"> Unknown/<br>Not Reported </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;border-right:1px solid;"> American Indian/Alaska Native </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;border-right:1px solid;"> Asian </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;border-right:1px solid;"> Native Hawaiian or Other Pacific Islander </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;border-right:1px solid;"> Black or African American </td>
+   <td style="text-align:right;"> 16 </td>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;border-right:1px solid;"> White </td>
+   <td style="text-align:right;"> 79 </td>
+   <td style="text-align:right;"> 23 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 16 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;border-right:1px solid;"> More than One Race </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;border-right:1px solid;"> Unknown or Not Reported </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;border-right:1px solid;"> 0 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+</tbody>
+</table>
+
+</body>
+
+</html>

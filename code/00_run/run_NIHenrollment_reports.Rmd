@@ -8,27 +8,22 @@ output: html_document
 
 ```{r, include=FALSE}
 
-# Get-RedCapData
-
 library(ezknitr)
 
 # get_RedCapData
 ezknit(file = "../get/get_RedCapData_21221.Rmd",
        wd="BEACH-reports/..",
-       out_dir = "../../output/reports/redcap")
-
-```
-
-
-```{r, include=FALSE}
-
-# Format-RedCapData
-
-library(ezknitr)
+       out_dir = "../../output/reports/nih_enrollment")
 
 # format_RedCapData
-ezknit(file = "../get/get_RedCapData_21221.Rmd",
+ezknit(file = "../format/format_RedCapData_NIHenrollment.Rmd",
        wd="BEACH-reports/..",
-       out_dir = "../../output/reports/redcap")
+       out_dir = "../../output/reports/nih_enrollment")
+
+# build_report
+ezknit(file = "../reports/NIHenrollment_report.Rmd",
+       wd="BEACH-reports/..",
+       out_dir = "../../output/reports/nih_enrollment")
 
 ```
+
