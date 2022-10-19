@@ -1,0 +1,34 @@
+---
+title: "Run NIH Enrollment Report"
+author: "Dominick J. Lemas"
+date: "10/19/2022"
+output: html_document
+
+---
+
+```{r, include=FALSE}
+
+# Get-RedCapData
+
+library(ezknitr)
+
+# get_RedCapData
+ezknit(file = "../get/get_RedCapData_21221.Rmd",
+       wd="BEACH-reports/..",
+       out_dir = "../../output/reports/redcap")
+
+```
+
+
+```{r, include=FALSE}
+
+# Format-RedCapData
+
+library(ezknitr)
+
+# format_RedCapData
+ezknit(file = "../get/get_RedCapData_21221.Rmd",
+       wd="BEACH-reports/..",
+       out_dir = "../../output/reports/redcap")
+
+```

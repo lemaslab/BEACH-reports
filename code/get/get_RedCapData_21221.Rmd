@@ -14,7 +14,7 @@ output: html_document
 
 # Author:            Dominick J. Lemas
 # Start Date:        07/19/2022 
-# Date Modify:       09/07/2022
+# Date Modify:       10/18/2022
 # Project:           The Breastfeeding and EArly Child Health Study
 # IRB:               IRB201601034
 #                   
@@ -46,6 +46,7 @@ library(keyringr)
 library(redcapAPI)
 library(REDCapR)
 library(tidyverse)
+library(ezknitr)
 source("~/BEACH-reports/code/utils/utils.R")
 
 ```

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title><strong>Project Details</strong></title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h4><strong>Project Details</strong></h4>
+
+<p>Title: The Breastfeeding and EArly Child Health Study<br/>
+IRB Number: IRB201601034<br/>
+Redcap URL: <a href="https://redcap.ctsi.ufl.edu/redcap/api/">https://redcap.ctsi.ufl.edu/redcap/api/</a><br/>
+Report Name: BEACH Study Overview<br/>
+Report ID: 21221</p>
+
+<h4><strong>Data Processing Summary</strong></h4>
+
+<p>Variables of interest are stored as RedCap reports. Data is extracted from REdcap via REDCapR using URL and API token. The extracted data is lightly formatted and output as an *.rda object for downstream analysis.<br/>
+<img src="redcap_workflow.png" alt=""/></p>
+
+<h4><strong>Data Description</strong></h4>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-6"/></p>
+
+<h4><strong>Project Outputs</strong></h4>
+
+<p>Output Directory: ~/BEACH-reports/data/raw/<br/>
+Output File Name: report_21221.RData</p>
+
+</body>
+
+</html>
