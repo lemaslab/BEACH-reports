@@ -46,7 +46,7 @@ library(keyringr)
 library(redcapAPI)
 library(REDCapR)
 library(tidyverse)
-library(ezknitr)
+# library(ezknitr)
 source("~/BEACH-reports/code/utils/utils.R")
 
 ```
