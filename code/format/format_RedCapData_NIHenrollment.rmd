@@ -156,9 +156,11 @@ Upstream Code: `r upstream_code`
 Input Data: `r input_file`
 
 #### __Data Processing Summary__
-The data processing 
+Data is added to RedCap and then run through the upstream code `r upstream_code` which extracts specific variables of interest and saves in `r input_file`. Then the data runs through this code to generate columns of raw data and saved in `r output_file_name` to be processed into a table.
+![](Format_RedCapData Workflow.png)
 
 #### __Data Description__
+
 
 ```{r, message=FALSE, echo=FALSE}
 
