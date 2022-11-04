@@ -3,29 +3,41 @@ title: "getData_current_particpant"
 author: "Yasmine Gillespie"
 date: '2022-10-23'
 output: html_document
----
 
+---
 
 ```{r, include=FALSE}
 ##--------------
 # **************************************************************************** #
 # ***************                Project Overview              *************** #
 # **************************************************************************** #
-# Author:      Hailey Ballard
-# Date:        October 21, 2021
-# IRB:         The Breastfeeding and EArly Child Health (BEACH) study (IRB201601034)
+# Author:             Hailey Ballard
+# Start Date:         October 21, 2021
+# Date Modify:        November 4, 2022
+# Project:            The Breastfeeding and EArly Child Health Study
+# IRB:                IRB201601034
 #
 # version: R version 4.0.2 (2020-06-22)
 # version: Rstudio version Version 1.3.959
+
 # **************************************************************************** #
 # ***************                Description                   *************** #
 # **************************************************************************** #
+
 # PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
 # Note: vpn must be active
+
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
+
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
 ```
 
 
-```{r, message=FALSE}
+```{r, message=FALSE, include=FALSE}
+
 # **************************************************************************** #
 # ***************                Library                       *************** #
 # **************************************************************************** #
@@ -34,25 +46,51 @@ library(redcapAPI)
 library(REDCapR)
 library(readxl)
 library(tidyverse)
+source("~/GitHub/BEACH-reports/code/utils/utils.R")
+
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE,include=FALSE}
 # Windows
-source("~/BEACH-facebook/code/utils/utils.R")
 api_token=get_API_token("BEACH-Facebook")
+
 ```
 
-```{r, message=FALSE}
+```{r, message=FALSE,include=FALSE}
 # Mac, you need to store your API code in your keychain first
 api_token <- decrypt_kc_pw("Redcap_BEACH_facebook")
+
 ```
 
-```{r, message=FALSE}
-# API and URL
-uri='https://redcap.ctsi.ufl.edu/redcap/api/'
-rcon <- redcapConnection(url=uri, token=api_token)
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+
+        #not sure if either this or the Windows and Mac sections needed
+
+# Total Recruitment
+        #correct report title?
+#----------
 report_id <- 35366
-# Access data
+report_name="Total Recruitment"
+
+#PULL DATA
+#----------
+report_raw <-
+  REDCapR::redcap_report(
+    redcap_uri = uri,
+    token      = api_token,
+    report_id  = report_id
+  )$data 
+
+
 CP_raw=redcap_report(
   uri,
   api_token,
@@ -60,5 +98,5 @@ CP_raw=redcap_report(
   raw_or_label_headers="raw",
   guess_type=FALSE)$data
 
-save(list=c("CP_raw"),file="~/BEACH-facebook/data/raw/Current_Particpant_raw.RData")
+save(list=c("CP_raw"),file="~/GitHub/BEACH-Reports/data/raw/Current_Particpant_raw.RData")
 ```
