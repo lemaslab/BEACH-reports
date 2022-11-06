@@ -12,15 +12,25 @@ output: html_document
 # **************************************************************************** #
 # Author:      Hailey Ballard
 # Date:        October 21, 2021
-# IRB:         The Breastfeeding and EArly Child Health (BEACH) study (IRB201601034)
+# Date Modify: November 6, 2022
+# Project:     The Breastfeeding and EArly Child Health (BEACH) study
+# IRB:         IRB201601034
 #
 # version: R version 4.0.2 (2020-06-22)
 # version: Rstudio version Version 1.3.959
+
 # **************************************************************************** #
 # ***************                Description                   *************** #
 # **************************************************************************** #
+
 # PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
 # Note: vpn must be active
+
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
 ```
 
 
@@ -33,11 +43,12 @@ library(redcapAPI)
 library(REDCapR)
 library(readxl)
 library(tidyverse)
+source("~/BEACH-reports/code/utils/utils.R")
+
 ```
 
 ```{r, message=FALSE}
 # Windows
-source("~/BEACH-facebook/code/utils/utils.R")
 api_token=get_API_token("BEACH-Facebook")
 ```
 
@@ -46,12 +57,25 @@ api_token=get_API_token("BEACH-Facebook")
 api_token <- decrypt_kc_pw("Redcap_BEACH_facebook")
 ```
 
-```{r, message=FALSE}
-# API and URL
-uri='https://redcap.ctsi.ufl.edu/redcap/api/'
-rcon <- redcapConnection(url=uri, token=api_token)
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+
+        #not sure if either this or the Windows and Mac sections needed
+
+# Title?
+#----------
 report_id <- 35392
-# Access data
+report_name="Title"
+
+# PULL DATA
 Encounter_data=redcap_report(
   uri,
   api_token,
@@ -59,5 +83,12 @@ Encounter_data=redcap_report(
   raw_or_label_headers="raw",
   guess_type=FALSE)$data
 
-save(list=c("Encounter_data"),file="~/BEACH-facebook/data/raw/all_encounters_raw.RData")
+```
+
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+# Save the data in your local laptop (Github path: BEACH-reports)
+save(list=c("report_raw"),file="~/BEACH-Reports/output/reports/recruitment/all_encounters_raw.RData")
 ```
