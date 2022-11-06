@@ -46,7 +46,7 @@ library(redcapAPI)
 library(REDCapR)
 library(readxl)
 library(tidyverse)
-source("~/GitHub/BEACH-reports/code/utils/utils.R")
+source("~/BEACH-reports/code/utils/utils.R")
 
 ```
 
@@ -90,13 +90,12 @@ report_raw <-
     report_id  = report_id
   )$data 
 
+```
 
-CP_raw=redcap_report(
-  uri,
-  api_token,
-  report_id,
-  raw_or_label_headers="raw",
-  guess_type=FALSE)$data
-
-save(list=c("CP_raw"),file="~/GitHub/BEACH-Reports/data/raw/Current_Particpant_raw.RData")
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+# Save the data in your local laptop (Github path: BEACH-reports)
+save(list=c("CP_raw"),file="~/BEACH-Reports/output/reports/recruitment/Current_Particpant_raw.RData")
 ```
