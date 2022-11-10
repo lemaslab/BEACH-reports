@@ -73,8 +73,6 @@ api_token <- decrypt_kc_pw("Redcap_BEACH_facebook")
 uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
 api_token=get_API_token("beach_api")
 
-        #not sure if either this or the Windows and Mac sections needed
-
 # Current Participants
 #----------
 report_id <- 35366L
