@@ -31,7 +31,7 @@ output: html_document
 
 # Next steps
 #- function to call the IDs and events
-#- function to batch pull EHR data by year/event and combine into final dataset. 
+#- function to batch pull EHR data by year/event 
 
 
 ```
@@ -68,7 +68,7 @@ library(readr)
 ```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
-# ***************              Load/Trim Data                  *************** #
+# ***************              Load Data                       *************** #
 # **************************************************************************** #
 
 load("~/BEACH-Reports/output/reports/recruitment/Current_Particpant_raw.RData")
@@ -76,6 +76,10 @@ load("~/BEACH-Reports/output/reports/recruitment/Current_Particpant_raw.RData")
 ```
 
 ```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
+# **************************************************************************** #
+# ***************              Eligible_Pass Data              *************** #
+# **************************************************************************** #
 
 #renames the first row containing column titles
 
@@ -170,11 +174,81 @@ Eligible_Pass_age_bmi_clean <- Eligible_Pass_age_bmi[ -c(2,4,5,6) ]
 
 ```
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
 
 names(Eligible_Pass_age_bmi_clean)[4] <- "BMI_grouping"
 
 ```
+
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                 Consent Data                 *************** #
+# **************************************************************************** #
+
+#create consent data
+CP_Consent= filter(CP_report, Consent == 1)
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+#adding BMI
+CP_Consent$BMI = coalesce(CP_Consent$beach_final_bmi, CP_Consent$beachphone_prepreg_bmi)
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+#recodes numerical variables for BMI analysis
+CP_Consent=CP_Consent %>%
+  mutate(bmi_analysis_prepregnant=recode(bmi_analysis_prepregnant,
+                              "1"="Normal",
+                              "2"="Overweight",
+                              "3"= "Obese"
+                               ))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+#create table with participants that passed, age, BMI grouping, and how they heard about the study
+CP_age_bmi=CP_Consent %>%
+  select(test_id,
+         beachphone_age,
+         BMI,
+       bmi_analysis_prepregnant,
+       beachphone_hear_about_us
+       )%>%
+  
+   mutate( age_groups =  beachphone_age) %>%
+   mutate(Age_grouping = case_when((age_groups <= 25) ~ "18-25",
+                                  (age_groups >25 & age_groups <= 30) ~ "26-30",
+                                 (age_groups >30 & age_groups <= 35) ~ "31-35",
+                                 (age_groups >35 & age_groups <= 40) ~ "36-40",
+                                  (age_groups > 40) ~ "> 40"))%>%
+   mutate(prepreg_bmi = BMI)%>%
+   mutate(Bmi_grouping = case_when((prepreg_bmi >29) ~ "Obese",
+                                  (prepreg_bmi >26 & prepreg_bmi<29) ~ "Overweight",
+                                  (prepreg_bmi <26) ~ "Normal"))%>%
+  select(test_id,age_groups, Age_grouping,prepreg_bmi,Bmi_grouping, bmi_analysis_prepregnant, beachphone_hear_about_us)
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_age_bmi$BMI_Type = coalesce(CP.age.bmi$Bmi_grouping, CP_age_bmi$bmi_analysis_prepregnant)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_age_bmi_clean <- CP_age_bmi[ -c(2,4,5,6) ]
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+names(CP_age_bmi_clean)[4] <- "BMI_grouping"
+
+```
+
 
 ```{r, message=FALSE,include=FALSE}
 
@@ -183,4 +257,7 @@ names(Eligible_Pass_age_bmi_clean)[4] <- "BMI_grouping"
 # **************************************************************************** #
 # Save the data in your local laptop (Github path: /data)
 
-save(list=c("Eligible_Pass_age_bmi_clean"),file="~/BEACH-Reports/output/reports/recruitment/Current_Particpant_format.RData")
+save(list=c("Eligible_Pass_age_bmi_clean"),file="~/BEACH-Reports/output/reports/recruitment/Current_Particpant_clean.RData")
+
+```
+
