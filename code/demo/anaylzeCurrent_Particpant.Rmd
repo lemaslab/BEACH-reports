@@ -64,7 +64,7 @@ library(readr)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-load("~/GitHub/BEACH-reports/output/reports/Current_Particpant_raw.RData")
+load("~/BEACH-Reports/output/reports/recruitment/Current_Particpant_raw.RData")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
