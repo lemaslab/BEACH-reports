@@ -89,7 +89,7 @@ CP_raw <-
 
 CP_report = CP_raw %>%
   select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance)
-#use to pull out any data
+#use to cut out any data
 
 ```
 
