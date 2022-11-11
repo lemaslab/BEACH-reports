@@ -92,5 +92,5 @@ Encounter_report = Encounter_data %>%
 # ***************              Save Data Local                 *************** #
 # **************************************************************************** #
 # Save the data in your local laptop (Github path: BEACH-reports)
-save(list=c("report_raw"),file="~/BEACH-Reports/output/reports/recruitment/all_encounters_raw.RData")
+save(list=c("Encounter_report"),file="~/BEACH-Reports/output/reports/recruitment/all_encounters_raw.RData")
 ```
