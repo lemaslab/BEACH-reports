@@ -16,7 +16,7 @@ output: html_document
 # Project:     The Breastfeeding and EArly Child Health (BEACH) study
 # IRB:         IRB201601034
 #
-# version: R version 4.2.2 (2022-11-08)
+# version: R version 4.2.2 (2022-10-31)
 # version: Rstudio version Version 1.3.959
 
 # **************************************************************************** #
@@ -34,7 +34,7 @@ irb_number="IRB201601034"
 ```
 
 
-```{r, message=FALSE}
+```{r, message=FALSE, include=FALSE}
 # **************************************************************************** #
 # ***************                Library                       *************** #
 # **************************************************************************** #
