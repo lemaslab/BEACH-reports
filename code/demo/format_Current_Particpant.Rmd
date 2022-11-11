@@ -257,7 +257,7 @@ names(CP_age_bmi_clean)[4] <- "BMI_grouping"
 # **************************************************************************** #
 # Save the data in your local laptop (Github path: /data)
 
-save(list=c("Eligible_Pass_age_bmi_clean"),file="~/BEACH-Reports/output/reports/recruitment/Current_Particpant_clean.RData")
+save(list=c("Eligible_Pass_age_bmi_clean","CP_age_bmi_clean"),file="~/BEACH-Reports/output/reports/recruitment/Current_Particpant_clean.RData")
 
 ```
 

@@ -1,0 +1,106 @@
+---
+title: "anaylzeCurrent_Particpant"
+author: "Yasmine Gillespie"
+date: '2022-10-23'
+output: html_document
+---
+
+
+```{r, include=FALSE,echo=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:      Yasmine Gillespie
+# Date:        November 17, 2020 
+# Modify:      November 10, 2022
+# IRB:         The Breastfeeding and EArly Child Health Study
+# IRB:         IRB201601899
+#
+#
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#combine into final dataset and analyze data 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Load/Analyze Data                  *************** #
+# **************************************************************************** #
+
+load("~/BEACH-Reports/output/reports/recruitment/Current_Particpant_clean.RData")
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+vtree(Eligible_Pass, "beachphone_hear_about_us Phone_Screen", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+vtree(Eligible_Pass_age_bmi_clean, "beachphone_hear_about_us Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Eligible_Pass_age_bmi_clean, "beachphone_hear_about_us BMI_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+vtree(CP_Consent, "beachphone_hear_about_us Phone_Screen", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+vtree(CP_age_bmi_clean, "beachphone_hear_about_us Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+vtree(CP_age_bmi_clean, "beachphone_hear_about_us BMI_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
