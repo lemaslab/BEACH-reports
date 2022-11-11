@@ -52,13 +52,13 @@ source("~/BEACH-reports/code/utils/utils.R")
 
 ```{r, message=FALSE,include=FALSE}
 # Windows
-api_token=get_API_token("BEACH-Facebook")
+api_token=get_API_token("beach_api")
 
 ```
 
 ```{r, message=FALSE,include=FALSE}
 # Mac, you need to store your API code in your keychain first
-api_token <- decrypt_kc_pw("Redcap_BEACH_facebook")
+api_token <- decrypt_kc_pw("beach_api")
 
 ```
 
@@ -80,12 +80,15 @@ report_name="Current Participants"
 
 #PULL DATA
 #----------
-report_raw <-
+Current_Participants <-
   REDCapR::redcap_report(
     redcap_uri = uri,
     token      = api_token,
     report_id  = report_id
   )$data 
+
+#report = report_raw %>%
+  #select(      #use to pull out any data
 
 ```
 
