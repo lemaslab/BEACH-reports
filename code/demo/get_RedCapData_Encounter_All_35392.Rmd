@@ -81,8 +81,9 @@ Encounter_data <-
     report_id  = report_id
   )$data 
 
-#report = report_raw %>%
-  #select(      #use to pull out any data
+Encounter_report = Encounter_data %>%
+  select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance)
+#use to cut out any data
 
 ```
 

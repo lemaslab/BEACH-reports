@@ -1,0 +1,108 @@
+---
+title: "anaylzeExample"
+author: "Yasmine Gillespie"
+date: '2022-10-25'
+output: html_document
+---
+
+```{r, include=FALSE,echo=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:      Yasmine Gillespie
+# Date:        Oct 25, 2022 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event and combine into final dataset. 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Load/Analyze Data                  *************** #
+# **************************************************************************** #
+
+load("~/BEACH-Reports/output/reports/recruitment/Encounter_All_clean.RData")
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Encounter_data, "Phone_Screen", palette = 3, sortfill = TRUE, horiz=FALSE)
+#282
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Encounter_data, "beach_encounter_type", palette = 3, sortfill = TRUE, horiz=FALSE)
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Encounter_data, "Prescreen_Survey", palette = 3, sortfill = TRUE, horiz=FALSE)
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Encounter_data, "Phone_Screen beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Encounter_data, "Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Encounter_data, "Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
+
+```
+
+
+
+
