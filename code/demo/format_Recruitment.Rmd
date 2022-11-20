@@ -130,13 +130,14 @@ recruitment_report$Recruitment = coalesce(recruitment_report$beachphone_hear_abo
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 
-#recodes numerical variable to show as incomplete
-#should this be N/A
+#recodes NA to show as incomplete
 
+recruitment_report$Recruitment[is.na(recruitment_report$Recruitment)] <- 0
 recruitment_report=recruitment_report %>%
   mutate(Recruitment=recode(Recruitment,
                               "0"="Incomplete"
                             ))
+
 ```
 
 ```{r, message=FALSE,include=FALSE}

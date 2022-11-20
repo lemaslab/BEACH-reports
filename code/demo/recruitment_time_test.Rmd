@@ -228,6 +228,13 @@ time_report=time_report %>%
 
 time_report$timecoalesce = coalesce(time_report$prescreen_date, time_report$beach_encounter_date, time_report$beachphone_date)
 
+
+#make code to where after 10 characters, delete (no hour:minute)
+
+time_report$timecoalesce <- format(as.POSIXct(time_report$timecoalesce,
+                           format = '%m/%d/%Y %H:%M:%S'),
+                format = '%m/%d/%Y')
+
 ```
 
 ```{r, message=FALSE,warning=FALSE,echo=FALSE}
@@ -240,13 +247,14 @@ time_report$Recruitment = coalesce(time_report$beachphone_hear_about_us, time_re
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 
-#recodes numerical variable to show as incomplete
-#should this be N/A
+#recodes NA to show as incomplete
 
-time_report=time_report %>%
+recruitment_report$Recruitment[is.na(recruitment_report$Recruitment)] <- 0
+recruitment_report=recruitment_report %>%
   mutate(Recruitment=recode(Recruitment,
                               "0"="Incomplete"
                             ))
+
 ```
 
 ```{r, message=FALSE,include=FALSE}
