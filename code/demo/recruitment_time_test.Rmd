@@ -224,9 +224,17 @@ time_report=time_report %>%
 
 ```{r, message=FALSE,warning=FALSE,echo=FALSE}
 
-#merge different recruitment methods into one column to fill in N/A blanks
+#merge times into one column to fill in N/A blanks
 
 time_report$timecoalesce = coalesce(time_report$prescreen_date, time_report$beach_encounter_date, time_report$beachphone_date)
+
+```
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
+#merge different recruitment methods into one column to fill in N/A blanks
+
+time_report$Recruitment = coalesce(time_report$beachphone_hear_about_us, time_report$beach_learn_about_study, time_report$IDR)
 
 ```
 
