@@ -249,8 +249,8 @@ time_report$Recruitment = coalesce(time_report$beachphone_hear_about_us, time_re
 
 #recodes NA to show as incomplete
 
-recruitment_report$Recruitment[is.na(recruitment_report$Recruitment)] <- 0
-recruitment_report=recruitment_report %>%
+time_report$Recruitment[is.na(time_report$Recruitment)] <- 0
+time_report=time_report %>%
   mutate(Recruitment=recode(Recruitment,
                               "0"="Incomplete"
                             ))
