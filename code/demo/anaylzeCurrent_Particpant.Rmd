@@ -92,20 +92,46 @@ CP_raw=CP_raw %>%
                               "5"="Word-of-mouth",
                               "6"="Other"
                                ))
+
+
+CP_raw=CP_raw %>%
+  mutate(beach_learn_about_study=recode(beach_learn_about_study,
+                              "1"="Flyer",
+                              "2"="Physician",
+                              "3"="Social Media",
+                              "4"="Mail",
+                              "5"="Other"
+                               ))
                               
 ```
 
+
+##Phone_Screening
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Eligible_Pass= filter(CP_raw, beachphone_pass_fail == 1)
+Phone_Screen= filter(CP_raw, Phone_Screen == 1)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Eligible_Pass$BMI = coalesce(Eligible_Pass$beach_final_bmi, Eligible_Pass$beachphone_prepreg_bmi)
+Phone_Screen$Recruitment = coalesce(Phone_Screen$beachphone_hear_about_us, Phone_Screen$beach_learn_about_study, Phone_Screen$IDR)
+
+Phone_Screen=Phone_Screen %>%
+  mutate(Recruitment=recode(Recruitment,
+                              "0"="Incomplete"
+                            ))
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Phone_Screen$BMI = coalesce(Phone_Screen$beach_final_bmi, Phone_Screen$beachphone_prepreg_bmi)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Phone_Screen <- Phone_Screen[ -c(9,11,13,14,15) ]
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #renaming
-Eligible_Pass=Eligible_Pass %>%
+Phone_Screen=Phone_Screen %>%
   mutate(bmi_analysis_prepregnant=recode(bmi_analysis_prepregnant,
                               "1"="Normal",
                               "2"="Overweight",
@@ -114,12 +140,19 @@ Eligible_Pass=Eligible_Pass %>%
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Eligible_Pass_age_bmi=Eligible_Pass %>%
+Phone_Screen_age_bmi=Phone_Screen %>%
   select(test_id,
          beachphone_age,
          BMI,
        bmi_analysis_prepregnant,
-       beachphone_hear_about_us
+       Recruitment,
+       Random_Contact,
+       Prescreen_Survey,
+       Phone_Screen,
+       IDR,
+       Consent,
+       Complete,
+       beachphone_pass_fail
        )%>%
   
    mutate( age_groups =  beachphone_age) %>%
@@ -132,113 +165,102 @@ Eligible_Pass_age_bmi=Eligible_Pass %>%
    mutate(Bmi_grouping = case_when((prepreg_bmi >29) ~ "Obese",
                                   (prepreg_bmi >26 & prepreg_bmi<29) ~ "Overweight",
                                   (prepreg_bmi <26) ~ "Normal"))%>%
-  select(test_id,age_groups, Age_grouping,prepreg_bmi,Bmi_grouping, bmi_analysis_prepregnant, beachphone_hear_about_us)
+  select(test_id, Age_grouping,Bmi_grouping, bmi_analysis_prepregnant, Recruitment, Consent,Complete, beachphone_pass_fail, Random_Contact,Prescreen_Survey,Phone_Screen, IDR)
 
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Eligible_Pass_age_bmi$BMI_Type = coalesce(Eligible_Pass_age_bmi$Bmi_grouping, Eligible_Pass_age_bmi$bmi_analysis_prepregnant)
+Phone_Screen_age_bmi$BMI_Type = coalesce(Phone_Screen_age_bmi$Bmi_grouping, Phone_Screen_age_bmi$bmi_analysis_prepregnant)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Eligible_Pass_age_bmi_clean <- Eligible_Pass_age_bmi[ -c(2,4,5,6) ]
+Phone_Screen_age_bmi <- Phone_Screen_age_bmi[ -c(3,4) ]
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+  mutate(Consent=recode(Consent,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
 
-names(Eligible_Pass_age_bmi_clean)[4] <- "BMI_grouping"
+Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+  mutate(Complete=recode(Complete,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
 
-```
+Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+  mutate(Random_Contact=recode(Random_Contact,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+  mutate(Prescreen_Survey=recode(Prescreen_Survey,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
 
-vtree(Eligible_Pass, "beachphone_hear_about_us Phone_Screen", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
+Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+  mutate(Phone_Screen=recode(Phone_Screen,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+  mutate(IDR=recode(IDR,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
 
-vtree(Eligible_Pass_age_bmi_clean, "beachphone_hear_about_us Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(CP.age.bmi_clean, "beachphone_hear_about_us BMI_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-
-
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-CP_Consent= filter(CP_raw, Consent == 1)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-CP_Consent$BMI = coalesce(CP_Consent$beach_final_bmi, CP_Consent$beachphone_prepreg_bmi)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#renaming
-CP_Consent=CP_Consent %>%
-  mutate(bmi_analysis_prepregnant=recode(bmi_analysis_prepregnant,
-                              "1"="Normal",
-                              "2"="Overweight",
-                              "3"= "Obese"
-                               ))
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-CP.age.bmi=CP_Consent %>%
-  select(test_id,
-         beachphone_age,
-         BMI,
-       bmi_analysis_prepregnant,
-       beachphone_hear_about_us
-       )%>%
-  
-   mutate( age_groups =  beachphone_age) %>%
-   mutate(Age_grouping = case_when((age_groups <= 25) ~ "18-25",
-                                  (age_groups >25 & age_groups <= 30) ~ "26-30",
-                                 (age_groups >30 & age_groups <= 35) ~ "31-35",
-                                 (age_groups >35 & age_groups <= 40) ~ "36-40",
-                                  (age_groups > 40) ~ "> 40"))%>%
-   mutate(prepreg_bmi = BMI)%>%
-   mutate(Bmi_grouping = case_when((prepreg_bmi >29) ~ "Obese",
-                                  (prepreg_bmi >26 & prepreg_bmi<29) ~ "Overweight",
-                                  (prepreg_bmi <26) ~ "Normal"))%>%
-  select(test_id,age_groups, Age_grouping,prepreg_bmi,Bmi_grouping, bmi_analysis_prepregnant, beachphone_hear_about_us)
+Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+  mutate(beachphone_pass_fail=recode(beachphone_pass_fail,
+                              "1"="Pass",
+                              "2"="Fail",
+                              "3"="Incomplete"
+                            ))
 
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-CP.age.bmi$BMI_Type = coalesce(CP.age.bmi$Bmi_grouping, CP.age.bmi$bmi_analysis_prepregnant)
+vtree(Phone_Screen_age_bmi, "Phone_Screen Random_Contact Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-CP.age.bmi_clean <- CP.age.bmi[ -c(2,4,5,6) ]
+vtree(Phone_Screen_age_bmi, "Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Just_Phone_Screen= filter(Phone_Screen_age_bmi, Random_Contact == "No" & Prescreen_Survey == "No")
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Just_Phone_Screen, "Phone_Screen BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+
+##Eligible
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Eligible_Pass= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 
-names(CP.age.bmi_clean)[4] <- "BMI_grouping"
+vtree(Eligible_Pass, "Recruitment BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
 
+#Consent
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_Consent= filter(Phone_Screen_age_bmi, Consent == "Yes")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-
-vtree(CP_Consent, "beachphone_hear_about_us Phone_Screen", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(CP_Consent, "BMI_Type Recruitment", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-
-vtree(CP.age.bmi_clean, "beachphone_hear_about_us Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(CP.age.bmi_clean, "beachphone_hear_about_us BMI_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-
-
-
 
 
 
