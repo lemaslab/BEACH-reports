@@ -1,0 +1,253 @@
+---
+title: "getData_Recruitment"
+author: "Yasmine Gillespie"
+date: '2022-11-05'
+output: html_document
+---
+
+```{r, include=FALSE}
+##--------------
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+# Author:             Hailey Ballard
+# Start Date:         October 21, 2021
+# Date Modify:        November 4, 2022
+# Project:            The Breastfeeding and EArly Child Health Study
+# IRB:                IRB201601034
+#
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
+
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
+```
+
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+library(keyringr)
+library(redcapAPI)
+library(REDCapR)
+library(readxl)
+library(tidyverse)
+source("~/BEACH-reports/code/utils/utils.R")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# Windows
+api_token=get_API_token("beach_api")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# Mac, you need to store your API code in your keychain first
+api_token <- decrypt_kc_pw("beach_api")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+
+# Recruitment
+#----------
+report_id <- 34504L
+report_name="Recruitment"
+
+#PULL DATA
+#----------
+time_raw <-
+  REDCapR::redcap_report(
+    redcap_uri = uri,
+    token      = api_token,
+    report_id  = report_id
+  )$data 
+
+time_report = time_raw %>%
+  select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance)
+#use to cut out any data
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+# Save the data in your local laptop (Github path: BEACH-reports)
+save(list=c("recruitment_report"),file="~/BEACH-Reports/output/reports/recruitment/Recruitment_raw.RData")
+```
+
+---
+title: "anaylzeRecruitment"
+author: "Yasmine Gillespie"
+date: '2022-11-05'
+output: html_document
+---
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+# Author:      Yasmine Gillespie
+# Date:        Oct 25, 2022 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Load Data                       *************** #
+# ****************************************************************************#
+
+load("~/BEACH-Reports/output/reports/recruitment/Recruitment_raw.RData")
+
+```
+
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
+# **************************************************************************** #
+# ***************              Eligible_Pass Data              *************** #
+# **************************************************************************** #
+
+#renames the first row containing column titles
+
+names(time_report)[5] <- "Random_Contact"
+names(time_report)[6] <- "Prescreen_Survey"
+names(time_report)[7] <- "Phone_Screen"
+names(time_report)[8] <- "IDR"
+names(time_report)[9] <- "Consent"
+names(time_report)[10] <- "Complete"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+#recodes numerical variables to be clearer for beachphone_hear_about_us, beach_learn_about_study, and IDR variables
+
+time_report=time_report %>%
+  mutate(beachphone_hear_about_us=recode(beachphone_hear_about_us,
+                              "1"="Flyer",
+                              "2"="Radio",
+                              "3"="Social Media",
+                              "4"="Newspaper",
+                              "5"="Word-of-mouth",
+                              "6"="Other"
+                               ))
+
+time_report=time_report %>%
+  mutate(beach_learn_about_study=recode(beach_learn_about_study,
+                              "1"="Flyer",
+                              "2"="Physician",
+                              "3"="Social Media",
+                              "4"="Mail",
+                              "5"="Other"
+                               ))
+
+time_report=time_report %>%
+  mutate(IDR=recode(IDR,
+                              "1"="IDR"
+                            ))
+
+                              
+```
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
+#merge different recruitment methods into one column to fill in N/A blanks
+
+time_report$timecoalesce = coalesce(time_report$prescreen_date, time_report$beach_encounter_date, time_report$beachphone_date)
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+#recodes numerical variable to show as incomplete
+#should this be N/A
+
+time_report=time_report %>%
+  mutate(Recruitment=recode(Recruitment,
+                              "0"="Incomplete"
+                            ))
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+# Save the data in your local laptop (Github path: /data)
+
+save(list=c("recruitment_report"),file="~/BEACH-Reports/output/reports/recruitment/recruitment_clean.RData")
+
+```
