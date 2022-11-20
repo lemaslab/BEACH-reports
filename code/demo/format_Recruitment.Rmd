@@ -5,18 +5,18 @@ date: '2022-11-05'
 output: html_document
 ---
 
-```{r, include=FALSE}
-##-------------- 
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
 # **************************************************************************** #
-# ***************                Project Overview              *************** #
+# ***************                Library                       *************** #
 # **************************************************************************** #
 
-# Author:      Dominick Lemas
-# Date:        Nov 17, 2020 
+# Author:      Yasmine Gillespie
+# Date:        Oct 25, 2022 
 # Modify:      
 # IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
 
-# version: R version 4.0.2 (2020-06-22)
+# version: R version 4.2.2 (2022-10-31)
 # version: Rstudio version Version 1.3.959 
 
 # **************************************************************************** #
@@ -28,7 +28,7 @@ output: html_document
 
 # Next steps
 #- function to call the IDs and events
-#- function to batch pull EHR data by year/event and combine into final dataset. 
+#- function to batch pull EHR data by year/event 
 
 
 ```
@@ -62,28 +62,38 @@ library(tidyquant)
 library(readr)
 ```
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-load("~/BEACH-facebook/data/raw/Recruitment_Particpant_raw.RData")
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Load Data                       *************** #
+# ****************************************************************************#
+
+load("~/BEACH-Reports/output/reports/recruitment/Recruitment_raw.RData")
+
+```
+
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
+# **************************************************************************** #
+# ***************              Eligible_Pass Data              *************** #
+# **************************************************************************** #
+
+#renames the first row containing column titles
+
+names(recruitment_report)[5] <- "Random_Contact"
+names(recruitment_report)[6] <- "Prescreen_Survey"
+names(recruitment_report)[7] <- "Phone_Screen"
+names(recruitment_report)[8] <- "IDR"
+names(recruitment_report)[9] <- "Consent"
+names(recruitment_report)[10] <- "Complete"
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_raw <- Recruitment_raw[ -c(2:4) ]
 
-```
+#recodes numerical variables to be clearer for beachphone_hear_about_us, beach_learn_about_study, and IDR variables
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-
-names(Recruitment_raw)[5] <- "Random_Contact"
-names(Recruitment_raw)[6] <- "Prescreen_Survey"
-names(Recruitment_raw)[7] <- "Phone_Screen"
-names(Recruitment_raw)[8] <- "IDR"
-names(Recruitment_raw)[9] <- "Consent"
-names(Recruitment_raw)[10] <- "Complete"
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#renaming
-Recruitment_raw=Recruitment_raw %>%
+recruitment_report=recruitment_report %>%
   mutate(beachphone_hear_about_us=recode(beachphone_hear_about_us,
                               "1"="Flyer",
                               "2"="Radio",
@@ -93,7 +103,7 @@ Recruitment_raw=Recruitment_raw %>%
                               "6"="Other"
                                ))
 
-Recruitment_raw=Recruitment_raw %>%
+recruitment_report=recruitment_report %>%
   mutate(beach_learn_about_study=recode(beach_learn_about_study,
                               "1"="Flyer",
                               "2"="Physician",
@@ -102,28 +112,40 @@ Recruitment_raw=Recruitment_raw %>%
                               "5"="Other"
                                ))
 
-Recruitment_raw=Recruitment_raw %>%
+recruitment_report=recruitment_report %>%
   mutate(IDR=recode(IDR,
                               "1"="IDR"
                             ))
 
-
                               
 ```
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_raw$Recruitment = coalesce(Recruitment_raw$beachphone_hear_about_us, Recruitment_raw$beach_learn_about_study, Recruitment_raw$IDR)
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
+#merge different recruitment methods into one column to fill in N/A blanks
+
+recruitment_report$Recruitment = coalesce(recruitment_report$beachphone_hear_about_us, recruitment_report$beach_learn_about_study, recruitment_report$IDR)
+
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_raw=Recruitment_raw %>%
+
+#recodes numerical variable to show as incomplete
+#should this be N/A
+
+recruitment_report=recruitment_report %>%
   mutate(Recruitment=recode(Recruitment,
                               "0"="Incomplete"
                             ))
 ```
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
+```{r, message=FALSE,include=FALSE}
 
-vtree(Recruitment_raw, "Recruitment", palette = 3, sortfill = TRUE, horiz=FALSE)
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+# Save the data in your local laptop (Github path: /data)
+
+save(list=c("recruitment_report"),file="~/BEACH-Reports/output/reports/recruitment/recruitment_clean.RData")
 
 ```

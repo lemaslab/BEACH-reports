@@ -5,18 +5,18 @@ date: '2022-11-05'
 output: html_document
 ---
 
-```{r, include=FALSE}
-##-------------- 
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+
 # **************************************************************************** #
-# ***************                Project Overview              *************** #
+# ***************                Library                       *************** #
 # **************************************************************************** #
 
-# Author:      Dominick Lemas
-# Date:        Nov 17, 2020 
+# Author:      Yasmine Gillespie
+# Date:        Oct 25, 2022 
 # Modify:      
 # IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
 
-# version: R version 4.0.2 (2020-06-22)
+# version: R version 4.2.2 (2022-10-31)
 # version: Rstudio version Version 1.3.959 
 
 # **************************************************************************** #
@@ -28,7 +28,7 @@ output: html_document
 
 # Next steps
 #- function to call the IDs and events
-#- function to batch pull EHR data by year/event and combine into final dataset. 
+#- function to batch pull EHR data by year/event 
 
 
 ```
@@ -62,68 +62,18 @@ library(tidyquant)
 library(readr)
 ```
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-load("~/BEACH-facebook/data/raw/Recruitment_Particpant_raw.RData")
-```
+```{r, message=FALSE,include=FALSE}
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_raw <- Recruitment_raw[ -c(2:4) ]
+# **************************************************************************** #
+# ***************              Load/Analyze Data                  *************** #
+# **************************************************************************** #
 
-```
+load("~/BEACH-Reports/output/reports/recruitment/recruitment_clean.RData")
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-
-names(Recruitment_raw)[5] <- "Random_Contact"
-names(Recruitment_raw)[6] <- "Prescreen_Survey"
-names(Recruitment_raw)[7] <- "Phone_Screen"
-names(Recruitment_raw)[8] <- "IDR"
-names(Recruitment_raw)[9] <- "Consent"
-names(Recruitment_raw)[10] <- "Complete"
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#renaming
-Recruitment_raw=Recruitment_raw %>%
-  mutate(beachphone_hear_about_us=recode(beachphone_hear_about_us,
-                              "1"="Flyer",
-                              "2"="Radio",
-                              "3"="Social Media",
-                              "4"="Newspaper",
-                              "5"="Word-of-mouth",
-                              "6"="Other"
-                               ))
-
-Recruitment_raw=Recruitment_raw %>%
-  mutate(beach_learn_about_study=recode(beach_learn_about_study,
-                              "1"="Flyer",
-                              "2"="Physician",
-                              "3"="Social Media",
-                              "4"="Mail",
-                              "5"="Other"
-                               ))
-
-Recruitment_raw=Recruitment_raw %>%
-  mutate(IDR=recode(IDR,
-                              "1"="IDR"
-                            ))
-
-
-                              
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_raw$Recruitment = coalesce(Recruitment_raw$beachphone_hear_about_us, Recruitment_raw$beach_learn_about_study, Recruitment_raw$IDR)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_raw=Recruitment_raw %>%
-  mutate(Recruitment=recode(Recruitment,
-                              "0"="Incomplete"
-                            ))
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 
-vtree(Recruitment_raw, "Recruitment", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(recruitment_report, "Recruitment", palette = 3, sortfill = TRUE, horiz=FALSE)
 
 ```

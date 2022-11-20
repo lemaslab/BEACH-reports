@@ -161,8 +161,8 @@ Eligible_Pass_age_bmi=Eligible_Pass %>%
 
 ```{r, message=FALSE,warning=FALSE,echo=FALSE}
 
-#BMI type
-    #same as BMI_grouping?
+#merge different BMI numbers into one column to fill in N/A blanks
+    
 Eligible_Pass_age_bmi$BMI_Type = coalesce(Eligible_Pass_age_bmi$Bmi_grouping, Eligible_Pass_age_bmi$bmi_analysis_prepregnant)
 
 ```

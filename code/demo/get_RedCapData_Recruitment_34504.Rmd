@@ -79,14 +79,14 @@ report_name="Recruitment"
 
 #PULL DATA
 #----------
-CP_raw <-
+recruitment_raw <-
   REDCapR::redcap_report(
     redcap_uri = uri,
     token      = api_token,
     report_id  = report_id
   )$data 
 
-CP_report = CP_raw %>%
+recruitment_report = recruitment_raw %>%
   select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance)
 #use to cut out any data
 
@@ -97,5 +97,5 @@ CP_report = CP_raw %>%
 # ***************              Save Data Local                 *************** #
 # **************************************************************************** #
 # Save the data in your local laptop (Github path: BEACH-reports)
-save(list=c("CP_report"),file="~/BEACH-Reports/output/reports/recruitment/Recruitment_raw.RData")
+save(list=c("recruitment_report"),file="~/BEACH-Reports/output/reports/recruitment/Recruitment_raw.RData")
 ```
