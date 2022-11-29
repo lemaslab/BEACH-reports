@@ -1,0 +1,102 @@
+---
+title: "getData_Recruitment"
+author: "Yasmine Gillespie"
+date: '2022-11-05'
+output: html_document
+---
+
+```{r, include=FALSE}
+##--------------
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+# Author:             Hailey Ballard
+# Start Date:         October 21, 2021
+# Date Modify:        November 4, 2022
+# Project:            The Breastfeeding and EArly Child Health Study
+# IRB:                IRB201601034
+#
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
+
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
+```
+
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+library(keyringr)
+library(redcapAPI)
+library(REDCapR)
+library(readxl)
+library(tidyverse)
+source("~/GitHub/BEACH-reports/code/utils/utils.R")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# Windows
+api_token=get_API_token("beach_api")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# Mac, you need to store your API code in your keychain first
+api_token <- decrypt_kc_pw("beach_api")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+
+# Recruitment
+#----------
+report_id <- 34504L
+report_name="Recruitment"
+
+#PULL DATA
+#----------
+recruitment_raw <-
+  REDCapR::redcap_report(
+    redcap_uri = uri,
+    token      = api_token,
+    report_id  = report_id
+  )$data 
+
+recruitment_report = recruitment_raw %>%
+  select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance)
+#use to cut out any data
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+# Save the data in your local laptop (Github path: BEACH-reports)
+save(list=c("recruitment_report"),file="~/GitHub/BEACH-reports/output/reports/Recruitment_raw.RData")
+```
+

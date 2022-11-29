@@ -1,0 +1,187 @@
+---
+title: "build_Recruitment"
+author: "Yasmine Gillespie"
+date: '2022-11-20'
+output: html_document
+---
+
+```{r, include=FALSE,echo=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:      Yasmine Gillespie
+# Date:        Oct 25, 2022 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+# Load libraries
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Load Data                       *************** #
+# ****************************************************************************#
+
+load("~/BEACH-facebook/data/raw/Recruitment_raw.RData")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+#install.packages("anytime")   # Install anytime package
+library("anytime")  
+Social_media$time=anydate(Social_media$timecoalesce)
+```
+
+```{r, message=FALSE,include=FALSE}
+d <- tibble(
+  date = as.Date(Social_media$time),
+  year = format(date, "%Y"),
+  week = as.integer(format(date, "%W")) + 1, # Week starts at 1
+  day = factor(weekdays(date, T),
+    levels = rev(c(
+      "Mon", "Tue", "Wed", "Thu",
+      "Fri", "Sat", "Sun"
+    ))
+  ),
+  hours = 0
+)
+```
+
+```{r, message=FALSE,include=FALSE}
+set.seed(1)
+# Simulate weekends
+weekends <- filter(d, grepl("S(at|un)", day))
+# Hours worked are (might be) poisson distributed
+weekends$hours <- rpois(nrow(weekends), lambda = 4)
+# Simulate missing days with probability .7
+weekends$na <- rbinom(nrow(weekends), 1, 0.7)
+weekends$hours <- ifelse(weekends$na, NA, weekends$hours)
+
+# Simulate weekdays
+weekdays <- filter(d, !grepl("S(at|un)", day))
+weekdays$hours <- rpois(nrow(weekdays), lambda = 8) # Greater lambda
+weekdays$na <- rbinom(nrow(weekdays), 1, 0.1) # Smaller p(missing)
+weekdays$hours <- ifelse(weekdays$na, NA, weekdays$hours)
+
+# Concatenate weekends and weekdays and arrange by date
+d <- bind_rows(weekends, weekdays) %>%
+  arrange(date) %>% # Arrange by date
+  select(-na) # Remove na column
+```
+
+```{r, message=FALSE,include=FALSE}
+library(ggthemes)
+library(extrafont)
+library(remotes)
+install.packages("http://cran.r-project.org/src/contrib/Archive/Rttf2pt1/Rttf2pt1_1.2.tar.gz")
+#remotes::install_version("Rttf2pt1", version = "1.3.8")
+extrafont::font_import() 
+
+```
+
+```{r, message=FALSE,include=FALSE}
+gh_waffle <- function(data, pal = "D", dir = -1) {
+  p <- ggplot(data, aes(x = week, y = day, fill = hours)) +
+    scale_fill_viridis_c(
+      name = "Hours",
+      option = pal, # Variable color palette
+      direction = dir, # Variable color direction
+      na.value = "grey90",
+      limits = c(0, max(data$hours))
+    ) +
+    geom_tile(color = "white", size = 0.7) +
+    facet_wrap("year", ncol = 1) +
+    scale_x_continuous(
+      expand = c(0, 0),
+      breaks = seq(1, 52, length = 12),
+      labels = c(
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      )
+    ) +
+    theme_linedraw(base_family = 'Arial') +
+    theme(
+      axis.title = element_blank(),
+      axis.ticks = element_blank(), 
+      axis.text.y = element_text(size = 7),
+      panel.grid = element_blank(),
+      legend.position = "bottom",
+      aspect.ratio = 1/7,
+      legend.key.width = unit(1, "cm"),
+      strip.text = element_text(hjust = 0.00, face = "bold", size = 12)
+    )
+
+  print(p)
+}
+```
+
+```{r, message=FALSE,include=FALSE}
+knitr::opts_chunk$set(dev = 'pdf', cache = FALSE, fig.showtext = TRUE)
+
+library(ggplot2)
+library(showtext)
+
+font_add('Arial', regular='arial.ttf', bold='arialbd.ttf', italic='ariali.ttf', bolditalic='arialbi.ttf')
+```
+
+```{r, message=FALSE,include=FALSE}
+#windowsFonts(Times=windowsFont("TT Times New Roman"))
+gh_waffle(d)
+```
+
+
+
+
+
+
+
+
+
