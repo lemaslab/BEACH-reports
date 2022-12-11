@@ -79,8 +79,13 @@ Social_media$time=anydate(Social_media$timecoalesce)
 ```
 
 ```{r, message=FALSE,include=FALSE}
+grouped <- count(Social_media$time) %>% ungroup()
+```
+
+
+```{r, message=FALSE,include=FALSE}
 d_2 <- tibble(
-  date = as.Date(grouped$date),
+  date = as.Date(grouped$x),
   year = format(date, "%Y"),
   week = as.integer(format(date, "%W")) + 1, # Week starts at 1
   day = factor(weekdays(date, T),
@@ -135,7 +140,7 @@ gh_waffle <- function(data, pal = "D", dir = -1) {
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
       )
     ) +
-    theme_linedraw(base_family = 'Arial') +
+    theme_linedraw(base_family = 'Helvetica') +
     theme(
       axis.title = element_blank(),
       axis.ticks = element_blank(), 
@@ -149,12 +154,10 @@ gh_waffle <- function(data, pal = "D", dir = -1) {
 
   print(p)
 }
+
 ```
 
-```{r, message=FALSE,include=FALSE}
-#windowsFonts(Times=windowsFont("TT Times New Roman"))
-gh_waffle(d)
-```
+
 
 
 
