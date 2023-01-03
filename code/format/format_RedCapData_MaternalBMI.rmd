@@ -67,64 +67,6 @@ bmi = report %>% select(test_id, beach_final_bmi)
 
 ```{r, message=FALSE,include=FALSE}
 
-# create long dataset where each row is a unique mom with BMI measurements.
-
-maternal=enroll %>%
-  mutate(participant_type="maternal") %>%
-  select(test_id, participant_type, maternal_sex_nih, mom_ethnicity_nih, 
-         maternal_race_nih___1,
-         maternal_race_nih___2, maternal_race_nih___3, maternal_race_nih___4,
-         maternal_race_nih___5, maternal_race_nih___6) %>%
-  rename(sex_nih=maternal_sex_nih,
-         ethnicity_nih=mom_ethnicity_nih, 
-         race_nih___1=maternal_race_nih___1,
-         race_nih___2=maternal_race_nih___2, 
-         race_nih___3=maternal_race_nih___3, 
-         race_nih___4=maternal_race_nih___4,
-         race_nih___5=maternal_race_nih___5, 
-         race_nih___6=maternal_race_nih___6)
-  
-infant= enroll %>%
-  mutate(participant_type="infant") %>%
-  select(test_id, participant_type, infant_sex_nih, infant_ethnicity_nih, 
-         infant_race_nih___1,
-         infant_race_nih___2, infant_race_nih___3, infant_race_nih___4,
-         infant_race_nih___5, infant_race_nih___6) %>%
-  rename(sex_nih=infant_sex_nih,
-         ethnicity_nih=infant_ethnicity_nih, 
-         race_nih___1=infant_race_nih___1,
-         race_nih___2=infant_race_nih___2, 
-         race_nih___3=infant_race_nih___3, 
-         race_nih___4=infant_race_nih___4,
-         race_nih___5=infant_race_nih___5, 
-         race_nih___6=infant_race_nih___6)
-
-data_all = rbind(maternal,infant)
-
-```
-
-
-```{r, message=FALSE,include=FALSE}
-
-# FORMAT DATA
-#------------
-
-data = data_all  %>% 
-  gather("race", "value", race_nih___1:race_nih___6) %>%
-  filter(value==1) %>%
-  mutate(race=recode_factor(race,
-                                     "race_nih___1" = "NativeAmerican", 
-                                     "race_nih___2" = "Asian", 
-                                     "race_nih___3" = "Black", 
-                                     "race_nih___4" = "PacificIsland", 
-                                     "race_nih___5" = "White",
-                                     "race_nih___6" = "NA")) %>%
-  select(-value) 
-
-```
-
-```{r, message=FALSE,include=FALSE}
-
 # **************************************************************************** #
 # ***************              Save Data Local                 *************** #
 # **************************************************************************** #
