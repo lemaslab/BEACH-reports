@@ -60,14 +60,7 @@ library(tidyverse)
 
 load("~/BEACH-reports/data/raw/report_21221.RData")
 
-enroll = report %>% select(test_id, maternal_sex_nih, mom_ethnicity_nih, 
-                                maternal_race_nih___1, maternal_race_nih___2,
-                                maternal_race_nih___3,
-                                maternal_race_nih___4, maternal_race_nih___5, 
-                                maternal_race_nih___6,
-                                infant_sex_nih, infant_ethnicity_nih,  
-                                infant_race_nih___1, infant_race_nih___2, infant_race_nih___3,
-                                infant_race_nih___4, infant_race_nih___5, infant_race_nih___6)
+bmi = report %>% select(test_id, beach_final_bmi)
   
 
 ```
@@ -137,9 +130,9 @@ data = data_all  %>%
 # **************************************************************************** #
 
 # Save the data in your local laptop (Github path: /data)
-save(list=c("data"),file="~/BEACH-reports/data/processed/21221_NIHenrollment_clean.RData")
+save(list=c("bmi"),file="~/BEACH-reports/data/processed/21221_MaternalBMI_clean.RData")
 
 output_directory="~/BEACH-reports/data/processed/"
-output_file_name="21221_NIHenrollment_clean.RData"
+output_file_name="21221_MaternalBMI_clean.RData"
 
 ```
