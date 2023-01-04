@@ -80,13 +80,10 @@ report_raw <-
   )$data 
 
 report = report_raw %>%
-  select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance,    # drop out variables not needed
-         -clinical_health_update_2wk_v4_042218_complete,
-         -health_update_3rd_trimester_v5082518_complete,-biosample_notes,
-         -infant_postnatal_care_other,-mom_healthcare_other,
-         -exitsurvey_resultsinfo)
+  select(-redcap_repeat_instrument,-redcap_repeat_instance, -redcap_survey_identifier, -health_update_3rd_trimester_v5082518_timestamp)   # drop out variables not needed)
 
 ```
+
 ```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
@@ -94,10 +91,10 @@ report = report_raw %>%
 # **************************************************************************** #
 
 # Save the data in your local laptop (Github path: /data)
-save(list=c("report"),file="~/BEACH-reports/data/raw/report_21221.RData")
+save(list=c("report"),file="~/BEACH-reports/data/raw/report_36954.RData")
 
 output_directory="~/BEACH-reports/data/raw/"
-output_file_name="report_21221.RData"
+output_file_name="report_36954.RData"
 
 ```
 
@@ -111,16 +108,3 @@ Report ID: `r report_id`
 #### __Data Processing Summary__
 Variables of interest are stored as RedCap reports. Data is extracted from REdcap via REDCapR using URL and API token. The extracted data is lightly formatted and output as an *.rda object for downstream analysis.  
 ![](redcap_workflow.png)
-
-#### __Data Description__
-
-```{r, message=FALSE, echo=FALSE}
-
-part_length=unique(length(report$test_id))
-hist(report$beach_final_bmi)
-
-```
-  
-#### __Project Outputs__  
-Output Directory: `r output_directory`  
-Output File Name: `r output_file_name`
