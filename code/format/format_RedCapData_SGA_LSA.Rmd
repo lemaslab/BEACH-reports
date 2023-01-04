@@ -52,7 +52,6 @@ library(tidyverse)
 #install devtools https://www.r-project.org/nosvn/pandoc/devtools.html
 #after download, type ".libPaths()" to find what folder to add the installed devtools folder to (should be something like Program Files/R/R-4.4.2/library)
 library(devtools)
-build_github_devtools()
 install.packages("devtools.zip", repos = NULL)
 library(devtools)
 install_github("dreidpath/SGA-LGA")
