@@ -48,6 +48,8 @@ input_file="report_36804.RData"
 
 #library(readxl)
 library(tidyverse)
+library(dplyr)
+library(magrittr)
 # source("~/BEACH-reports/code/utils/utils.R")
 
 ```
@@ -60,16 +62,13 @@ library(tidyverse)
 
 load("~/BEACH-reports/data/raw/report_36804.RData")
 
-enroll = report %>% select(test_id, maternal_sex_nih, mom_ethnicity_nih, 
-                                maternal_race_nih___1, maternal_race_nih___2,
-                                maternal_race_nih___3,
-                                maternal_race_nih___4, maternal_race_nih___5, 
-                                maternal_race_nih___6,
-                                infant_sex_nih, infant_ethnicity_nih,  
-                                infant_race_nih___1, infant_race_nih___2, infant_race_nih___3,
-                                infant_race_nih___4, infant_race_nih___5, infant_race_nih___6)
-  
+participants <- report %>% select(test_id, maternal_study_groups, beach_final_bmi,inf2wk_gest_age, beachphone_birthdate, part_dob, mom3t_birth_date, mom2wk_delivery_date, inf2mo_stopped_bf, inf2mo_bfpump_age_stop )
 
+participants=report %>% select(test_id, maternal_study_groups, beach_final_bmi,inf2wk_gest_age, beachphone_birthdate, part_dob, mom3t_birth_date, mom2wk_delivery_date, inf2mo_stopped_bf, inf2mo_bfpump_age_stop )%>%
+  rename(BLS=test_id)
+
+colnames(participants)
+group_by(participants$BLS)
 ```
 
 ```{r, message=FALSE,include=FALSE}
