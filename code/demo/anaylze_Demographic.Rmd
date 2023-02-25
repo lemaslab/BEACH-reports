@@ -1,7 +1,7 @@
 ---
-title: "anaylzeCurrent_Particpant"
+title: "anaylze_Demographic"
 author: "Yasmine Gillespie"
-date: '2022-10-23'
+date: "2022-12-21"
 output: html_document
 ---
 
@@ -60,6 +60,7 @@ library(plyr)
 library(plotly)
 library(tidyquant)
 library(readr)
+#1522, 1536
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
@@ -107,14 +108,11 @@ CP_raw=CP_raw %>%
 
 
 ##Phone_Screening
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Phone_Screen= filter(CP_raw, Phone_Screen == 1)
-```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Phone_Screen$Recruitment = coalesce(Phone_Screen$beachphone_hear_about_us, Phone_Screen$beach_learn_about_study, Phone_Screen$IDR)
+CP_raw$Recruitment = coalesce(CP_raw$beachphone_hear_about_us, CP_raw$beach_learn_about_study, CP_raw$IDR)
 
-Phone_Screen=Phone_Screen %>%
+Part_Dem=CP_raw %>%
   mutate(Recruitment=recode(Recruitment,
                               "0"="Incomplete"
                             ))
@@ -122,16 +120,16 @@ Phone_Screen=Phone_Screen %>%
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Phone_Screen$BMI = coalesce(Phone_Screen$beach_final_bmi, Phone_Screen$beachphone_prepreg_bmi)
+Part_Dem$BMI = coalesce(Part_Dem$beach_final_bmi, Part_Dem$beachphone_prepreg_bmi)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Phone_Screen <- Phone_Screen[ -c(9,11,13,14,15) ]
+Part_Dem <- Part_Dem[ -c(9,11,13,14,15) ]
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #renaming
-Phone_Screen=Phone_Screen %>%
+Part_Dem=Part_Dem%>%
   mutate(bmi_analysis_prepregnant=recode(bmi_analysis_prepregnant,
                               "1"="Normal",
                               "2"="Overweight",
@@ -140,7 +138,7 @@ Phone_Screen=Phone_Screen %>%
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Phone_Screen_age_bmi=Phone_Screen %>%
+Part_Dem_age_bmi=Part_Dem %>%
   select(test_id,
          beachphone_age,
          BMI,
@@ -165,56 +163,56 @@ Phone_Screen_age_bmi=Phone_Screen %>%
    mutate(Bmi_grouping = case_when((prepreg_bmi >29) ~ "Obese",
                                   (prepreg_bmi >26 & prepreg_bmi<29) ~ "Overweight",
                                   (prepreg_bmi <26) ~ "Normal"))%>%
-  select(test_id, Age_grouping,Bmi_grouping, bmi_analysis_prepregnant, Recruitment, Consent,Complete, beachphone_pass_fail, Random_Contact,Prescreen_Survey,Phone_Screen, IDR)
+  select(test_id, Age_grouping,beachphone_age, BMI,Bmi_grouping, bmi_analysis_prepregnant, Recruitment, Consent,Complete, beachphone_pass_fail, Random_Contact,Prescreen_Survey,Phone_Screen, IDR)
 
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Phone_Screen_age_bmi$BMI_Type = coalesce(Phone_Screen_age_bmi$Bmi_grouping, Phone_Screen_age_bmi$bmi_analysis_prepregnant)
+Part_Dem_age_bmi$BMI_Type = coalesce(Part_Dem_age_bmi$Bmi_grouping, Part_Dem_age_bmi$bmi_analysis_prepregnant)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Phone_Screen_age_bmi <- Phone_Screen_age_bmi[ -c(3,4) ]
+Part_Dem_age_bmi <- Part_Dem_age_bmi[ -c(3,4) ]
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
   mutate(Consent=recode(Consent,
                               "0"="No",
                               "1"="Yes"
                             ))
 
-Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
   mutate(Complete=recode(Complete,
                               "0"="No",
                               "1"="Yes"
                             ))
 
-Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
   mutate(Random_Contact=recode(Random_Contact,
                               "0"="No",
                               "1"="Yes"
                             ))
 
-Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
   mutate(Prescreen_Survey=recode(Prescreen_Survey,
                               "0"="No",
                               "1"="Yes"
                             ))
 
-Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
   mutate(Phone_Screen=recode(Phone_Screen,
                               "0"="No",
                               "1"="Yes"
                             ))
 
-Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
   mutate(IDR=recode(IDR,
                               "0"="No",
                               "1"="Yes"
                             ))
 
-Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
   mutate(beachphone_pass_fail=recode(beachphone_pass_fail,
                               "1"="Pass",
                               "2"="Fail",
@@ -223,202 +221,237 @@ Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
 
 ```
 
-#Random Contact
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Phone_Screen_age_bmi, "Random_Contact Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Phone_Screen_age_bmi, "Random_Contact BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Phone_Screen_age_bmi, "Random_Contact Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Phone_Screen_age_bmi, "Random_Contact Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Phone_Screen_age_bmi, "Random_Contact beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#anaylsis
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Random_Contact = select(filter(Phone_Screen_age_bmi, Random_Contact %in% c("Yes")), c(Random_Contact,BMI_Type,Age_grouping,Consent,Complete, beachphone_pass_fail))
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Random_Contact_ana <- na.omit(Random_Contact) 
+Just_Phone_Screen_Dem= filter(Part_Dem_age_bmi, Prescreen_Survey == "No")
 
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(x = table(Random_Contact_ana$Random_Contact, Random_Contact_ana$Age_grouping))
-# X^2= 14.286
-# p= 0.002541
+vtree(Just_Phone_Screen_Dem, "Phone_Screen BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(x = table(Random_Contact_ana$Random_Contact, Random_Contact_ana$BMI_Type))
-# X^2= 9.7014
-# p= 0.01072
-```
-
-#PreScreen
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Just_Pre_Screen= filter(Phone_Screen_age_bmi, Random_Contact == "No" & Prescreen_Survey == "Yes")
+vtree(Just_Phone_Screen_Dem, "Phone_Screen Age_Group", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Pre_Screen, "Prescreen_Survey Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+Just_Prescreen_Dem= filter(Part_Dem_age_bmi, Phone_Screen == "No" & Prescreen_Survey == "Yes")
+
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Pre_Screen, "Prescreen_Survey BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(Just_Prescreen_Dem, "Prescreen_Survey BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Pre_Screen, "Prescreen_Survey Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(Just_Prescreen_Dem, "Prescreen_Survey Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Pre_Screen, "Prescreen_Survey Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
+Just_Prescreen_Dem= filter(Part_Dem_age_bmi, Phone_Screen == "No")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Pre_Screen, "Prescreen_Survey beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#anaylsis
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Just_Pre_Screen_ana <- na.omit(Just_Pre_Screen) 
+vtree(Just_Prescreen_Dem, "Prescreen_Survey BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(x = table(Just_Pre_Screen_ana$Prescreen_Survey, Just_Pre_Screen_ana$Age_grouping))
-# X^2= 40.22
-# p= 3.897e-08
+vtree(Just_Prescreen_Dem, "Prescreen_Survey Age_Group", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(x = table(Just_Pre_Screen_ana$Prescreen_Survey, Just_Pre_Screen_ana$BMI_Type))
-# X^2= 30.729
-# p= 2.125e-07
-```
-
-
-#Phonescreen
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Just_Phone_Screen= filter(Phone_Screen_age_bmi, Random_Contact == "No" & Prescreen_Survey == "No")
+Combined_Dem= filter(Part_Dem_age_bmi, Phone_Screen == "Yes" & Prescreen_Survey == "Yes")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Phone_Screen, "Phone_Screen Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(Combined_Dem, "Prescreen_Survey Phone_Screen BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Phone_Screen, "Phone_Screen BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(Combined_Dem, "Prescreen_Survey Phone_Screen Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+
+
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+load("~/BEACH-facebook/data/raw/Particpant_Demographic_raw.RData")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Phone_Screen, "Phone_Screen Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
+PD_raw <- PD_raw[ -c(2:4) ]
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Phone_Screen, "Phone_Screen Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
+
+names(PD_raw)[2] <- "Random_Contact"
+names(PD_raw)[3] <- "Prescreen_Survey"
+names(PD_raw)[4] <- "Phone_Screen"
+names(PD_raw)[5] <- "IDR"
+names(PD_raw)[6] <- "Consent"
+names(PD_raw)[7] <- "Complete"
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Just_Phone_Screen, "Phone_Screen beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
+PD_raw=PD_raw %>%
+  mutate(prescreen_prego=recode(prescreen_prego,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(prescreen_gnv=recode(prescreen_gnv,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(prescreen_mod=recode(prescreen_mod,
+                              "1"="Vaginal",
+                              "2"="C-Section"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(beachphone_mod=recode(beachphone_mod,
+                              "1"="Vaginal",
+                              "2"="C-Section"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(beachphone_gainesville=recode(beachphone_gainesville,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(beachphone_3rd_trimester=recode(beachphone_3rd_trimester,
+                             "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(Prescreen_Survey=recode(Prescreen_Survey,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
 
-#anaylsis
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Just_Phone_Screen_ana <- na.omit(Just_Phone_Screen) 
-```
+PD_raw=PD_raw %>%
+  mutate(Phone_Screen=recode(Phone_Screen,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(x = table(Just_Phone_Screen_ana$Phone_Screen, Just_Phone_Screen_ana$Age_grouping))
-# X^2= 13.635
-# p= 0.003447
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(x = table(Just_Phone_Screen_ana$Phone_Screen, Just_Phone_Screen_ana$BMI_Type))
-# X^2= 30.952
-# p= 1.9e-07
-```
+#gestation
+#edit filter
 
 
-##Eligible based on Recruitment 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Eligible_Pass= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
-```
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Eligible_Pass, "Recruitment BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Eligible_Pass, "Recruitment Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Eligible_Pass, "Recruitment beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Eligible_Pass, "Recruitment Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#Consent
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-CP_Consent= filter(Phone_Screen_age_bmi, Consent == "Yes")
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(CP_Consent, "BMI_Type Recruitment", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#anaylsis
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-All_Pass= Eligible_Pass
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Allrecords <- na.omit(All_Pass) 
+PD_raw$Prego = coalesce(PD_raw$beachphone_3rd_trimester, PD_raw$prescreen_prego)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(Allrecords$Recruitment, Allrecords$Age_grouping, correct=FALSE)
-#X^2=18.795
-#p=0.09361
+PD_raw$GNV = coalesce(PD_raw$beachphone_gainesville, PD_raw$prescreen_gnv)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(Allrecords$Recruitment, Allrecords$BMI_Type, correct=FALSE)
-#X^2=6.1512
-#p=0.4065
-```
-
-
-#Facebook vs Flyers BMI
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_ana = select(filter(Allrecords, Recruitment %in% c("Social Media","Flyer"), Consent %in% c("Yes")), c(Recruitment,Age_grouping, BMI_Type, Consent))
+PD_raw$Mod = coalesce(PD_raw$beachphone_mod, PD_raw$prescreen_mod)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-vtree(Recruitment_ana, "Recruitment Consent BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
+PD_raw$Gest_wks = coalesce(PD_raw$beachphone_prego_wks, PD_raw$prescreen_gest_wks)
 ```
 
-#anaylsis
+
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(Recruitment_ana$Recruitment, Recruitment_ana$BMI_Type, correct=FALSE)
-#X^2=2.4557
-#p=0.2929
+class(PD_raw$Gest_wks)
+PD_raw$Gest_wks = as.numeric(as.character(PD_raw$Gest_wks))
+
+PD_Gest=PD_raw %>%
+  select(test_id,
+       Prescreen_Survey,
+       Phone_Screen,
+       IDR,
+       Gest_wks
+       )%>%
+  
+      mutate(gestation_wks =  Gest_wks) %>%
+   mutate(gest_wks_groups= case_when((gestation_wks <= 10) ~ "0-10",
+                                  (gestation_wks >10 & gestation_wks<= 20) ~ "11-20",
+                                 (gestation_wks >20 & gestation_wks <= 30) ~ "21-30",
+                                 (gestation_wks >30 & gestation_wks <= 40) ~ "31-40",
+                                  (gestation_wks > 40) ~ "> 40"))%>%
+  select(test_id, Prescreen_Survey,Phone_Screen, IDR, Gest_wks,gest_wks_groups )
+  
 ```
 
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(PD_Gest, "Prescreen_Survey gest_wks_groups", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(PD_Gest, "Phone_Screen gest_wks_groups", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(PD_Gest, "Prescreen_Survey Phone_Screen gest_wks_groups", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Only_Phone_Screen_DEM= filter(PD_raw, Prescreen_Survey == "No")
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Only_Phone_Screen_DEM, "Phone_Screen GNV", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Only_Phone_Screen_DEM, "Phone_Screen Prego", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Only_Phone_Screen_DEM, "Phone_Screen Mod", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Only_Phone_Screen_DEM, "Phone_Screen Gest_wks", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Only_PreScreen_DEM= filter(PD_raw, Phone_Screen == "No" )
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Only_PreScreen_DEM, "Prescreen_Survey GNV", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Only_PreScreen_DEM, "Prescreen_Survey Prego", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Only_PreScreen_DEM, "Prescreen_Survey Mod", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Only_PreScreen_DEM, "Prescreen_Survey Gest_wks", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Both_DEM= filter(PD_raw, Phone_Screen == "Yes" & Prescreen_Survey == "Yes")
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Both_DEM, "Prescreen_Survey Phone_Screen GNV", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Both_DEM, "Prescreen_Survey Phone_Screen Prego", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Both_DEM, "Prescreen_Survey Phone_Screen Mod", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
 
 
