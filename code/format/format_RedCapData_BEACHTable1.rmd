@@ -50,6 +50,7 @@ input_file="report_36804.RData"
 library(tidyverse)
 library(dplyr)
 library(magrittr)
+library(data.table)
 # source("~/BEACH-reports/code/utils/utils.R")
 
 ```
@@ -62,13 +63,34 @@ library(magrittr)
 
 load("~/BEACH-reports/data/raw/report_36804.RData")
 
-participants <- report %>% select(test_id, maternal_study_groups, beach_final_bmi,inf2wk_gest_age, beachphone_birthdate, part_dob, mom3t_birth_date, mom2wk_delivery_date, inf2mo_stopped_bf, inf2mo_bfpump_age_stop )
+df <- report %>% select(test_id, maternal_study_groups, beach_final_bmi,inf2wk_gest_age, mom3t_birth_date, mom2wk_delivery_date, inf2mo_stopped_bf, inf2mo_bfpump_age_stop )
 
-participants=report %>% select(test_id, maternal_study_groups, beach_final_bmi,inf2wk_gest_age, beachphone_birthdate, part_dob, mom3t_birth_date, mom2wk_delivery_date, inf2mo_stopped_bf, inf2mo_bfpump_age_stop )%>%
-  rename(BLS=test_id)
+#create one row for each participant with their respective data
+participants <- df %>%
+  group_by(test_id) %>%
+  fill(everything(), .direction = "down") %>%
+  fill(everything(), .direction = "up") %>%
+  slice(1)
 
-colnames(participants)
-group_by(participants$BLS)
+mutate(participants$inf2wk_gest_age, )
+
+```
+
+```{r, message=FALSE, include=FALSE}
+setDT(participants)
+participants[ ,list(mean=mean(inf2wk_gest_age))]
+class(participants$test_id)
+class(participants$maternal_study_groups)
+class(participants$beach_final_bmi)
+class(participants$inf2wk_gest_age)
+class(participants$mom3t_birth_date)
+class(participants$mom2wk_delivery_date)
+class(participants$inf2mo_stopped_bf)
+class(participants$inf2mo_bfpump_age_stop)
+
+class(participants$inf2wk_gest_age)
+mean(participants$inf2wk_gest_age, na.rm = TRUE)
+      
 ```
 
 ```{r, message=FALSE,include=FALSE}
@@ -138,10 +160,10 @@ data = data_all  %>%
 # **************************************************************************** #
 
 # Save the data in your local laptop (Github path: /data)
-save(list=c("data"),file="~/BEACH-reports/data/processed/21221_NIHenrollment_clean.RData")
+save(list=c("participants"),file="~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
 
 output_directory="~/BEACH-reports/data/processed/"
-output_file_name="21221_NIHenrollment_clean.RData"
+output_file_name="BEACHTable1.RData"
 
 ```
 
