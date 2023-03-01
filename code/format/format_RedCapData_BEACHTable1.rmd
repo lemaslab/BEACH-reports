@@ -49,8 +49,8 @@ input_file="report_36804.RData"
 #library(readxl)
 library(tidyverse)
 library(dplyr)
-library(magrittr)
-library(data.table)
+library(ggplot2)
+library(eeptools)
 # source("~/BEACH-reports/code/utils/utils.R")
 
 ```
@@ -118,6 +118,22 @@ age_calculate <- months_recode %>% select(BMI_Group, BMI, Gestational_Age, mom3t
 # ***************                Calculating Age               *************** #
 # **************************************************************************** #
 
+#ensure ggplot2 and eeptools are downloaded
+
+age_calculate$Age <- floor(age_calc(na.omit(age_calculate$mom3t_birth_date), na.omit(age_calculate$mom2wk_delivery_date)))
+age_calculate$Age[!is.na(age_calculate$mom2wk_delivery_date)] <- age_calculate$Age
+
+
+
+```
+
+age_calculate$Age <- function(age_calc, na.rm){ 
+  age_calc(age_calculate$mom3t_birth_date,enddate = age_calculate$mom2wk_delivery_date)}
+
+age_calc(age_calculate$mom3t_birth_date, enddate = age_calculate$mom2wk_delivery_date, units = "years")
+
+age_calculate$Age <- floor(age_calc(age_calculate$mom3t_birth_date,enddate = age_calculate$mom2wk_delivery_date))
+#age_calculate$Age_month <- floor(age_calc(age_calculate$mom3t_birth_date, units = "months"))
 
 
 ```
