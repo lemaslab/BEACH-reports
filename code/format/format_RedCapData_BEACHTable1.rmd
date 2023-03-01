@@ -63,7 +63,8 @@ library(data.table)
 
 load("~/BEACH-reports/data/raw/report_36804.RData")
 
-df <- report %>% select(test_id, maternal_study_groups, beach_final_bmi,inf2wk_gest_age, mom3t_birth_date, mom2wk_delivery_date, inf2mo_stopped_bf, inf2mo_bfpump_age_stop )
+#select out extra data
+df <- report %>% select(test_id, maternal_study_groups, beach_final_bmi,inf2wk_gest_age, mom3t_birth_date, mom2wk_delivery_date, inf2mo_bfpump_age_stop, inf2mo_bfpump_age_stop_units )
 
 #create one row for each participant with their respective data
 participants <- df %>%
@@ -72,84 +73,52 @@ participants <- df %>%
   fill(everything(), .direction = "up") %>%
   slice(1)
 
-mutate(participants$inf2wk_gest_age, )
+
+#renaming column headings
+names(participants)[names(participants) == "maternal_study_groups"] <- "BMI_Group"
+names(participants)[names(participants) == "beach_final_bmi"] <- "BMI"
+names(participants)[names(participants) == "inf2wk_gest_age"] <- "Gestational_Age"
+
+
+#coding some of the values for study groups and breastfeeding units
+bmi_recode <- participants %>%
+    mutate(BMI_Group = recode(BMI_Group, "1" = 'NW', "2" = 'OW', "3" =  'OB' ))
+months_recode <- bmi_recode %>%
+    mutate(inf2mo_bfpump_age_stop_units = recode(inf2mo_bfpump_age_stop_units, "1" = 'Weeks', "2" = "Months"))
 
 ```
 
 ```{r, message=FALSE, include=FALSE}
-setDT(participants)
-participants[ ,list(mean=mean(inf2wk_gest_age))]
-class(participants$test_id)
-class(participants$maternal_study_groups)
-class(participants$beach_final_bmi)
-class(participants$inf2wk_gest_age)
-class(participants$mom3t_birth_date)
-class(participants$mom2wk_delivery_date)
-class(participants$inf2mo_stopped_bf)
-class(participants$inf2mo_bfpump_age_stop)
+# **************************************************************************** #
+# ***************      Changing Specific Breastfeeding Data    *************** #
+# **************************************************************************** #
 
-class(participants$inf2wk_gest_age)
-mean(participants$inf2wk_gest_age, na.rm = TRUE)
-      
-```
+#cleaning data for specific values that have specific inconsistencies for easier analysis
 
-```{r, message=FALSE,include=FALSE}
+#changing row 44 column 7-8, BLS056A, from 3 weeks to 1.5 months as it's the only data listed in weeks
+#and the value for inf2mo_bf_pump_age_stop is listed as 6 weeks for their 6 month and 12 month visits
+months_recode[44,7] = "1.5"
+months_recode[44,8] = "months"
 
-# create long dataset where each row is a unique mom or infant. The number of 
-# rows will represent the total number of mom-baby participants that have signed
-# ICF and we have collected data on the infant. 
+#chaning row 54 column 7, BLS070A inf2mo_bfpump_age_stop, from "9 1/2" to "9.5"
+months_recode[54,7] = "9.5"
 
-maternal=enroll %>%
-  mutate(participant_type="maternal") %>%
-  select(test_id, participant_type, maternal_sex_nih, mom_ethnicity_nih, 
-         maternal_race_nih___1,
-         maternal_race_nih___2, maternal_race_nih___3, maternal_race_nih___4,
-         maternal_race_nih___5, maternal_race_nih___6) %>%
-  rename(sex_nih=maternal_sex_nih,
-         ethnicity_nih=mom_ethnicity_nih, 
-         race_nih___1=maternal_race_nih___1,
-         race_nih___2=maternal_race_nih___2, 
-         race_nih___3=maternal_race_nih___3, 
-         race_nih___4=maternal_race_nih___4,
-         race_nih___5=maternal_race_nih___5, 
-         race_nih___6=maternal_race_nih___6)
-  
-infant= enroll %>%
-  mutate(participant_type="infant") %>%
-  select(test_id, participant_type, infant_sex_nih, infant_ethnicity_nih, 
-         infant_race_nih___1,
-         infant_race_nih___2, infant_race_nih___3, infant_race_nih___4,
-         infant_race_nih___5, infant_race_nih___6) %>%
-  rename(sex_nih=infant_sex_nih,
-         ethnicity_nih=infant_ethnicity_nih, 
-         race_nih___1=infant_race_nih___1,
-         race_nih___2=infant_race_nih___2, 
-         race_nih___3=infant_race_nih___3, 
-         race_nih___4=infant_race_nih___4,
-         race_nih___5=infant_race_nih___5, 
-         race_nih___6=infant_race_nih___6)
+#changing row 58 column 7, BLS078A inf2mo_bfpump_age_stop, from "5-6" to "5.5," to provide an average of the range for an easier numerical value for analysis
+months_recode[58,7] = "5.5"
 
-data_all = rbind(maternal,infant)
+#since all data is now in months, renaming column to just be in months and removing units column
+names(months_recode)[names(months_recode) == "inf2mo_bfpump_age_stop"] <- "Breastfeeding_Months"
+age_calculate <- months_recode %>% select(BMI_Group, BMI, Gestational_Age, mom3t_birth_date, mom2wk_delivery_date, Breastfeeding_Months)
+
 
 ```
 
+```{r, message=FALSE, include=FALSE}
+# **************************************************************************** #
+# ***************                Calculating Age               *************** #
+# **************************************************************************** #
 
-```{r, message=FALSE,include=FALSE}
 
-# FORMAT DATA
-#------------
-
-data = data_all  %>% 
-  gather("race", "value", race_nih___1:race_nih___6) %>%
-  filter(value==1) %>%
-  mutate(race=recode_factor(race,
-                                     "race_nih___1" = "NativeAmerican", 
-                                     "race_nih___2" = "Asian", 
-                                     "race_nih___3" = "Black", 
-                                     "race_nih___4" = "PacificIsland", 
-                                     "race_nih___5" = "White",
-                                     "race_nih___6" = "NA")) %>%
-  select(-value) 
 
 ```
 
