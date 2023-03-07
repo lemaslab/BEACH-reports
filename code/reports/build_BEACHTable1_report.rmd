@@ -194,10 +194,10 @@ sample1[1,4] = (paste("n =",nrow(sample_grouping_ow),"( p =", round(nrow(sample_
 sample1[1,5] = (paste("n =",nrow(sample_grouping_ob),"( p =", round(nrow(sample_grouping_ob)/nrow(sample_grouping), digits = 2)," )"))
 
 #rename table columns to reflect category
-colnames(table1)[2] <- "Overall"
-colnames(table1)[3] <- "Normal Weight"
-colnames(table1)[4] <- "Overweight"
-colnames(table1)[5] <- "Obese"
+colnames(sample1)[2] <- "Overall"
+colnames(sample1)[3] <- "Normal Weight"
+colnames(sample1)[4] <- "Overweight"
+colnames(sample1)[5] <- "Obese"
 
 ```
 
