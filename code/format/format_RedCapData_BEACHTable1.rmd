@@ -50,6 +50,7 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 library(eeptools)
+library(zoo)
 # source("~/BEACH-reports/code/utils/utils.R")
 
 ```
@@ -62,6 +63,7 @@ library(eeptools)
 
 load("~/BEACH-reports/data/raw/report_36804.RData")
 
+###table 1 data
 #select out extra data
 df <- report %>% select(test_id, maternal_study_groups, beach_final_bmi,inf2wk_gest_age, mom3t_birth_date, mom2wk_delivery_date, inf2mo_bfpump_age_stop, inf2mo_bfpump_age_stop_units )
 
@@ -84,6 +86,18 @@ bmi_recode <- participants %>%
     mutate(BMI_Group = recode(BMI_Group, "1" = 'NW', "2" = 'OW', "3" =  'OB' ))
 months_recode <- bmi_recode %>%
     mutate(inf2mo_bfpump_age_stop_units = recode(inf2mo_bfpump_age_stop_units, "1" = 'Weeks', "2" = "Months"))
+
+###samples
+samples <- report %>% select (test_id, maternal_study_groups, mom3t_crc_blood_time, mom3t_crc_stool_time, mompostnat_crc_milk_time, mompostnat_crc_blood_time, mompostnat_crc_stool_time, infant_crc_blood_time, infant_crc_stool_time, beach_foodrecord_hardcopy)
+
+#renaming BMI group and coding some of the values for BMI study groups
+names(samples)[names(samples) == "maternal_study_groups"] <- "BMI_Group"
+samples <- samples %>%
+    mutate(BMI_Group = recode(BMI_Group, "1" = 'NW', "2" = 'OW', "3" =  'OB' ))
+
+#adding BMI group for each line to later sort samples
+sample_grouping <- samples %>%
+    fill(BMI_Group, .direction = "down")
 
 ```
 
@@ -151,7 +165,7 @@ table1_formatted <- age_calc_final[order(age_calc_final$BMI),]
 # **************************************************************************** #
 
 # Save the data in your local laptop (Github path: /data)
-save(list=c("table1_formatted"),file="~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
+save(list=c("table1_formatted", "sample_grouping"),file="~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
 
 output_directory="~/BEACH-reports/data/processed/"
 output_file_name="BEACHTable1.RData"

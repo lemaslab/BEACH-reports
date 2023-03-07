@@ -68,6 +68,11 @@ table1_nw <- table1_formatted[table1_formatted$BMI_Group == "NW", ]
 table1_ow <- table1_formatted[table1_formatted$BMI_Group == "OW", ]
 table1_ob <- table1_formatted[table1_formatted$BMI_Group == "OB", ]
 
+#creating sample groups based on BMI Group
+sample_grouping_nw <- sample_grouping[sample_grouping$BMI_Group == "NW", ]
+sample_grouping_ow <- sample_grouping[sample_grouping$BMI_Group == "OW", ]
+sample_grouping_ob <- sample_grouping[sample_grouping$BMI_Group == "OB", ]
+
 ```
 
 
@@ -77,32 +82,35 @@ table1_ob <- table1_formatted[table1_formatted$BMI_Group == "OB", ]
 # ***************          Calculating Table 1 Stats           *************** #
 # **************************************************************************** #
 #create table frame with rows to describe maternal age, gestational age, breastfeeding (months)
-table1 <- data.frame(Variables = c("n and p values", "Maternal Age", "Gestational Age", "Breastfeeding (months)"))
+table1 <- data.frame(Variables = c("n and p values", "Maternal Age", "Gestational Age", "Breastfeeding (months)", "BMI"))
   #will fill in n and p values at the end
 
 #adding means for overall category
-table1[2,2] = mean(table1_formatted$Maternal_Age, na.rm = TRUE)
-table1[3,2] = mean(table1_formatted$Gestational_Age, na.rm = TRUE)
-table1[4,2] = mean(table1_formatted$Breastfeeding_Months, na.rm = TRUE)
+table1[2,2] = paste(mean(table1_formatted$Maternal_Age, na.rm = TRUE), "+/-", sd(table1_formatted$Maternal_Age, na.rm = TRUE))
+table1[3,2] = paste(mean(table1_formatted$Gestational_Age, na.rm = TRUE), "+/-", sd(table1_formatted$Gestational_Age, na.rm = TRUE))
+table1[4,2] = paste(mean(table1_formatted$Breastfeeding_Months, na.rm = TRUE), "+/-", sd(table1_formatted$Breastfeeding_Months, na.rm = TRUE))
+table1[5,2] = paste(mean(table1_formatted$BMI, na.rm = TRUE),"+/-",sd(table1_formatted$BMI))
 
 #adding means for normal weight category
-table1[2,3] = mean(table1_nw$Maternal_Age, na.rm = TRUE)
-table1[3,3] = mean(table1_nw$Gestational_Age, na.rm = TRUE)
-table1[4,3] = mean(table1_nw$Breastfeeding_Months, na.rm = TRUE)
+table1[2,3] = paste(mean(table1_nw$Maternal_Age, na.rm = TRUE), "+/-", sd(table1_nw$Maternal_Age, na.rm = TRUE))
+table1[3,3] = paste(mean(table1_nw$Gestational_Age, na.rm = TRUE), "+/-", sd(table1_nw$Gestational_Age, na.rm = TRUE))
+table1[4,3] = paste(mean(table1_nw$Breastfeeding_Months, na.rm = TRUE), "+/-", sd(table1_nw$Breastfeeding_Months, na.rm = TRUE))
+table1[5,3] = paste(mean(table1_nw$BMI, na.rm = TRUE), "+/-", sd(table1_nw$BMI))
+
+class(table1_nw$BMI)
 
 #adding means for overweight weight category
-table1[2,4] = mean(table1_ow$Maternal_Age, na.rm = TRUE)
-table1[3,4] = mean(table1_ow$Gestational_Age, na.rm = TRUE)
-table1[4,4] = mean(table1_ow$Breastfeeding_Months, na.rm = TRUE)
+table1[2,4] = paste(mean(table1_ow$Maternal_Age, na.rm = TRUE), "+/-", sd(table1_ow$Maternal_Age, na.rm = TRUE))
+table1[3,4] = paste(mean(table1_ow$Gestational_Age, na.rm = TRUE), "+/-", sd(table1_ow$Gestational_Age, na.rm = TRUE))
+table1[4,4] = paste(mean(table1_ow$Breastfeeding_Months, na.rm = TRUE), "+/-", sd(table1_ow$Breastfeeding_Months, na.rm = TRUE))
+table1[5,4] = paste(mean(table1_ow$BMI, na.rm = TRUE), "+/-", sd(table1_ow$BMI, na.rm = TRUE))
 
 #adding means for obese category
-table1[2,5] = mean(table1_ob$Maternal_Age, na.rm = TRUE)
-table1[3,5] = mean(table1_ob$Gestational_Age, na.rm = TRUE)
-table1[4,5] = mean(table1_ob$Breastfeeding_Months, na.rm = TRUE)
+table1[2,5] = paste(mean(table1_ob$Maternal_Age, na.rm = TRUE), "+/-", sd(table1_ob$Maternal_Age, na.rm = TRUE))
+table1[3,5] = paste(mean(table1_ob$Gestational_Age, na.rm = TRUE), "+/-", sd(table1_ob$Gestational_Age, na.rm = TRUE))
+table1[4,5] = paste(mean(table1_ob$Breastfeeding_Months, na.rm = TRUE), "+/-", sd(table1_ob$Breastfeeding_Months, na.rm = TRUE))
+table1[5,5] = paste(mean(table1_ob$BMI, na.rm = TRUE), "+/-", sd(table1_ob$BMI))
 
-#round digits
-table1 <- table1 %>% 
-  mutate_if(is.numeric, round, digits=2)
 
 ```
 
@@ -128,5 +136,69 @@ colnames(table1)[5] <- "Obese"
 
 ```
 
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Samples Quantified              *************** #
+# **************************************************************************** #
+
+#create table frame with rows to describe maternal age, gestational age, breastfeeding (months)
+sample1 <- data.frame(Variables = c("n and p value","Breastmilk", "Maternal Blood", "Maternal Stool", "Infant Blood", "Infant Stool", "Diet Records"))
+
+#adding total for overall category
+sample1[2,2] = sum(!is.na(sample_grouping$mompostnat_crc_milk_time))
+sample1[3,2] = sum(!is.na(sample_grouping$mom3t_crc_blood_time),!is.na(sample_grouping$mompostnat_crc_blood_time))
+sample1[4,2] = sum(!is.na(sample_grouping$mom3t_crc_stool_time),!is.na(sample_grouping$mompostnat_crc_stool_time))
+sample1[5,2] = sum(!is.na(sample_grouping$infant_crc_blood_time))
+sample1[6,2] = sum(!is.na(sample_grouping$infant_crc_stool_time))
+sample1[7,2] = sum(!is.na(sample_grouping$beach_foodrecord_hardcopy))
+
+#adding total for normal weight category
+sample1[2,3] = sum(!is.na(sample_grouping_nw$mompostnat_crc_milk_time))
+sample1[3,3] = sum(!is.na(sample_grouping_nw$mom3t_crc_blood_time),!is.na(sample_grouping_nw$mompostnat_crc_blood_time))
+sample1[4,3] = sum(!is.na(sample_grouping_nw$mom3t_crc_stool_time),!is.na(sample_grouping_nw$mompostnat_crc_stool_time))
+sample1[5,3] = sum(!is.na(sample_grouping_nw$infant_crc_blood_time))
+sample1[6,3] = sum(!is.na(sample_grouping_nw$infant_crc_stool_time))
+sample1[7,3] = sum(!is.na(sample_grouping_nw$beach_foodrecord_hardcopy))
+
+#adding total for overweight category
+sample1[2,4] = sum(!is.na(sample_grouping_ow$mompostnat_crc_milk_time))
+sample1[3,4] = sum(!is.na(sample_grouping_ow$mom3t_crc_blood_time),!is.na(sample_grouping_ow$mompostnat_crc_blood_time))
+sample1[4,4] = sum(!is.na(sample_grouping_ow$mom3t_crc_stool_time),!is.na(sample_grouping_ow$mompostnat_crc_stool_time))
+sample1[5,4] = sum(!is.na(sample_grouping_ow$infant_crc_blood_time))
+sample1[6,4] = sum(!is.na(sample_grouping_ow$infant_crc_stool_time))
+sample1[7,4] = sum(!is.na(sample_grouping_ow$beach_foodrecord_hardcopy))
+
+#adding total for obese category
+sample1[2,5] = sum(!is.na(sample_grouping_ob$mompostnat_crc_milk_time))
+sample1[3,5] = sum(!is.na(sample_grouping_ob$mom3t_crc_blood_time),!is.na(sample_grouping_ob$mompostnat_crc_blood_time))
+sample1[4,5] = sum(!is.na(sample_grouping_ob$mom3t_crc_stool_time),!is.na(sample_grouping_ob$mompostnat_crc_stool_time))
+sample1[5,5] = sum(!is.na(sample_grouping_ob$infant_crc_blood_time))
+sample1[6,5] = sum(!is.na(sample_grouping_ob$infant_crc_stool_time))
+sample1[7,5] = sum(!is.na(sample_grouping_ob$beach_foodrecord_hardcopy))
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************                n and p values                *************** #
+# **************************************************************************** #
+
+#remove 
+
+#add n value and p value for each category: overall, normal weight, overweight, obese
+sample1[1,2] = (paste("n =",nrow(sample_grouping),"( p =",nrow(sample_grouping)/nrow(sample_grouping)," )"))
+sample1[1,3] = (paste("n =",nrow(sample_grouping_nw),"( p =", round(nrow(sample_grouping_nw)/nrow(sample_grouping), digits = 2)," )"))
+sample1[1,4] = (paste("n =",nrow(sample_grouping_ow),"( p =", round(nrow(sample_grouping_ow)/nrow(sample_grouping), digits = 2)," )"))
+sample1[1,5] = (paste("n =",nrow(sample_grouping_ob),"( p =", round(nrow(sample_grouping_ob)/nrow(sample_grouping), digits = 2)," )"))
+
+#rename table columns to reflect category
+colnames(table1)[2] <- "Overall"
+colnames(table1)[3] <- "Normal Weight"
+colnames(table1)[4] <- "Overweight"
+colnames(table1)[5] <- "Obese"
+
+```
 
 
