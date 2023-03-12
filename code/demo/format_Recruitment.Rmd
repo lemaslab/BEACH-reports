@@ -68,10 +68,13 @@ library(readr)
 # ***************              Load Data                       *************** #
 # ****************************************************************************#
 
-load("~/BEACH-facebook/data/raw/Recruitment_raw.RData")
+load("~/BEACH-facebook/data/raw/Recruitment_Particpant_raw.RData")
 
 ```
 
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+recruitment_report <- Recruitment_raw[ -c(2:4) ]
+```
 
 ```{r, message=FALSE,warning=FALSE,echo=FALSE}
 
@@ -133,15 +136,6 @@ recruitment_report$Recruitment = coalesce(recruitment_report$beachphone_hear_abo
 #merge times into one column to fill in N/A blanks
 
 recruitment_report$timecoalesce = coalesce(recruitment_report$prescreen_date, recruitment_report$beach_encounter_date, recruitment_report$beachphone_date)
-
-```
-
-```{r, message=FALSE,warning=FALSE,echo=FALSE}
-
-#merge times into one column to fill in N/A blanks
-
-recruitment_report$timecoalesce <- format(as.POSIXct(recruitment_report$timecoalesce,format='%m/%d/%Y %H:%M:%S'),format='%m/%d/%Y')
-
 
 ```
 
