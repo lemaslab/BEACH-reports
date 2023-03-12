@@ -149,7 +149,9 @@ recruitment_report$timecoalesce <- format(as.POSIXct(recruitment_report$timecoal
 
 Social_media= filter(recruitment_report, Recruitment == "Social Media")
 Flyer = filter(recruitment_report, Recruitment == "Flyer")
+Word_of_mouth = filter(recruitment_report, Recruitment == "Word-of-mouth")
 ```
+
 
 ```{r, message=FALSE,include=FALSE}
 
