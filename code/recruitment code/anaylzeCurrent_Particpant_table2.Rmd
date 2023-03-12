@@ -232,168 +232,6 @@ Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
 
 ```
 
-###Random Contact
-
-#Table 1
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#age gropuing for random contact
-vtree(Phone_Screen_age_bmi, "Random_Contact Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#BMI grouping for random contact
-vtree(Phone_Screen_age_bmi, "Random_Contact BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for random contact
-vtree(Phone_Screen_age_bmi, "Random_Contact Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for random contact
-vtree(Phone_Screen_age_bmi, "Random_Contact Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for random contact
-vtree(Phone_Screen_age_bmi, "Random_Contact beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#anaylsis
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#select out columns for analysis
-Random_Contact = select(filter(Phone_Screen_age_bmi, Random_Contact %in% c("Yes")), c(Random_Contact,BMI_Type,Age_grouping,Consent,Complete, beachphone_pass_fail))
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Random_Contact_ana <- na.omit(Random_Contact) 
-
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for random contact age grouping
-chisq.test(x = table(Random_Contact_ana$Random_Contact, Random_Contact_ana$Age_grouping))
-# X^2= 14.286
-# p= 0.002541
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for random contact BMI
-chisq.test(x = table(Random_Contact_ana$Random_Contact, Random_Contact_ana$BMI_Type))
-# X^2= 9.7014
-# p= 0.01072
-```
-
-###PreScreen
-
-#Table 1
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#filter  for prescreen survey
-Just_Pre_Screen= filter(Phone_Screen_age_bmi, Random_Contact == "No" & Prescreen_Survey == "Yes")
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#age grouping for prescreen survey
-vtree(Just_Pre_Screen, "Prescreen_Survey Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#BMI for prescreen survey
-vtree(Just_Pre_Screen, "Prescreen_Survey BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for prescreen 
-vtree(Just_Pre_Screen, "Prescreen_Survey Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for prescreen
-vtree(Just_Pre_Screen, "Prescreen_Survey Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for prescreen
-vtree(Just_Pre_Screen, "Prescreen_Survey beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#anaylsis
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Just_Pre_Screen_ana <- na.omit(Just_Pre_Screen) 
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for prescreen age grouping
-chisq.test(x = table(Just_Pre_Screen_ana$Prescreen_Survey, Just_Pre_Screen_ana$Age_grouping))
-# X^2= 40.22
-# p= 3.897e-08
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for prescreen BMI
-chisq.test(x = table(Just_Pre_Screen_ana$Prescreen_Survey, Just_Pre_Screen_ana$BMI_Type))
-# X^2= 30.729
-# p= 2.125e-07
-```
-
-
-###Phonescreen
-
-#Table 1
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#filter for phone screen
-Just_Phone_Screen= filter(Phone_Screen_age_bmi, Random_Contact == "No" & Prescreen_Survey == "No")
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#age grouping for phone screen
-vtree(Just_Phone_Screen, "Phone_Screen Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#BMI grouping for phone screen
-vtree(Just_Phone_Screen, "Phone_Screen BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for phone screen
-vtree(Just_Phone_Screen, "Phone_Screen Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for phone screen
-vtree(Just_Phone_Screen, "Phone_Screen Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for phone screen
-vtree(Just_Phone_Screen, "Phone_Screen beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#anaylsis
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Just_Phone_Screen_ana <- na.omit(Just_Phone_Screen) 
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for phone screen age
-chisq.test(x = table(Just_Phone_Screen_ana$Phone_Screen, Just_Phone_Screen_ana$Age_grouping))
-# X^2= 13.635
-# p= 0.003447
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for phone screen BMI
-chisq.test(x = table(Just_Phone_Screen_ana$Phone_Screen, Just_Phone_Screen_ana$BMI_Type))
-# X^2= 30.952
-# p= 1.9e-07
-```
-
 ###Table 2
 
 ##Eligible based on Recruitment 
@@ -404,12 +242,12 @@ Eligible_Pass= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #age grouping for each recruitment type
-vtree(Eligible_Pass, "Recruitment BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(Eligible_Pass, "Recruitment Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #BMI grouping for each recruitment type
-vtree(Eligible_Pass, "Recruitment Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(Eligible_Pass, "Recruitment BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
@@ -445,26 +283,3 @@ chisq.test(Allrecords$Recruitment, Allrecords$BMI_Type, correct=FALSE)
 #X^2=6.1512
 #p=0.4065
 ```
-
-###Table 3
-
-#Facebook vs Flyers BMI
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_ana = select(filter(Allrecords, Recruitment %in% c("Social Media","Flyer"), Consent %in% c("Yes")), c(Recruitment,Age_grouping, BMI_Type, Consent))
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment methods and BMI for consented participants
-vtree(Recruitment_ana, "Recruitment Consent BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#anaylsis
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for consented participants
-chisq.test(Recruitment_ana$Recruitment, Recruitment_ana$BMI_Type, correct=FALSE)
-#X^2=2.4557
-#p=0.2929
-```
-
-
-

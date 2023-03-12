@@ -106,7 +106,7 @@ CP_raw=CP_raw %>%
 ```
 
 
-##Phone_Screening
+##editing data frame
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #sort by phone screen participants
 Phone_Screen= filter(CP_raw, Phone_Screen == 1)
@@ -234,8 +234,6 @@ Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
 
 ###Random Contact
 
-#Table 1
-
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #age gropuing for random contact
 vtree(Phone_Screen_age_bmi, "Random_Contact Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
@@ -288,8 +286,6 @@ chisq.test(x = table(Random_Contact_ana$Random_Contact, Random_Contact_ana$BMI_T
 
 ###PreScreen
 
-#Table 1
-
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #filter  for prescreen survey
 Just_Pre_Screen= filter(Phone_Screen_age_bmi, Random_Contact == "No" & Prescreen_Survey == "Yes")
@@ -340,10 +336,7 @@ chisq.test(x = table(Just_Pre_Screen_ana$Prescreen_Survey, Just_Pre_Screen_ana$B
 # p= 2.125e-07
 ```
 
-
 ###Phonescreen
-
-#Table 1
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #filter for phone screen
@@ -393,78 +386,3 @@ chisq.test(x = table(Just_Phone_Screen_ana$Phone_Screen, Just_Phone_Screen_ana$B
 # X^2= 30.952
 # p= 1.9e-07
 ```
-
-###Table 2
-
-##Eligible based on Recruitment 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#filter for participants who completed phone screen
-Eligible_Pass= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#age grouping for each recruitment type
-vtree(Eligible_Pass, "Recruitment BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#BMI grouping for each recruitment type
-vtree(Eligible_Pass, "Recruitment Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for each recruitment type
-vtree(Eligible_Pass, "Recruitment beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment outcomes for each recruitment type
-vtree(Eligible_Pass, "Recruitment Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#anaylsis
-#Table 2
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-All_Pass= Eligible_Pass
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Allrecords <- na.omit(All_Pass) 
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for age groups for eligible participants 
-chisq.test(Allrecords$Recruitment, Allrecords$Age_grouping, correct=FALSE)
-#X^2=18.795
-#p=0.09361
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for BMI for eligible participants
-chisq.test(Allrecords$Recruitment, Allrecords$BMI_Type, correct=FALSE)
-#X^2=6.1512
-#p=0.4065
-```
-
-###Table 3
-
-#Facebook vs Flyers BMI
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_ana = select(filter(Allrecords, Recruitment %in% c("Social Media","Flyer"), Consent %in% c("Yes")), c(Recruitment,Age_grouping, BMI_Type, Consent))
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#recruitment methods and BMI for consented participants
-vtree(Recruitment_ana, "Recruitment Consent BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-#anaylsis
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#chi squared for consented participants
-chisq.test(Recruitment_ana$Recruitment, Recruitment_ana$BMI_Type, correct=FALSE)
-#X^2=2.4557
-#p=0.2929
-```
-
-
-
