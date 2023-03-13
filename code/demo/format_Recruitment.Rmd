@@ -68,7 +68,7 @@ library(readr)
 # ***************              Load Data                       *************** #
 # ****************************************************************************#
 
-load("~/BEACH-facebook/data/raw/Recruitment_Particpant_raw.RData")
+load("~/BEACH-Reports/data/raw/Recruitment_Particpant_raw.RData")
 
 ```
 
