@@ -232,6 +232,19 @@ Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
 
 ```
 
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#filter for participants who completed phone screen
+Eligible_Pass= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+All_Pass= Eligible_Pass
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Allrecords <- na.omit(All_Pass) 
+```
+
 ###Table 3
 
 #Facebook vs Flyers BMI
