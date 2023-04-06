@@ -1,0 +1,233 @@
+---
+title: "anaylzeCurrent_Particpant"
+author: "Yasmine Gillespie"
+date: '2022-10-23'
+output: html_document
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:      Dominick Lemas
+# Date:        Nov 17, 2020 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event and combine into final dataset. 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_raw <- CP_raw[ -c(2:4) ]
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#renaming
+names(CP_raw)[2] <- "Random_Contact"
+names(CP_raw)[3] <- "Prescreen_Survey"
+names(CP_raw)[4] <- "Phone_Screen"
+names(CP_raw)[5] <- "IDR"
+names(CP_raw)[6] <- "Consent"
+names(CP_raw)[7] <- "Complete"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#recoding
+CP_raw=CP_raw %>%
+  mutate(beachphone_hear_about_us=recode(beachphone_hear_about_us,
+                              "1"="Flyer",
+                              "2"="Radio",
+                              "3"="Social Media",
+                              "4"="Newspaper",
+                              "5"="Word-of-mouth",
+                              "6"="Other"
+                               ))
+
+
+CP_raw=CP_raw %>%
+  mutate(beach_learn_about_study=recode(beach_learn_about_study,
+                              "1"="Flyer",
+                              "2"="Physician",
+                              "3"="Social Media",
+                              "4"="Mail",
+                              "5"="Other"
+                               ))
+                              
+```
+
+
+##editing data frame
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#sort by phone screen participants
+Phone_Screen= filter(CP_raw, Phone_Screen == 1)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns into Recruitment column for how participant found study
+Phone_Screen$Recruitment = coalesce(Phone_Screen$beachphone_hear_about_us, Phone_Screen$beach_learn_about_study, Phone_Screen$IDR)
+
+#recoding if participants didn't complete IDR
+Phone_Screen=Phone_Screen %>%
+  mutate(Recruitment=recode(Recruitment,
+                              "0"="Incomplete"
+                            ))
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for BMI
+Phone_Screen$BMI = coalesce(Phone_Screen$beach_final_bmi, Phone_Screen$beachphone_prepreg_bmi)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#removing extra columns
+Phone_Screen <- Phone_Screen[ -c(9,11,13,14,15) ]
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#recoding
+Phone_Screen=Phone_Screen %>%
+  mutate(Consent=recode(Consent,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Phone_Screen=Phone_Screen %>%
+  mutate(Complete=recode(Complete,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Phone_Screen=Phone_Screen %>%
+  mutate(Random_Contact=recode(Random_Contact,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Phone_Screen=Phone_Screen %>%
+  mutate(Prescreen_Survey=recode(Prescreen_Survey,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Phone_Screen=Phone_Screen %>%
+  mutate(Phone_Screen=recode(Phone_Screen,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Phone_Screen=Phone_Screen %>%
+  mutate(IDR=recode(IDR,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Phone_Screen=Phone_Screen %>%
+  mutate(beachphone_pass_fail=recode(beachphone_pass_fail,
+                              "1"="Pass",
+                              "2"="Fail",
+                              "3"="Incomplete"
+                            ))
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#removing extra columns so it's just test ID, consent, eligibility
+Phone_Screen <- Phone_Screen[ c(1,6,9,11) ]
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+###making data frame for barplot
+
+PS_Consented <- Phone_Screen[Phone_Screen$Consent=="Yes",]
+barplot_consent = (table(PS_Consented$Recruitment))
+PS_Eligible <- Phone_Screen[Phone_Screen$beachphone_pass_fail=="Pass",]
+PS_Eligible <- na.omit(PS_Eligible)
+PS_Eligible <- PS_Eligible[!PS_Eligible$Recruitment=="Incomplete",]
+  #is it okay to remove incomplete?
+barplot_eligible = (table(PS_Eligible$Recruitment))
+#counting values
+
+data <- data.frame(barplot_consent,barplot_eligible)
+names(data)[1] <- "Recruitment Type"
+names(data)[2] <- "Consent"
+names(data)[4] <- "Eligible"
+data <- data[ -c(3) ]
+#changing column titles, cutting out extra recruitment type column
+
+data <- as.data.frame(t(data))
+names(data) <- data[1,]
+data <- data[-1,]
+#switching column and row
+
+data$Flyer <- as.numeric(data$Flyer)
+data$Other <- as.numeric(data$Other)
+data$`Social Media` <- as.numeric(data$`Social Media`)
+data$`Word-of-mouth` <- as.numeric(data$`Word-of-mouth`)
+#changing variables in data frame to be numeric instead of character
+
+data1 <- as.matrix(data)
+#making matrix to plug into barplot
+
+x11()
+library(graphics)
+#run for graphics to work correctly
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+###barplot
+
+barplot(main = "Recruitment", data1,beside=TRUE, col = c("blue","orange"), ylab = "Participants", ylim = c(0,60), xlab = "Recruitment Type", legend.text = TRUE)
+
+```
