@@ -198,10 +198,10 @@ PS_Eligible <- PS_Eligible[!PS_Eligible$Recruitment=="Incomplete",]
 barplot_eligible = (table(PS_Eligible$Recruitment))
 #counting values
 
-data <- data.frame(barplot_consent,barplot_eligible)
+data <- data.frame(barplot_eligible,barplot_consent)
 names(data)[1] <- "Recruitment Type"
-names(data)[2] <- "Consent"
-names(data)[4] <- "Eligible"
+names(data)[2] <- "Eligible"
+names(data)[4] <- "Consent"
 data <- data[ -c(3) ]
 #changing column titles, cutting out extra recruitment type column
 
@@ -228,6 +228,6 @@ library(graphics)
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 ###barplot
 
-barplot(main = "Recruitment", data1,beside=TRUE, col = c("blue","orange"), ylab = "Participants", ylim = c(0,60), xlab = "Recruitment Type", legend.text = TRUE)
+barplot(main = "Recruitment Outcomes Based on Recruitment Type", data1,beside=TRUE, col = c("blue","orange"), ylab = "Participants", ylim = c(0,60), xlab = "Recruitment Type", legend.text = TRUE)
 
 ```
