@@ -63,11 +63,11 @@ library(readr)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-load("~/BEACH-facebook/data/raw/Recruitment_Particpant_raw.RData")
+load("~/GitHub/BEACH-reports/output/reports/recruitment_raw.RData")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Recruitment_raw <- Recruitment_raw[ -c(2:4) ]
+Recruitment_raw <- recruitment_raw[ -c(2:4) ]
 
 ```
 

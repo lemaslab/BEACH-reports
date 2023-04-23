@@ -97,6 +97,6 @@ recruitment_report = recruitment_raw %>%
 # ***************              Save Data Local                 *************** #
 # **************************************************************************** #
 # Save the data in your local laptop (Github path: BEACH-reports)
-save(list=c("recruitment_report"),file="~/GitHub/BEACH-reports/output/reports/Recruitment_raw.RData")
+save(list=c("recruitment_report"),file="~/GitHub/BEACH-reports/output/reports/recruitment_raw.RData")
 ```
 
