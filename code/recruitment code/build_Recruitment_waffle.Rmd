@@ -1,0 +1,242 @@
+---
+title: "build_Recruitment_4"
+author: "Yasmine Gillespie"
+date: "2022-12-12"
+output: html_document
+---
+
+```{r, include=FALSE,echo=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:      Yasmine Gillespie
+# Date:        Oct 25, 2022 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+
+
+library(scales)
+library(viridis)
+library(ggthemes)
+library(gridExtra)
+library(lubridate)
+library(data.table)
+
+library(tidyquant)
+library(ggplot2)
+library(plyr)
+library(plotly)
+# Load libraries
+```
+
+
+```{r, message=FALSE,include=FALSE}
+#install.packages("anytime")   # Install anytime package
+library("anytime")  
+
+all <- (rbind(Social_media,Word_of_mouth,Flyer))
+all$time = anydate(all$timecoalesce)
+
+amazonstockg <- count(all$time) %>% ungroup()
+names(amazonstockg) [1] <- "time"
+ 
+```
+
+
+```{r, message=FALSE,include=FALSE}
+#all waffle
+
+amazonstockg$weekday = as.POSIXlt(amazonstockg$time)$wday #finding the day no. of the week
+amazonstockg$weekdayf<-factor(amazonstockg$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+amazonstockg$monthf<- 1
+
+amazonstockg$monthf<-factor(month(amazonstockg$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+
+amazonstockg$yearmonth<- factor(as.yearmon(amazonstockg$time)) # finding the year and the month from the date. Eg: Nov 2018
+#might not need this
+
+amazonstockg$week <- as.numeric(format(amazonstockg$time,"%W")) # finding the week of the year for each date
+
+amazonstockg<-ddply(amazonstockg,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
+
+
+p <- ggplot(amazonstockg, aes(monthweek, weekdayf, fill = amazonstockg$freq)) + 
+    geom_tile(colour = "white") + facet_grid(~amazonstockg$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Overall Recruitment") + labs(fill = "# Recruited")
+
+p
+print(p)
+```
+
+```{r, message=FALSE,include=FALSE}
+
+#install.packages("anytime")   # Install anytime package
+library("anytime")  
+
+Social_media$time=anydate(Social_media$timecoalesce)
+```
+
+```{r, message=FALSE,include=FALSE}
+amznStockg <- count(Social_media$time) %>% ungroup()
+names(amznStockg)[1] <- "time"
+
+```
+
+```{r, message=FALSE,include=FALSE}
+#social media waffle
+
+amznStockg$weekday = as.POSIXlt(amznStockg$time)$wday #finding the day no. of the week
+amznStockg$weekdayf<-factor(amznStockg$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+amznStockg$monthf<- 1
+
+amznStockg$monthf<-factor(month(amznStockg$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+
+amznStockg$yearmonth<- factor(as.yearmon(amznStockg$time)) # finding the year and the month from the date. Eg: Nov 2018
+#might not need this
+
+amznStockg$week <- as.numeric(format(amznStockg$time,"%W")) # finding the week of the year for each date
+
+amznStockg<-ddply(amznStockg,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
+
+
+p <- ggplot(amznStockg, aes(monthweek, weekdayf, fill = amznStockg$freq)) + 
+    geom_tile(colour = "white") + facet_grid(~amznStockg$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Social media Recruitment") + labs(fill = "# Recruited")
+
+p
+print(p)
+```
+
+
+```{r, message=FALSE,include=FALSE}
+
+#install.packages("anytime")   # Install anytime package
+library("anytime")  
+
+Flyer$time=anydate(Flyer$timecoalesce)
+```
+
+```{r, message=FALSE,include=FALSE}
+amznStockg <- count(Flyer$time) %>% ungroup()
+names(amznStockg)[1] <- "time"
+
+```
+
+```{r, message=FALSE,include=FALSE}
+#flyer waffle
+
+library(tidyquant)
+library(ggplot2)
+library(plyr)
+library(plotly)
+
+amznStockg$weekday = as.POSIXlt(amznStockg$time)$wday #finding the day no. of the week
+amznStockg$weekdayf<-factor(amznStockg$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+amznStockg$monthf<- 1
+
+amznStockg$monthf<-factor(month(amznStockg$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+
+amznStockg$yearmonth<- factor(as.yearmon(amznStockg$time)) # finding the year and the month from the date. Eg: Nov 2018
+
+amznStockg$week <- as.numeric(format(amznStockg$time,"%W")) # finding the week of the year for each date
+
+amznStockg<-ddply(amznStockg,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
+
+f <- ggplot(amznStockg, aes(monthweek, weekdayf, fill = amznStockg$freq)) + 
+    geom_tile(colour = "white") + facet_grid(~amznStockg$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Flyer Recruitment") + labs(fill = "# Recruited")
+
+f
+print(f)
+```
+
+```{r, message=FALSE,include=FALSE}
+
+#install.packages("anytime")   # Install anytime package
+library("anytime")  
+
+Word_of_mouth$time=anydate(Word_of_mouth$timecoalesce)
+```
+
+```{r, message=FALSE,include=FALSE}
+amznStockg <- count(Word_of_mouth$time) %>% ungroup()
+names(amznStockg)[1] <- "time"
+
+```
+
+```{r, message=FALSE,include=FALSE}
+#word of mouth waffle
+
+library(tidyquant)
+library(ggplot2)
+library(plyr)
+library(plotly)
+
+amznStockg$weekday = as.POSIXlt(amznStockg$time)$wday #finding the day no. of the week
+amznStockg$weekdayf<-factor(amznStockg$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+amznStockg$monthf<- 1
+
+amznStockg$monthf<-factor(month(amznStockg$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+
+amznStockg$yearmonth<- factor(as.yearmon(amznStockg$time)) # finding the year and the month from the date. Eg: Nov 2018
+
+amznStockg$week <- as.numeric(format(amznStockg$time,"%W")) # finding the week of the year for each date
+
+amznStockg<-ddply(amznStockg,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
+
+w <- ggplot(amznStockg, aes(monthweek, weekdayf, fill = amznStockg$freq)) + 
+    geom_tile(colour = "white") + facet_grid(~amznStockg$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Word-of-mouth Recruitment") + labs(fill = "# Recruited")
+
+w
+print(w)
+```
+
+
