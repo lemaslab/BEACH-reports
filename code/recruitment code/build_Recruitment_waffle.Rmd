@@ -101,7 +101,6 @@ all_waffle$monthf<- 1
 all_waffle$monthf<-factor(month(all_waffle$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
 
 all_waffle$yearmonth<- factor(as.yearmon(all_waffle$time)) # finding the year and the month from the date. Eg: Nov 2018
-#might not need this
 
 all_waffle$week <- as.numeric(format(all_waffle$time,"%W")) # finding the week of the year for each date
 
@@ -113,6 +112,19 @@ p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = all_waffle$freq)) +
 
 p
 print(p)
+```
+
+```{r,message=FALSE,include=FALSE}
+p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = freq)) + 
+    geom_tile(colour = "white") + facet_grid(~all_waffle$monthf) + scale_fill_gradient(low="orange", high="blue") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Overall Recruitment") + labs(fill = "# Recruited") + scale_shape_binned("square")
+
+p
+print(p)
+#run individually to ensure the plot looks fine and everything worked so far
+
+ggsave(p, filename = "c:/Recruitment_Waffle/waffle.png",height = 2, width = 10)
+#save to computer to adjust size appropriately. adjust filename to where you want it saved
+
 ```
 
 ```{r, message=FALSE,include=FALSE}
