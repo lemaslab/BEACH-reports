@@ -1,0 +1,128 @@
+---
+title: "build_Recruitment_4"
+author: "Yasmine Gillespie"
+date: "2022-12-12"
+output: html_document
+---
+
+```{r, include=FALSE,echo=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:      Yasmine Gillespie
+# Date:        Oct 25, 2022 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+
+
+library(scales)
+library(viridis)
+library(ggthemes)
+library(gridExtra)
+library(lubridate)
+library(data.table)
+
+library(tidyquant)
+library(ggplot2)
+library(plyr)
+library(plotly)
+# Load libraries
+```
+
+
+```{r, message=FALSE,include=FALSE}
+#install.packages("anytime")   # Install anytime package
+library("anytime")  
+
+all <- (rbind(Social_media,Word_of_mouth,Flyer))
+all$time = anydate(all$timecoalesce)
+
+all_waffle <- count(all$time) %>% ungroup()
+names(all_waffle) [1] <- "time"
+ 
+```
+
+
+```{r, message=FALSE,include=FALSE}
+#all waffle
+
+all_waffle$weekday = as.POSIXlt(all_waffle$time)$wday #finding the day no. of the week
+all_waffle$weekdayf<-factor(all_waffle$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+all_waffle$monthf<- 1
+
+all_waffle$monthf<-factor(month(all_waffle$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+
+all_waffle$yearmonth<- factor(as.yearmon(all_waffle$time)) # finding the year and the month from the date. Eg: Nov 2018
+
+all_waffle$week <- as.numeric(format(all_waffle$time,"%W")) # finding the week of the year for each date
+
+all_waffle<-ddply(all_waffle,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
+
+
+p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = all_waffle$freq)) + 
+    geom_tile(colour = "white") + facet_grid(~all_waffle$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Overall Recruitment") + labs(fill = "# Recruited")
+
+p
+print(p)
+```
+
+```{r,message=FALSE,include=FALSE}
+p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = freq)) + 
+    geom_tile(colour = "white") + facet_grid(~all_waffle$monthf) + scale_fill_gradient(low="orange", high="blue") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Overall Recruitment") + labs(fill = "# Recruited") + scale_shape_binned("square")
+
+p
+print(p)
+#run individually to ensure the plot looks fine and everything worked so far
+
+ggsave(p, filename = "c:/Recruitment_Waffle/waffle.png",height = 2, width = 10)
+#save to computer to adjust size appropriately. adjust filename to where you want it saved
+
+```
