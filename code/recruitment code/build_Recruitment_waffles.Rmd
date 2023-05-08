@@ -212,6 +212,9 @@ names(OWOB_waffle) [1] <- "time"
 
 ```
 
+OWOB_waffle[35,5] = "Mar"
+OWOB_waffle[35,2] = "0"
+
 ```{r, message=FALSE,include=FALSE}
 #normal weight waffle
 
@@ -227,10 +230,12 @@ OWOB_waffle$yearmonth<- factor(as.yearmon(OWOB_waffle$time)) # finding the year 
 OWOB_waffle$week <- as.numeric(format(OWOB_waffle$time,"%W")) # finding the week of the year for each date
 
 OWOB_waffle<-ddply(OWOB_waffle,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
+OWOB_waffle <- na.omit(OWOB_waffle)
+
 
 
 o <- ggplot(OWOB_waffle, aes(monthweek, weekdayf, fill = freq)) + 
-    geom_tile(colour = "white") + facet_grid(~OWOB_waffle$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Normal Weight Recruitment") + labs(fill = "# Recruited")
+    geom_tile(colour = "white") + facet_grid(~OWOB_waffle$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Overweight and Obese Recruitment") + labs(fill = "# Recruited")
 
 o
 print(o)
