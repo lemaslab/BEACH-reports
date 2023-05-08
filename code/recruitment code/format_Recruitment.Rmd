@@ -139,13 +139,6 @@ recruitment_report$timecoalesce = coalesce(recruitment_report$prescreen_date, re
 
 ```
 
-```{r, message=FALSE,warning=FALSE,echo=FALSE}
-
-Social_media= filter(recruitment_report, Recruitment == "Social Media")
-Flyer = filter(recruitment_report, Recruitment == "Flyer")
-Word_of_mouth = filter(recruitment_report, Recruitment == "Word-of-mouth")
-```
-
 
 ```{r, message=FALSE,include=FALSE}
 
@@ -155,5 +148,6 @@ Word_of_mouth = filter(recruitment_report, Recruitment == "Word-of-mouth")
 # Save the data in your local laptop (Github path: /data)
 
 save(list=c("recruitment_report"),file="~/BEACH-Reports/output/reports/recruitment/recruitment_clean.RData")
+
 
 ```

@@ -76,12 +76,48 @@ library(plotly)
 # Load libraries
 ```
 
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Load Data                       *************** #
+# ****************************************************************************#
+
+load("~/BEACH-Reports/output/reports/recruitment/recruitment_clean.RData")
+load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
+
+```
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+#make waffles
+
+#recruitment types
+Social_media= filter(recruitment_report, Recruitment == "Social Media")
+Flyer = filter(recruitment_report, Recruitment == "Flyer")
+Word_of_mouth = filter(recruitment_report, Recruitment == "Word-of-mouth")
+
+#all waffle
+all <- (rbind(Social_media,Word_of_mouth,Flyer))
+
+#bmi waffle
+CP_raw=CP_raw %>%
+  mutate(bmi_analysis_prepregnant=recode(bmi_analysis_prepregnant,
+                              "1"="Normal",
+                              "2"="Overweight",
+                              "3"= "Obese"
+                               ))
+BMI_waffle <- cbind(recruitment_report, CP_raw$bmi_analysis_prepregnant)
+colnames(BMI_waffle)[18] <- "bmi_group"
+
+BMI_waffle = BMI_waffle %>% drop_na(`bmi_group`)
+BMI_NW = filter(BMI_waffle, bmi_group == "Normal")
+BMI_OWOB = filter(BMI_waffle, bmi_group != "Normal")
+
+```
 
 ```{r, message=FALSE,include=FALSE}
 #install.packages("anytime")   # Install anytime package
 library("anytime")  
 
-all <- (rbind(Social_media,Word_of_mouth,Flyer))
 all$time = anydate(all$timecoalesce)
 
 all_waffle <- count(all$time) %>% ungroup()
@@ -107,35 +143,112 @@ all_waffle$week <- as.numeric(format(all_waffle$time,"%W")) # finding the week o
 all_waffle<-ddply(all_waffle,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
 
 
-p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = all_waffle$freq)) + 
+a <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = freq)) + 
     geom_tile(colour = "white") + facet_grid(~all_waffle$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Overall Recruitment") + labs(fill = "# Recruited")
 
-p
-print(p)
 ```
 
-```{r,message=FALSE,include=FALSE}
-p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = freq)) + 
-    geom_tile(colour = "white") + facet_grid(~all_waffle$monthf) + scale_fill_gradient(low="orange", high="blue") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Overall Recruitment") + labs(fill = "# Recruited") + scale_shape_binned("square")
-
-p
-print(p)
+```{r, message=FALSE,include=FALSE}
+a
+print(a)
 #run individually to ensure the plot looks fine and everything worked so far
 
-ggsave(p, filename = "c:/Recruitment_Waffle/waffle.png",height = 2, width = 10)
+ggsave(a, filename = "c:/waffles/overallRecruitment_waffle.png",height = 2, width = 10)
 #save to computer to adjust size appropriately. adjust filename to where you want it saved
 
 ```
 
+                               
+#BMI-Based Waffles
+
+###normal weight waffle
 ```{r, message=FALSE,include=FALSE}
 
-#install.packages("anytime")   # Install anytime package
-library("anytime")  
+BMI_NW$time = anydate(BMI_NW$timecoalesce)
 
-Social_media$time=anydate(Social_media$timecoalesce)
+NW_waffle <- count(BMI_NW$time) %>% ungroup()
+names(NW_waffle) [1] <- "time"
+
+
 ```
 
 ```{r, message=FALSE,include=FALSE}
+#normal weight waffle
+
+NW_waffle$weekday = as.POSIXlt(NW_waffle$time)$wday #finding the day no. of the week
+NW_waffle$weekdayf<-factor(NW_waffle$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+NW_waffle$monthf<- 1
+
+NW_waffle$monthf<-factor(month(NW_waffle$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+
+NW_waffle$yearmonth<- factor(as.yearmon(NW_waffle$time)) # finding the year and the month from the date. Eg: Nov 2018
+
+NW_waffle$week <- as.numeric(format(NW_waffle$time,"%W")) # finding the week of the year for each date
+
+NW_waffle<-ddply(NW_waffle,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
+
+
+n <- ggplot(NW_waffle, aes(monthweek, weekdayf, fill = freq)) + 
+    geom_tile(colour = "white") + facet_grid(~NW_waffle$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Normal Weight Recruitment") + labs(fill = "# Recruited")
+
+n
+print(n)
+#run individually to ensure the plot looks fine and everything worked so far
+
+ggsave(n, filename = "c:/waffles/BMI_NW_waffle.png",height = 2, width = 10)
+#save to computer to adjust size appropriately. adjust filename to where you want it saved
+
+```                          
+     
+###overweight/obese waffle
+```{r, message=FALSE,include=FALSE}
+
+BMI_OWOB$time = anydate(BMI_OWOB$timecoalesce)
+
+OWOB_waffle <- count(BMI_OWOB$time) %>% ungroup()
+names(OWOB_waffle) [1] <- "time"
+
+
+```
+
+```{r, message=FALSE,include=FALSE}
+#normal weight waffle
+
+OWOB_waffle$weekday = as.POSIXlt(OWOB_waffle$time)$wday #finding the day no. of the week
+OWOB_waffle$weekdayf<-factor(OWOB_waffle$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+OWOB_waffle$monthf<- 1
+
+OWOB_waffle$monthf<-factor(month(OWOB_waffle$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+
+OWOB_waffle$yearmonth<- factor(as.yearmon(OWOB_waffle$time)) # finding the year and the month from the date. Eg: Nov 2018
+
+OWOB_waffle$week <- as.numeric(format(OWOB_waffle$time,"%W")) # finding the week of the year for each date
+
+OWOB_waffle<-ddply(OWOB_waffle,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
+
+
+o <- ggplot(OWOB_waffle, aes(monthweek, weekdayf, fill = freq)) + 
+    geom_tile(colour = "white") + facet_grid(~OWOB_waffle$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Normal Weight Recruitment") + labs(fill = "# Recruited")
+
+o
+print(o)
+#run individually to ensure the plot looks fine and everything worked so far
+
+ggsave(o, filename = "c:/waffles/BMI_OWOB_waffle.png",height = 2, width = 10)
+#save to computer to adjust size appropriately. adjust filename to where you want it saved
+
+```                               
+
+
+#Recruitment-Based Waffles
+                               
+###social media waffle
+```{r, message=FALSE,include=FALSE}
+
+Social_media$time=anydate(Social_media$timecoalesce)
+
 social_waffle <- count(Social_media$time) %>% ungroup()
 names(social_waffle)[1] <- "time"
 
@@ -167,15 +280,11 @@ print(p)
 ```
 
 
+###flyer waffle
 ```{r, message=FALSE,include=FALSE}
-
-#install.packages("anytime")   # Install anytime package
-library("anytime")  
 
 Flyer$time=anydate(Flyer$timecoalesce)
-```
 
-```{r, message=FALSE,include=FALSE}
 flyer_waffle <- count(Flyer$time) %>% ungroup()
 names(flyer_waffle)[1] <- "time"
 
@@ -183,11 +292,6 @@ names(flyer_waffle)[1] <- "time"
 
 ```{r, message=FALSE,include=FALSE}
 #flyer waffle
-
-library(tidyquant)
-library(ggplot2)
-library(plyr)
-library(plotly)
 
 flyer_waffle$weekday = as.POSIXlt(flyer_waffle$time)$wday #finding the day no. of the week
 flyer_waffle$weekdayf<-factor(flyer_waffle$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
@@ -209,15 +313,12 @@ f
 print(f)
 ```
 
-```{r, message=FALSE,include=FALSE}
 
-#install.packages("anytime")   # Install anytime package
-library("anytime")  
+###word of mouth waffle
+```{r, message=FALSE,include=FALSE}
 
 Word_of_mouth$time=anydate(Word_of_mouth$timecoalesce)
-```
 
-```{r, message=FALSE,include=FALSE}
 word_waffle <- count(Word_of_mouth$time) %>% ungroup()
 names(word_waffle)[1] <- "time"
 
