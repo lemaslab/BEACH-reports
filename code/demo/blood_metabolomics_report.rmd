@@ -87,8 +87,9 @@ metab_filter=metab %>%
   filter(bmi<=20 | bmi >=30) %>%
   filter(bmi<=35)
 
-fit_tmao2 = lm(tmao_ngmL2~bmi, data = metab_filter);summary(fit_tmao2)
-plot(metab_filter$bmi,metab_filter$tmao_ngmL2)
+fit_tmao2 = lm(tmao_ngmL~bmi, data = metab_filter);summary(fit_tmao2)
+plot(metab_filter$bmi,metab_filter$tmao_ngmL)
+t.test(metab_filter$bmi_group, metab_filter$bmi)
 
 
 ```
