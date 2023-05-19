@@ -73,6 +73,7 @@ library(tidyquant)
 library(ggplot2)
 library(plyr)
 library(plotly)
+library(stringi)
 # Load libraries
 ```
 
@@ -111,7 +112,7 @@ all_waffle$yearmonth<- factor(as.yearmon(all_waffle$time)) # finding the year an
 
 all_waffle$week <- as.numeric(format(all_waffle$time,"%W")) # finding the week of the year for each date
 
-all_waffle<-ddply(all_waffle,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
+all_waffle<-ddply(all_waffle,.(yearmonth),transform,monthweek=stringi::stri_datetime_fields(time)$WeekOfMonth) # normalizing the week to start at 1 for every month
 
 
 p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = freq)) + 
@@ -126,7 +127,16 @@ p
 print(p)
 #run individually to ensure the plot looks fine and everything worked so far
 
-ggsave(p, filename = "c:/Recruitment_Waffle/waffle.png",height = 1.6, width = 10)
+ggsave(p, filename = "c:/waffles/overallRecruitment_waffle.png",height = 1.6, width = 10)
 #save to computer to adjust size appropriately. adjust filename to where you want it saved
+
+```
+
+```{r,message=FALSE,include=FALSE}
+#bar plot based on waffle plot months
+
+
+
+
 
 ```
