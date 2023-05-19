@@ -148,17 +148,15 @@ sum(all_counts$month == 'Oct' | all_counts$month == 'Nov' | all_counts$month == 
 
 all_bar <- count(all_counts$month) %>% ungroup()
 names(all_bar)[1] <- "months"
+names(all_bar)[2] <- "participants"
 
-data <- data.frame(
-  name=c("A","B","C","D","E") ,  
-  value=c(3,12,5,18,45)
-  )
-
-# Barplot
+#Barplot
 ggplot(data, aes(x=name, y=value)) + 
   geom_bar(stat = "identity")
 
-ggplot(all_bar, aes(x=months, y=freq)) + geom_bar(stat = "identity")
-       
-       
+b <- ggplot(all_bar, aes(x=months, y=participants, fill = participants)) + geom_bar(stat = "identity") + ylim(0,60) + geom_text(aes(label = participants), vjust = 0)
+
+b     
+ 
+ggsave(b, filename = "c:/waffles/overallRecruitment_barplot.png", height = 3, width = 10)     
 ```
