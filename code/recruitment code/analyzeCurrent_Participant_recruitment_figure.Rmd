@@ -182,15 +182,15 @@ Phone_Screen=Phone_Screen %>%
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#removing extra columns so it's just test ID, consent, eligibility
-Phone_Screen <- Phone_Screen[ c(1,6,9,11) ]
+#removing extra columns so it's just test ID, consent, eligibility, recruitment
+Phone_Screen <- Phone_Screen[ c(1,6,9,12) ]
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 ###making data frame for barplot
 
 PS_Consented <- Phone_Screen[Phone_Screen$Consent=="Yes",]
-barplot_consent = table(PS_Consented$Recruitment)
+barplot_consent <- table(PS_Consented$Recruitment)
 PS_Eligible <- Phone_Screen[Phone_Screen$beachphone_pass_fail=="Pass",]
 PS_Eligible <- na.omit(PS_Eligible)
 PS_Eligible <- PS_Eligible[!PS_Eligible$Recruitment=="Incomplete",]
