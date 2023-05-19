@@ -81,11 +81,18 @@ library(plotly)
 #install.packages("anytime")   # Install anytime package
 library("anytime")  
 
+#make waffles by recruitment types
+Social_media= filter(recruitment_report, Recruitment == "Social Media")
+Flyer = filter(recruitment_report, Recruitment == "Flyer")
+Word_of_mouth = filter(recruitment_report, Recruitment == "Word-of-mouth")
+
 all <- (rbind(Social_media,Word_of_mouth,Flyer))
 all$time = anydate(all$timecoalesce)
 
 all_waffle <- count(all$time) %>% ungroup()
 names(all_waffle) [1] <- "time"
+
+all_waffle <- na.omit(all_waffle)
  
 ```
 
@@ -107,22 +114,19 @@ all_waffle$week <- as.numeric(format(all_waffle$time,"%W")) # finding the week o
 all_waffle<-ddply(all_waffle,.(yearmonth),transform,monthweek=1+week-min(week)) # normalizing the week to start at 1 for every month
 
 
-p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = all_waffle$freq)) + 
-    geom_tile(colour = "white") + facet_grid(~all_waffle$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Overall Recruitment") + labs(fill = "# Recruited")
+p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = freq)) + 
+    geom_tile(colour = "white") + facet_grid(~all_waffle$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + labs(fill = "# Recruited")
 
 p
 print(p)
 ```
 
 ```{r,message=FALSE,include=FALSE}
-p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = freq)) + 
-    geom_tile(colour = "white") + facet_grid(~all_waffle$monthf) + scale_fill_gradient(low="orange", high="blue") +  xlab("Week of Month") + ylab("") + ggtitle("Time-Series Calendar Heatmap: Overall Recruitment") + labs(fill = "# Recruited") + scale_shape_binned("square")
-
 p
 print(p)
 #run individually to ensure the plot looks fine and everything worked so far
 
-ggsave(p, filename = "c:/Recruitment_Waffle/waffle.png",height = 2, width = 10)
+ggsave(p, filename = "c:/Recruitment_Waffle/waffle.png",height = 1.6, width = 10)
 #save to computer to adjust size appropriately. adjust filename to where you want it saved
 
 ```
