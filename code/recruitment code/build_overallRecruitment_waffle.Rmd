@@ -132,11 +132,33 @@ ggsave(p, filename = "c:/waffles/overallRecruitment_waffle.png",height = 1.6, wi
 
 ```
 
-```{r,message=FALSE,include=FALSE}
 #bar plot based on waffle plot months
 
+```{r,message=FALSE,include=FALSE}
+#make data frames
+all_counts = all[18]
+all_counts <- na.omit(all_counts)
+all_counts$month<-factor(month(all_counts$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
 
+#counts for each quarter
+sum(all_counts$month == 'Jan' | all_counts$month == 'Feb' | all_counts$month == 'Mar')
+sum(all_counts$month == 'Apr' | all_counts$month == 'May' | all_counts$month == 'Jun')
+sum(all_counts$month == 'Jul' | all_counts$month == 'Aug' | all_counts$month == 'Sep')
+sum(all_counts$month == 'Oct' | all_counts$month == 'Nov' | all_counts$month == 'Dec')
 
+all_bar <- count(all_counts$month) %>% ungroup()
+names(all_bar)[1] <- "months"
 
+data <- data.frame(
+  name=c("A","B","C","D","E") ,  
+  value=c(3,12,5,18,45)
+  )
 
+# Barplot
+ggplot(data, aes(x=name, y=value)) + 
+  geom_bar(stat = "identity")
+
+ggplot(all_bar, aes(x=months, y=freq)) + geom_bar(stat = "identity")
+       
+       
 ```
