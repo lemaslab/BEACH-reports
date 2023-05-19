@@ -190,7 +190,7 @@ Phone_Screen <- Phone_Screen[ c(1,6,9,11) ]
 ###making data frame for barplot
 
 PS_Consented <- Phone_Screen[Phone_Screen$Consent=="Yes",]
-barplot_consent = (table(PS_Consented$Recruitment))
+barplot_consent = table(PS_Consented$Recruitment)
 PS_Eligible <- Phone_Screen[Phone_Screen$beachphone_pass_fail=="Pass",]
 PS_Eligible <- na.omit(PS_Eligible)
 PS_Eligible <- PS_Eligible[!PS_Eligible$Recruitment=="Incomplete",]
