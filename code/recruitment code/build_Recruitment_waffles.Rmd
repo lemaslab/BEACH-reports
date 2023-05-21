@@ -74,6 +74,7 @@ library(ggplot2)
 library(plyr)
 library(plotly)
 library(stringi)
+library(anytime)
 
 # Load libraries
 ```
@@ -203,7 +204,7 @@ ggsave(n, filename = "c:/waffles/BMI_NW_waffle.png",height = 1.6, width = 10)
 #save to computer to adjust size appropriately. adjust filename to where you want it saved
 
 ```                          
-     
+
 ###overweight/obese waffle
 ```{r, message=FALSE,include=FALSE}
 
@@ -242,6 +243,72 @@ ggsave(o, filename = "c:/waffles/BMI_OWOB_waffle.png",height = 1.6, width = 10)
 #save to computer to adjust size appropriately. adjust filename to where you want it saved
 
 ```
+
+#bar plot based on waffle plot months
+
+```{r,message=FALSE,include=FALSE}
+#make data frames
+NW_months <- NW_waffle[5]
+OWOB_months <- OWOB_waffle[5]
+NW_bar <- table(NW_months)
+OWOB_bar <- table(OWOB_months)
+BMI_bar <- data.frame(NW_bar, OWOB_bar)
+
+#renaming
+names(BMI_bar)[1] <- "month"
+names(BMI_bar)[2] <- "NW_freq"
+names(BMI_bar)[4] <- "OWOB_freq"
+BMI_bar <- BMI_bar[ -c(3) ] #cutting out extra column
+
+BMI_bar <- as.data.frame(t(BMI_bar))
+names(BMI_bar) <- BMI_bar[1,]
+BMI_bar <- BMI_bar[-1,]
+#switching column and row
+
+BMI_bar$Jan <- as.numeric(BMI_bar$Jan)
+BMI_bar$Feb <- as.numeric(BMI_bar$Feb)
+BMI_bar$Mar <- as.numeric(BMI_bar$Mar)
+BMI_bar$Apr <- as.numeric(BMI_bar$Apr)
+BMI_bar$May <- as.numeric(BMI_bar$May)
+BMI_bar$Jun <- as.numeric(BMI_bar$Jun)
+BMI_bar$Jul <- as.numeric(BMI_bar$Jul)
+BMI_bar$Aug <- as.numeric(BMI_bar$Aug)
+BMI_bar$Sep <- as.numeric(BMI_bar$Sep)
+BMI_bar$Oct <- as.numeric(BMI_bar$Oct)
+BMI_bar$Nov <- as.numeric(BMI_bar$Nov)
+BMI_bar$Dec <- as.numeric(BMI_bar$Dec)
+#changing variables in data frame to be numeric instead of character
+
+BMI_bar1 <- as.matrix(BMI_bar)
+#making matrix to plug into barplot
+
+x11()
+library(graphics)
+#run to ensure graphics works
+
+```
+
+```{r,message=FALSE,include=FALSE}
+#barplot 
+
+barplot(BMI_bar1, beside = TRUE, ylab = "Participants", legend.text = TRUE)
+
+```
+
+
+```{r,message=FALSE,include=FALSE}
+
+#https://statdoe.com/barplot-for-two-factors-in-r/ 
+
+
+```
+#counts for each quarter
+sum(BMI_all$month == 'Jan' | BMI_all$month == 'Feb' | BMI_all$month == 'Mar')
+sum(BMI_all$month == 'Apr' | BMI_all$month == 'May' | BMI_all$month == 'Jun')
+sum(BMI_all$month == 'Jul' | BMI_all$month == 'Aug' | BMI_all$month == 'Sep')
+sum(BMI_all$month == 'Oct' | BMI_all$month == 'Nov' | BMI_all$month == 'Dec')
+
+
 #Recruitment-Based Waffles (unused)
                                
 ###social media waffle
