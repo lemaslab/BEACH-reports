@@ -290,24 +290,30 @@ library(graphics)
 
 ```{r,message=FALSE,include=FALSE}
 #barplot 
-
-barplot(BMI_bar1, beside = TRUE, ylab = "Participants", legend.text = TRUE)
+library(RColorBrewer)
+barplot(BMI_bar1, beside = TRUE, ylab = "Participants", legend.text = TRUE, col = c("darkred", "blue"))
 
 ```
 
 
 ```{r,message=FALSE,include=FALSE}
+#counts for each quarter
+#normal weight
+sum(NW_months$month == 'Jan' | NW_months$month == 'Feb' | NW_months$month == 'Mar')
+sum(NW_months$month == 'Apr' | NW_months$month == 'May' | NW_months$month == 'Jun')
+sum(NW_months$month == 'Jul' | NW_months$month == 'Aug' | NW_months$month == 'Sep')
+sum(NW_months$month == 'Oct' | NW_months$month == 'Nov' | NW_months$month == 'Dec')
+
+#overweight/obese
+sum(OWOB_months$month == 'Jan' | OWOB_months$month == 'Feb' | OWOB_months$month == 'Mar')
+sum(OWOB_months$month == 'Apr' | OWOB_months$month == 'May' | OWOB_months$month == 'Jun')
+sum(OWOB_months$month == 'Jul' | OWOB_months$month == 'Aug' | OWOB_months$month == 'Sep')
+sum(OWOB_months$month == 'Oct' | OWOB_months$month == 'Nov' | OWOB_months$month == 'Dec')
 
 #https://statdoe.com/barplot-for-two-factors-in-r/ 
 
 
 ```
-#counts for each quarter
-sum(BMI_all$month == 'Jan' | BMI_all$month == 'Feb' | BMI_all$month == 'Mar')
-sum(BMI_all$month == 'Apr' | BMI_all$month == 'May' | BMI_all$month == 'Jun')
-sum(BMI_all$month == 'Jul' | BMI_all$month == 'Aug' | BMI_all$month == 'Sep')
-sum(BMI_all$month == 'Oct' | BMI_all$month == 'Nov' | BMI_all$month == 'Dec')
-
 
 #Recruitment-Based Waffles (unused)
                                
