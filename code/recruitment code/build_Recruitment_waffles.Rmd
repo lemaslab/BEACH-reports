@@ -75,6 +75,7 @@ library(plyr)
 library(plotly)
 library(stringi)
 library(anytime)
+library(ggpattern)
 
 # Load libraries
 ```
@@ -110,7 +111,7 @@ CP_raw=CP_raw %>%
                                ))
 CP_raw$BMI = coalesce(CP_raw$beach_final_bmi, CP_raw$beachphone_prepreg_bmi)
 CP_raw = CP_raw %>%
-   mutate(BMI = case_when((BMI >26) ~ "OWOB", (BMI <26) ~ "NW"))
+   mutate(BMI = case_when((BMI >=26) ~ "OWOB", (BMI <26) ~ "NW"))
 
  
 BMI_waffle <- cbind(recruitment_report, CP_raw$BMI)
@@ -290,13 +291,13 @@ BMI_bar_counted <- count(BMI_bar)
 BMI_bar_counted <- na.omit(BMI_bar_counted)
 
 
-b <- ggplot(BMI_bar_counted, aes(x = factor(month), y = freq, fill = freq, col = bmi_group)) + geom_bar(stat = "identity", position = "dodge") + ylim(0,25) + geom_text(aes(label = freq), vjust = -1)
+b <- ggplot(BMI_bar_counted, aes(x = month, y = freq, fill = bmi_group)) + geom_bar(stat = "identity", position = "dodge") + ylim(0,25) + geom_text(aes(label = freq), vjust = -1, position = position_dodge(width = 0.9))
 b
 
 ggsave(b, filename = "c:/waffles/BMI_barplot.png",height = 3, width = 10)
 #save to computer to adjust size appropriately. adjust filename to where you want it saved
 
-#adjust colors/patterns to differentiate
+
 #adjust location of counts on barplot
 
 ```
