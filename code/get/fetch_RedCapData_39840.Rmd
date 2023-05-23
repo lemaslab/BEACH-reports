@@ -62,7 +62,7 @@ source("~/plasma-metabolomics/code/utils/utils.R")
 #----------
 uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
 api_token=get_API_token("beach_api")
-api_token=""
+#api_token=""
 
 # REPORT IDS
 #-----------
@@ -112,7 +112,33 @@ infant = report_raw %>%
          infant_NA=infant_race_nih___6)
 names(infant)
 
+# merge datasets
+# plasma_infant=left_join(plasma, infant)
+
+
 ```
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************                Carolines Space               *************** #
+# **************************************************************************** #
+
+# subset to tmao
+tmao=plasma %>%
+  filter(metabolite_name=="tmao")
+
+hist(tmao$metabolite_value)
+
+# scatterplots
+
+# histograms
+
+# other visualization
+
+
+
+
 ```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
@@ -120,33 +146,10 @@ names(infant)
 # **************************************************************************** #
 
 # Save the data in your local laptop (Github path: /data)
-save(list=c("report"),file="~/BEACH-reports/data/raw/report_21221.RData")
+save(list=c("report"),file="~/BEACH-reports/data/raw/report_39840.RData")
 
 output_directory="~/BEACH-reports/data/raw/"
-output_file_name="report_21221.RData"
+output_file_name="report_39840.RData"
 
 ```
 
-#### __Project Details__
-Title: `r project_name`  
-IRB Number: `r irb_number`  
-Redcap URL: `r uri`  
-Report Name: `r report_name`  
-Report ID: `r report_id`
-
-#### __Data Processing Summary__
-Variables of interest are stored as RedCap reports. Data is extracted from REdcap via REDCapR using URL and API token. The extracted data is lightly formatted and output as an *.rda object for downstream analysis.  
-![](redcap_workflow.png)
-
-#### __Data Description__
-
-```{r, message=FALSE, echo=FALSE}
-
-part_length=unique(length(report$test_id))
-hist(report$beach_final_bmi)
-
-```
-  
-#### __Project Outputs__  
-Output Directory: `r output_directory`  
-Output File Name: `r output_file_name`
