@@ -244,15 +244,66 @@ ggsave(o, filename = "c:/waffles/BMI_OWOB_waffle.png",height = 1.6, width = 10)
 
 ```
 
+```{r,message=FALSE,include=FALSE}
+#counts for each quarter
+#normal weight
+sum(NW_months$month == 'Jan' | NW_months$month == 'Feb' | NW_months$month == 'Mar')
+sum(NW_months$month == 'Apr' | NW_months$month == 'May' | NW_months$month == 'Jun')
+sum(NW_months$month == 'Jul' | NW_months$month == 'Aug' | NW_months$month == 'Sep')
+sum(NW_months$month == 'Oct' | NW_months$month == 'Nov' | NW_months$month == 'Dec')
+
+#overweight/obese
+sum(OWOB_months$month == 'Jan' | OWOB_months$month == 'Feb' | OWOB_months$month == 'Mar')
+sum(OWOB_months$month == 'Apr' | OWOB_months$month == 'May' | OWOB_months$month == 'Jun')
+sum(OWOB_months$month == 'Jul' | OWOB_months$month == 'Aug' | OWOB_months$month == 'Sep')
+sum(OWOB_months$month == 'Oct' | OWOB_months$month == 'Nov' | OWOB_months$month == 'Dec')
+
+```
+
+
 #bar plot based on waffle plot months
 
 ```{r,message=FALSE,include=FALSE}
 #make data frames
+BMI_bar <- BMI_waffle[18]
+BMI_bar[2] <- BMI_waffle[17]
+BMI_bar$time <- anydate(BMI_waffle$timecoalesce)
+BMI_bar$month<-factor(month(BMI_bar$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+BMI_bar = BMI_bar %>%
+  select(bmi_group, month)
+
+#renaming normal, and combining overweight and obese to "OWOB"
+BMI_bar <- BMI_bar %>%
+    mutate(bmi_group = recode(bmi_group, "Normal" = 'NW', "Overweight" = 'OWOB', "Obese" =  'OWOB' ))
+
+#creating counted data for each BMI and month
+BMI_bar_counted <- count(BMI_bar)
+
+#cleaning data frame, adding March OWOB freq (as it is 0)
+BMI_bar_counted <- na.omit(BMI_bar_counted)
+BMI_bar_counted[24,1] <- "OWOB"
+BMI_bar_counted[24,2] <- "Mar"
+BMI_bar_counted[24,3] <- as.integer(0)
+
+b <- ggplot(BMI_bar_counted, aes(x = factor(month), y = freq, fill = freq, col = bmi_group)) + geom_bar(stat = "identity", position = "dodge") + ylim(0,10) + geom_text(aes(label = freq), vjust = -1)
+b
+
+#adjust colors to differentiate
+#adjust and y-scale
+#adjust location of counts on barplot
+
+```
+
+###barplot in base R (saved in case)
+```{r,message=FALSE,include=FALSE}
+#make data frames
+
 NW_months <- NW_waffle[5]
 OWOB_months <- OWOB_waffle[5]
 NW_bar <- table(NW_months)
 OWOB_bar <- table(OWOB_months)
-BMI_bar <- data.frame(NW_bar, OWOB_bar)
+BMI_bar <- join(NW_bar, OWOB_bar)
+
 
 #renaming
 names(BMI_bar)[1] <- "month"
@@ -290,28 +341,8 @@ library(graphics)
 
 ```{r,message=FALSE,include=FALSE}
 #barplot 
-library(RColorBrewer)
+
 barplot(BMI_bar1, beside = TRUE, ylab = "Participants", legend.text = TRUE, col = c("darkred", "blue"))
-
-```
-
-
-```{r,message=FALSE,include=FALSE}
-#counts for each quarter
-#normal weight
-sum(NW_months$month == 'Jan' | NW_months$month == 'Feb' | NW_months$month == 'Mar')
-sum(NW_months$month == 'Apr' | NW_months$month == 'May' | NW_months$month == 'Jun')
-sum(NW_months$month == 'Jul' | NW_months$month == 'Aug' | NW_months$month == 'Sep')
-sum(NW_months$month == 'Oct' | NW_months$month == 'Nov' | NW_months$month == 'Dec')
-
-#overweight/obese
-sum(OWOB_months$month == 'Jan' | OWOB_months$month == 'Feb' | OWOB_months$month == 'Mar')
-sum(OWOB_months$month == 'Apr' | OWOB_months$month == 'May' | OWOB_months$month == 'Jun')
-sum(OWOB_months$month == 'Jul' | OWOB_months$month == 'Aug' | OWOB_months$month == 'Sep')
-sum(OWOB_months$month == 'Oct' | OWOB_months$month == 'Nov' | OWOB_months$month == 'Dec')
-
-#https://statdoe.com/barplot-for-two-factors-in-r/ 
-
 
 ```
 
