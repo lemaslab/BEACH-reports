@@ -62,6 +62,7 @@ source("~/plasma-metabolomics/code/utils/utils.R")
 #----------
 uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
 api_token=get_API_token("beach_api")
+api_token=""
 
 # REPORT IDS
 #-----------
@@ -88,14 +89,28 @@ plasma = report_raw %>%
 maternal = report_raw %>%
    select(test_id,beach_final_bmi,maternal_study_groups,mom_ethnicity_nih,
           maternal_race_nih___1,maternal_race_nih___2,maternal_race_nih___3,
-          maternal_race_nih___4,maternal_race_nih___5,maternal_race_nih___6) 
+          maternal_race_nih___4,maternal_race_nih___5,maternal_race_nih___6) %>% drop_na() %>%
+  rename(maternal_AIAN=maternal_race_nih___1,
+         maternal_ASIAN=maternal_race_nih___2,
+         maternal_BLACK=maternal_race_nih___3,
+         maternal_HAWAII=maternal_race_nih___4,
+         maternal_WHITE=maternal_race_nih___5,
+         maternal_NA=maternal_race_nih___6)
+names(maternal)
 
 # infant outcomes
 infant = report_raw %>%
    select(test_id,infant_ethnicity_nih,
           infant_race_nih___1,infant_race_nih___2,infant_race_nih___3,
           infant_race_nih___4,infant_race_nih___5,infant_race_nih___6,
-          infant_crc_wt_kg,wt_zscore,inf2wk_gest_age,inf2wk_sex) 
+          infant_crc_wt_kg,wt_zscore,inf2wk_gest_age,inf2wk_sex) %>%
+  rename(infant_AIAN=infant_race_nih___1,
+         infant_ASIAN=infant_race_nih___2,
+         infant_BLACK=infant_race_nih___3,
+         infant_HAWAII=infant_race_nih___4,
+         infant_WHITE=infant_race_nih___5,
+         infant_NA=infant_race_nih___6)
+names(infant)
 
 ```
 ```{r, message=FALSE,include=FALSE}
