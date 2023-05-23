@@ -266,7 +266,7 @@ sum(NW_months$month == 'Jul' | NW_months$month == 'Aug' | NW_months$month == 'Se
 sum(NW_months$month == 'Oct' | NW_months$month == 'Nov' | NW_months$month == 'Dec')
 
 #overweight/obese
-sum(OWOB_months$month == 'Jan*' | OWOB_months$month == 'Feb' | OWOB_months$month == 'Mar')
+sum(OWOB_months$month == 'Jan' | OWOB_months$month == 'Feb' | OWOB_months$month == 'Mar')
 sum(OWOB_months$month == 'Apr' | OWOB_months$month == 'May' | OWOB_months$month == 'Jun')
 sum(OWOB_months$month == 'Jul' | OWOB_months$month == 'Aug' | OWOB_months$month == 'Sep')
 sum(OWOB_months$month == 'Oct' | OWOB_months$month == 'Nov' | OWOB_months$month == 'Dec')
