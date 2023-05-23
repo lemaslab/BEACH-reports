@@ -283,3 +283,23 @@ chisq.test(Allrecords$Recruitment, Allrecords$BMI_Type, correct=FALSE)
 #X^2=6.1512
 #p=0.4065
 ```
+
+#ensure this can be rerun after updated BMI code
+#check if this is correct, or if I need/can use % for frequency
+
+#two-factor ANOVA
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+CP_anova = Eligible_Pass %>% select(BMI_Type, Recruitment, Consent, Complete)
+consent_anova = CP_anova %>% select (-Complete)
+complete_anova = CP_anova %>% select (-Consent)
+
+
+consent_anova$BMI_Type <- as.factor(consent_anova$BMI_Type)
+consent_anova$Recruitment <- as.factor(consent_anova$Recruitment)  
+consent_aov_counted <- count(consent_anova)
+
+anova <- aov(freq ~ BMI_Type*Recruitment, data = consent_aov_counted)
+summary(anova)
+
+```
