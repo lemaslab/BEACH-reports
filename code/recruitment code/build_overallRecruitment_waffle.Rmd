@@ -151,7 +151,7 @@ names(all_bar)[1] <- "months"
 names(all_bar)[2] <- "participants"
 
 #Barplot
-b <- ggplot(all_bar, aes(x=months, y=participants, fill = participants)) + geom_bar(stat = "identity") + ylim(0,60) + geom_text(aes(label = participants), vjust = 0)
+b <- ggplot(all_bar, aes(x=months, y=participants, fill = participants)) + geom_bar(stat = "identity") + ylim(0,60) + geom_text(aes(label = participants), vjust = -1) + xlab("Months") + ylab("Participants") + theme_light() + guides(fill = guide_legend(title = "Participants")) + theme(legend.title = element_text(size = 12), legend.text= element_text(size=12), text = element_text(size = 14))
 
 b     
  
