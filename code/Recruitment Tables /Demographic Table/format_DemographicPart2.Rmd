@@ -1,0 +1,174 @@
+---
+title: "format_DemographicsPart2"
+author: "Yasmine Gillespie"
+date: "2023-06-02"
+output: html_document
+---
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+# Author:      Dominick Lemas
+# Date:        Nov 17, 2020 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event and combine into final dataset. 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#ensure getData_Demographic.Rmd 
+load("~/BEACH-facebook/data/raw/Particpant_Demographic_raw.RData")
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+PD_raw <- PD_raw[ -c(2:4) ]
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#renaming columns
+names(PD_raw)[2] <- "Random_Contact"
+names(PD_raw)[3] <- "Prescreen_Survey"
+names(PD_raw)[4] <- "Phone_Screen"
+names(PD_raw)[5] <- "IDR"
+names(PD_raw)[6] <- "Consent"
+names(PD_raw)[7] <- "Complete"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#recoding
+PD_raw=PD_raw %>%
+  mutate(prescreen_prego=recode(prescreen_prego,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(prescreen_gnv=recode(prescreen_gnv,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(prescreen_mod=recode(prescreen_mod,
+                              "1"="Vaginal",
+                              "2"="C-Section"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(beachphone_mod=recode(beachphone_mod,
+                              "1"="Vaginal",
+                              "2"="C-Section"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(beachphone_gainesville=recode(beachphone_gainesville,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(beachphone_3rd_trimester=recode(beachphone_3rd_trimester,
+                             "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(Prescreen_Survey=recode(Prescreen_Survey,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(Phone_Screen=recode(Phone_Screen,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+#gestation
+#edit filter
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for pregnant
+PD_raw$Prego = coalesce(PD_raw$beachphone_3rd_trimester, PD_raw$prescreen_prego)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for giving birth in GNV
+PD_raw$GNV = coalesce(PD_raw$beachphone_gainesville, PD_raw$prescreen_gnv)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for mode of delivery
+PD_raw$Mod = coalesce(PD_raw$beachphone_mod, PD_raw$prescreen_mod)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for current gestation weeks
+PD_raw$Gest_wks = coalesce(PD_raw$beachphone_prego_wks, PD_raw$prescreen_gest_wks)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+PD_raw$Encounter_Type[PD_raw$Prescreen_Survey=="No" & PD_raw$Phone_Screen=="Yes" ] <- "Phone Screen"
+PD_raw$Encounter_Type[PD_raw$Prescreen_Survey=="Yes" & PD_raw$Phone_Screen=="No" ] <- "Prescreen"
+PD_raw$Encounter_Type[PD_raw$Prescreen_Survey=="Yes" & PD_raw$Phone_Screen=="Yes" ] <- "Both"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#making gestation week code
+#recoding, selecting out columns
+PD_raw$Gest_wks = as.numeric(as.character(PD_raw$Gest_wks))
+class(PD_raw$Gest_wks)
+#should say numeric
+PD_Gest=PD_raw %>%
+  select(test_id,
+       Prescreen_Survey,
+       Phone_Screen,
+       IDR,
+       Gest_wks,
+       GNV,
+       Prego,
+       Mod,
+       Encounter_Type
+       )%>%
+  
+      mutate(gestation_wks =  Gest_wks) %>%
+   mutate(gest_wks_groups= case_when((gestation_wks <= 10) ~ "0-10",
+                                  (gestation_wks >10 & gestation_wks<= 20) ~ "11-20",
+                                 (gestation_wks >20 & gestation_wks <= 30) ~ "21-30",
+                                 (gestation_wks >30 & gestation_wks <= 40) ~ "31-40",
+                                  (gestation_wks > 40) ~ "> 40"))%>%
+  select(test_id, Prescreen_Survey,Phone_Screen, IDR, Gest_wks,gest_wks_groups, GNV, Prego, Mod, Encounter_Type)
+  
+```
+
+
