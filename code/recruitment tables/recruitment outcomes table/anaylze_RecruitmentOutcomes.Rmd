@@ -1,0 +1,100 @@
+---
+title: "anaylze_RecruitmentOutcomes"
+author: "Yasmine Gillespie"
+date: "2023-06-02"
+output: html_document
+---
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+# Author:      Dominick Lemas
+# Date:        Nov 17, 2020 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event and combine into final dataset. 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#recruitment outcomes for each recruitment type
+vtree(Eligible_Pass, "Recruitment beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#recruitment outcomes for each recruitment type
+vtree(Eligible_Pass, "Recruitment Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#recruitment outcomes for each recruitment type
+vtree(Eligible_Pass, "Recruitment Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+#Table 3 anaylsis
+#Consent
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_table2_Consent = select(filter(Eligible_Pass),c(Recruitment, Consent))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_table2_Consent <- na.omit(CP_table2_Consent) 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(CP_table2_Consent$Recruitment, CP_table2_Consent$Consent, correct=FALSE)
+#X^2=11.7
+#p=0.01973
+```
+
+#Complete
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_table2_Complete = select(filter(Eligible_Pass),c(Recruitment, Complete))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_table2_Complete <- na.omit(CP_table2_Complete) 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(CP_table2_Complete$Recruitment, CP_table2_Complete$Complete, correct=FALSE)
+#X^2=3.9165
+#p=0.4174
+```
+
