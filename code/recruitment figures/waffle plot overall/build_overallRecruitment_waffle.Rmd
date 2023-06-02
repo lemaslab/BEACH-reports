@@ -1,0 +1,177 @@
+---
+title: "build_Recruitment_4"
+author: "Yasmine Gillespie"
+date: "2022-12-12"
+output: html_document
+---
+
+```{r, include=FALSE,echo=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:      Yasmine Gillespie
+# Date:        Oct 25, 2022 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+
+
+library(scales)
+library(viridis)
+library(ggthemes)
+library(gridExtra)
+library(lubridate)
+library(data.table)
+
+library(tidyquant)
+library(ggplot2)
+library(plyr)
+library(plotly)
+library(stringi)
+# Load libraries
+```
+
+
+```{r, message=FALSE,include=FALSE}
+#install.packages("anytime")   # Install anytime package
+library("anytime")  
+
+#make waffles by recruitment types
+Social_media= filter(recruitment_report, Recruitment == "Social Media")
+Flyer = filter(recruitment_report, Recruitment == "Flyer")
+Word_of_mouth = filter(recruitment_report, Recruitment == "Word-of-mouth")
+
+all <- (rbind(Social_media,Word_of_mouth,Flyer))
+all$time = anydate(all$timecoalesce)
+
+all_waffle <- count(all$time) %>% ungroup()
+names(all_waffle) [1] <- "time"
+
+all_waffle <- na.omit(all_waffle)
+ 
+```
+
+
+```{r, message=FALSE,include=FALSE}
+#all waffle
+
+all_waffle$weekday = as.POSIXlt(all_waffle$time)$wday #finding the day no. of the week
+all_waffle$weekdayf<-factor(all_waffle$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+all_waffle$monthf<- 1
+
+all_waffle$monthf<-factor(month(all_waffle$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+
+all_waffle$yearmonth<- factor(as.yearmon(all_waffle$time)) # finding the year and the month from the date. Eg: Nov 2018
+
+all_waffle$week <- as.numeric(format(all_waffle$time,"%W")) # finding the week of the year for each date
+
+all_waffle<-ddply(all_waffle,.(yearmonth),transform,monthweek=stringi::stri_datetime_fields(time)$WeekOfMonth) # normalizing the week to start at 1 for every month
+
+
+p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = freq)) + 
+    geom_tile(colour = "white") + facet_grid(~all_waffle$monthf) + scale_fill_gradient(low="red", high="green") +  xlab("Week of Month") + ylab("") + labs(fill = "# Recruited")
+
+p
+print(p)
+```
+
+```{r,message=FALSE,include=FALSE}
+p
+print(p)
+#run individually to ensure the plot looks fine and everything worked so far
+
+ggsave(p, filename = "c:/waffles/overallRecruitment_waffle.png",height = 1.6, width = 10)
+#save to computer to adjust size appropriately. adjust filename to where you want it saved
+
+```
+
+#bar plot based on waffle plot months
+
+```{r,message=FALSE,include=FALSE}
+#make data frames
+all_counts = all[18]
+all_counts <- na.omit(all_counts)
+all_counts$month<-factor(month(all_counts$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+
+#counts for each quarter
+sum(all_counts$month == 'Jan' | all_counts$month == 'Feb' | all_counts$month == 'Mar')
+sum(all_counts$month == 'Apr' | all_counts$month == 'May' | all_counts$month == 'Jun')
+sum(all_counts$month == 'Jul' | all_counts$month == 'Aug' | all_counts$month == 'Sep')
+sum(all_counts$month == 'Oct' | all_counts$month == 'Nov' | all_counts$month == 'Dec')
+
+all_bar <- count(all_counts$month) %>% ungroup()
+names(all_bar)[1] <- "months"
+names(all_bar)[2] <- "participants"
+
+#Barplot
+b <- ggplot(all_bar, aes(x=months, y=participants, fill = participants)) + geom_bar(stat = "identity") + ylim(0,60) + geom_text(aes(label = participants), vjust = -1) + xlab("Months") + ylab("Participants") + theme_light() + guides(fill = guide_legend(title = "Participants")) + theme(legend.title = element_text(size = 12), legend.text= element_text(size=12), text = element_text(size = 14)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+b     
+ 
+ggsave(b, filename = "c:/waffles/overallRecruitment_barplot.png", height = 3, width = 10)     
+```
+
+#recruitment based on days of the week
+```{r,message=FALSE,include=FALSE}
+all_table = all[18]
+all_table <- na.omit(all_counts)
+all_table$weekday = as.POSIXlt(all_table$time)$wday #finding the day no. of the week
+all_table$weekdayf<-factor(all_table$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+sum(all_table$weekdayf == 'Sun')
+sum(all_table$weekdayf == 'Mon')
+sum(all_table$weekdayf == 'Tue')
+sum(all_table$weekdayf == 'Wed')
+sum(all_table$weekdayf == 'Thu')
+sum(all_table$weekdayf == 'Fri')
+sum(all_table$weekdayf == 'Sat')
+
+
+```
