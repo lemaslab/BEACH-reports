@@ -1,0 +1,340 @@
+---
+title: "anaylze_Infant_Race_Ethnicity"
+author: "Yasmine Gillespie"
+date: "2023-03-11"
+output: html_document
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:      Dominick Lemas
+# Date:        Nov 17, 2020 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event and combine into final dataset. 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+load("~/BEACH-facebook/data/raw/Infant_Race_Ethnicity_raw.RData")
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Infant_raw <- Infant_raw[ -c(2:4) ]
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#renaming columns
+names(Infant_raw)[2] <- "Are_you_Hispanic_or_Latino"
+names(Infant_raw)[3] <- "American_Indian_or_Alaska_Native"
+names(Infant_raw)[4] <- "Asian"
+names(Infant_raw)[5] <- "Black_or_African_American"
+names(Infant_raw)[6] <- "Native_Hawaiian_or_other_Pacific_Islander"
+names(Infant_raw)[7] <- "White"
+names(Infant_raw)[8] <- "Non_Applicable"
+names(Infant_raw)[11] <- "Random_Contact"
+names(Infant_raw)[12] <- "Prescreen_Survey"
+names(Infant_raw)[13] <- "Phone_Screen"
+names(Infant_raw)[14] <- "IDR"
+names(Infant_raw)[15] <- "Consent"
+names(Infant_raw)[16] <- "Complete"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#renaming rows
+Infant_raw=Infant_raw %>%
+  mutate(Are_you_Hispanic_or_Latino=recode(Are_you_Hispanic_or_Latino,
+                              "0"="Uncheked",
+                              "1"="No",
+                              "2"= "Yes",
+                              "3"= "NA"
+                               ))
+
+Infant_raw=Infant_raw %>%
+  mutate(American_Indian_or_Alaska_Native=recode(American_Indian_or_Alaska_Native,
+                              "0"="No",
+                              "1"="Yes"
+                               ))
+
+Infant_raw=Infant_raw %>%
+  mutate(Asian=recode(Asian,
+                              "0"="No",
+                              "1"="Yes"
+                               ))
+
+Infant_raw=Infant_raw %>%
+  mutate(Black_or_African_American=recode(Black_or_African_American,
+                              "0"="No",
+                              "1"="Yes"
+                               ))
+
+Infant_raw=Infant_raw %>%
+  mutate(Native_Hawaiian_or_other_Pacific_Islander=recode(Native_Hawaiian_or_other_Pacific_Islander,
+                              "0"="No",
+                              "1"="Yes"
+                               ))
+
+Infant_raw=Infant_raw %>%
+  mutate(White=recode(White,
+                              "0"="No",
+                              "1"="Yes"
+                               ))
+                              
+Infant_raw=Infant_raw %>%
+  mutate(Non_Applicable=recode(Non_Applicable,
+                              "0"="No",
+                              "1"="Yes"
+                               ))
+
+Infant_raw=Infant_raw %>%
+  mutate(beachphone_hear_about_us=recode(beachphone_hear_about_us,
+                              "1"="Flyer",
+                              "2"="Radio",
+                              "3"="Social Media",
+                              "4"="Newspaper",
+                              "5"="Word-of-mouth",
+                              "6"="Other"
+                               ))
+Infant_raw[2733,9] <- "Flyer"
+
+
+Infant_raw=Infant_raw %>%
+  mutate(beach_learn_about_study=recode(beach_learn_about_study,
+                              "1"="Flyer",
+                              "2"="Physician",
+                              "3"="Social Media",
+                              "4"="Mail",
+                              "5"="Other"
+                               ))
+
+Infant_raw=Infant_raw %>%
+  mutate(Consent=recode(Consent,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Infant_raw=Infant_raw %>%
+  mutate(Complete=recode(Complete,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Infant_raw=Infant_raw %>%
+  mutate(Random_Contact=recode(Random_Contact,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Infant_raw=Infant_raw %>%
+  mutate(Prescreen_Survey=recode(Prescreen_Survey,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Infant_raw=Infant_raw %>%
+  mutate(Phone_Screen=recode(Phone_Screen,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+
+Infant_raw=Infant_raw %>%
+  mutate(beachphone_pass_fail=recode(beachphone_pass_fail,
+                              "1"="Pass",
+                              "2"="Fail",
+                              "3"="Incomplete"
+                            ))
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Infant_raw$Recruitment = coalesce(Infant_raw$beachphone_hear_about_us, Infant_raw$beach_learn_about_study)
+
+Infant_raw=Infant_raw %>%
+  mutate(Recruitment=recode(Recruitment,
+                              "0"="Incomplete"
+                            ))
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Consent_Race_Ethnicity_Infant= filter(Infant_raw, Consent == "Yes")
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Consent_Race_Ethnicity_Infant, "Recruitment Are_you_Hispanic_or_Latino", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Consent_Race_Ethnicity_Infant, "Recruitment American_Indian_or_Alaska_Native", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Consent_Race_Ethnicity_Infant, "Recruitment Asian", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Consent_Race_Ethnicity_Infant, "Recruitment Black_or_African_American", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Consent_Race_Ethnicity_Infant, "Recruitment Native_Hawaiian_or_other_Pacific_Islander", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Consent_Race_Ethnicity_Infant, "Recruitment White", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Consent_Race_Ethnicity_Infant, "Recruitment Non_Applicable", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+#anaylsis
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+HL_ana_infant = select(filter(Consent_Race_Ethnicity_Infant, Are_you_Hispanic_or_Latino %in% c("Yes","No")), c(Are_you_Hispanic_or_Latino, Recruitment))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(HL_ana_infant$Recruitment, HL_ana_infant$Are_you_Hispanic_or_Latino, correct=FALSE)
+#X^2=9.3347
+#p=0.02516
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+AI_AN_ana_infant = select(filter(Consent_Race_Ethnicity_Infant, American_Indian_or_Alaska_Native%in% c("Yes","No")), c(American_Indian_or_Alaska_Native, Recruitment))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(AI_AN_ana_infant$Recruitment, AI_AN_ana_infant$American_Indian_or_Alaska_Native, correct=FALSE)
+#X^2=2.0488
+#p=0.5623
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Asian_ana_infant = select(filter(Consent_Race_Ethnicity_Infant, Asian%in% c("Yes","No")), c(Asian, Recruitment))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(Asian_ana_infant$Recruitment, Asian_ana_infant$Asian, correct=FALSE)
+#X^2=1.05
+#p=0.7892
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+B_AA_ana_infant = select(filter(Consent_Race_Ethnicity_Infant, Black_or_African_American%in% c("Yes","No")), c(Black_or_African_American, Recruitment))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(B_AA_ana_infant$Recruitment, B_AA_ana_infant$Black_or_African_American, correct=FALSE)
+#X^2=2.3569
+#p=0.5017
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+NH_PI_ana_infant = select(filter(Consent_Race_Ethnicity_Infant, Native_Hawaiian_or_other_Pacific_Islander%in% c("Yes","No")), c(Native_Hawaiian_or_other_Pacific_Islander, Recruitment))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(NH_PI_ana_infant$Recruitment, NH_PI_ana_infant$Native_Hawaiian_or_other_Pacific_Islander, correct=FALSE)
+# all no 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+White_ana_infant = select(filter(Consent_Race_Ethnicity_Infant, White%in% c("Yes","No")), c(White, Recruitment))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(White_ana_infant$Recruitment, White_ana_infant$White, correct=FALSE)
+#X^2=2.1926
+#p=0.5334
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+NA_ana_infant = select(filter(Consent_Race_Ethnicity_Infant, Non_Applicable%in% c("Yes","No")), c(Non_Applicable, Recruitment))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(NA_ana_infant$Recruitment, NA_ana_infant$Non_Applicable, correct=FALSE)
+#X^2=7.4078
+#p=0.05998
+```
+
+#White vs Non-White
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Consent_Race_Ethnicity_Infant$Race1[Consent_Race_Ethnicity_Infant$White=="Yes"] <- "White"
+Consent_Race_Ethnicity_Infant$Race1[Consent_Race_Ethnicity_Infant$Are_you_Hispanic_or_Latino=="Yes"] <- "Non-White"
+Consent_Race_Ethnicity_Infant$Race1[Consent_Race_Ethnicity_Infant$American_Indian_or_Alaska_Native=="Yes"] <- "Non-White"
+Consent_Race_Ethnicity_Infant$Race1[Consent_Race_Ethnicity_Infant$Asian=="Yes"] <- "Non-White"
+Consent_Race_Ethnicity_Infant$Race1[Consent_Race_Ethnicity_Infant$Black_or_African_American=="Yes"] <- "Non-White"
+Consent_Race_Ethnicity_Infant$Race1[Consent_Race_Ethnicity_Infant$Native_Hawaiian_or_other_Pacific_Islander=="Yes"] <- "Non-White"
+Consent_Race_Ethnicity_Infant$Race1[Consent_Race_Ethnicity_Infant$Non_Applicable=="Yes"] <- "Non-White"
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+vtree(Consent_Race_Ethnicity_Infant, "Recruitment Race1", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+RE_Infant1= select(filter(Consent_Race_Ethnicity_Infant),c(Recruitment, Race1))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+RE_Infant1 <- na.omit(RE_Infant1) 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(RE_Infant1$Recruitment, RE_Infant1$Race1, correct=FALSE)
+#X^2=1.9237
+#p=0.5884
+```
+

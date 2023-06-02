@@ -1,0 +1,63 @@
+---
+title: "getData_Maternal_Race_Ethnicity"
+author: "Yasmine Gillespie"
+date: "2023-03-06"
+output: html_document
+---
+
+```{r, include=FALSE}
+##--------------
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+# Author:      Hailey Ballard
+# Date:        October 21, 2021
+# IRB:         The Breastfeeding and EArly Child Health (BEACH) study (IRB201601034)
+#
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+```
+
+
+```{r, message=FALSE}
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+library(keyringr)
+library(redcapAPI)
+library(REDCapR)
+library(readxl)
+library(tidyverse)
+```
+
+```{r, message=FALSE}
+# Windows
+source("~/BEACH-facebook/code/utils/utils.R")
+api_token=get_API_token("BEACH-Facebook")
+```
+
+```{r, message=FALSE}
+# Mac, you need to store your API code in your keychain first
+api_token <- decrypt_kc_pw("Redcap_BEACH_facebook")
+```
+
+```{r, message=FALSE}
+# API and URL
+uri='https://redcap.ctsi.ufl.edu/redcap/api/'
+rcon <- redcapConnection(url=uri, token=api_token)
+report_id <- 39306
+# Access data
+Maternal_raw=redcap_report(
+  uri,
+  api_token,
+  report_id,
+  raw_or_label_headers="raw",
+  guess_type=FALSE)$data
+
+save(list=c("Maternal_raw"),file="~/BEACH-facebook/data/raw/Maternal_Race_Ethnicity_raw.RData")
+```
