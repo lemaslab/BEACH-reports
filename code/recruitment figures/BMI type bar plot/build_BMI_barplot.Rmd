@@ -1,0 +1,180 @@
+---
+title: "build_Recruitment_4"
+author: "Yasmine Gillespie"
+date: "2022-12-12"
+output: html_document
+---
+
+```{r, include=FALSE,echo=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:      Yasmine Gillespie
+# Date:        Oct 25, 2022 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+
+# version: R version 4.2.2 (2022-10-31)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event 
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+
+
+library(scales)
+library(viridis)
+library(ggthemes)
+library(gridExtra)
+library(lubridate)
+library(data.table)
+
+library(tidyquant)
+library(ggplot2)
+library(plyr)
+library(plotly)
+library(stringi)
+library(anytime)
+library(ggpattern)
+
+# Load libraries
+```
+
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Load Data                       *************** #
+# ****************************************************************************#
+
+load("~/BEACH-Reports/output/reports/recruitment/recruitment_clean.RData")
+load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
+
+```
+
+```{r, message=FALSE,warning=FALSE,echo=FALSE}
+#make bmi waffle
+CP_raw=CP_raw %>%
+  mutate(bmi_analysis_prepregnant=recode(bmi_analysis_prepregnant,
+                              "1"="Normal",
+                              "2"="Overweight",
+                              "3"= "Obese"
+                               ))
+CP_raw$BMI = coalesce(CP_raw$beach_final_bmi, CP_raw$beachphone_prepreg_bmi)
+CP_raw = CP_raw %>%
+   mutate(BMI = case_when((BMI >=26) ~ "OWOB", (BMI <26) ~ "NW"))
+
+ 
+BMI_waffle <- cbind(recruitment_report, CP_raw$BMI)
+colnames(BMI_waffle)[18] <- "bmi_group"
+
+BMI_waffle = BMI_waffle %>% drop_na(`bmi_group`)
+BMI_NW = filter(BMI_waffle, bmi_group == "NW")
+BMI_OWOB = filter(BMI_waffle, bmi_group != "NW")
+
+BMI_NW$time = anydate(BMI_NW$timecoalesce)
+
+
+BMI_OWOB$time = anydate(BMI_OWOB$timecoalesce)
+
+
+```
+
+
+```{r,message=FALSE,include=FALSE}
+#counts for each quarter
+
+NW_months <- BMI_NW[19]
+NW_months$month<-factor(month(NW_months$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")) 
+OWOB_months <- BMI_OWOB[19]
+OWOB_months$month<-factor(month(OWOB_months$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")) 
+
+OWOB_months <- na.omit(OWOB_months)
+
+#normal weight
+sum(NW_months$month == 'Jan' | NW_months$month == 'Feb' | NW_months$month == 'Mar')
+sum(NW_months$month == 'Apr' | NW_months$month == 'May' | NW_months$month == 'Jun')
+sum(NW_months$month == 'Jul' | NW_months$month == 'Aug' | NW_months$month == 'Sep')
+sum(NW_months$month == 'Oct' | NW_months$month == 'Nov' | NW_months$month == 'Dec')
+
+#overweight/obese
+sum(OWOB_months$month == 'Jan' | OWOB_months$month == 'Feb' | OWOB_months$month == 'Mar')
+sum(OWOB_months$month == 'Apr' | OWOB_months$month == 'May' | OWOB_months$month == 'Jun')
+sum(OWOB_months$month == 'Jul' | OWOB_months$month == 'Aug' | OWOB_months$month == 'Sep')
+sum(OWOB_months$month == 'Oct' | OWOB_months$month == 'Nov' | OWOB_months$month == 'Dec')
+
+```
+
+
+#bar plot based on waffle plot months
+
+```{r,message=FALSE,include=FALSE}
+#make data frames
+BMI_bar <- BMI_waffle[18]
+BMI_bar[2] <- BMI_waffle[17]
+BMI_bar$time <- anydate(BMI_waffle$timecoalesce)
+BMI_bar$month<-factor(month(BMI_bar$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
+BMI_bar = BMI_bar %>%
+  select(bmi_group, month)
+
+#creating counted data for each BMI and month
+BMI_bar_counted <- count(BMI_bar)
+BMI_bar_counted <- na.omit(BMI_bar_counted)
+BMI_bar_counted=BMI_bar_counted %>%
+  mutate(bmi_group=recode(bmi_group,
+                              "NW"="Normal",
+                              "OWOB"="Obese/Overweight"
+                               ))
+
+
+b <- ggplot(BMI_bar_counted, aes(x = month, y = freq, fill = bmi_group)) + geom_bar(stat = "identity", position = "dodge") + ylim(0,25) + geom_text(aes(label = freq), vjust = -1, position = position_dodge(width = 0.9)) + theme_light() + xlab("Month") + ylab("Participants") + guides(fill = guide_legend(title = "Obesity Status")) + theme(legend.title = element_text(size = 12), legend.text= element_text(size=12), text = element_text(size = 14)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+
+b
+
+ggsave(b, filename = "c:/waffles/BMI_barplot.png",height = 3, width = 10)
+#save to computer to adjust size appropriately. adjust filename to where you want it saved
+
+
+#adjust location of counts on barplot
+
+```
