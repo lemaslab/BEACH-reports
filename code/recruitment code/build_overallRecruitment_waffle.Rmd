@@ -157,3 +157,21 @@ b
  
 ggsave(b, filename = "c:/waffles/overallRecruitment_barplot.png", height = 3, width = 10)     
 ```
+
+#recruitment based on days of the week
+```{r,message=FALSE,include=FALSE}
+all_table = all[18]
+all_table <- na.omit(all_counts)
+all_table$weekday = as.POSIXlt(all_table$time)$wday #finding the day no. of the week
+all_table$weekdayf<-factor(all_table$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
+
+sum(all_table$weekdayf == 'Sun')
+sum(all_table$weekdayf == 'Mon')
+sum(all_table$weekdayf == 'Tue')
+sum(all_table$weekdayf == 'Wed')
+sum(all_table$weekdayf == 'Thu')
+sum(all_table$weekdayf == 'Fri')
+sum(all_table$weekdayf == 'Sat')
+
+
+```
