@@ -1,0 +1,261 @@
+---
+title: "build_BMI_Outcomes_Barplot"
+author: "Yasmine Gillespie"
+date: "2023-06-02"
+output: html_document
+---
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+# Author:      Dominick Lemas
+# Date:        Nov 17, 2020 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event and combine into final dataset. 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+#Overweight +Obese
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Obese"] <- "Obese and Overweight"
+Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Overweight"] <- "Obese and Overweight"
+Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Normal"] <- "Normal"
+
+Phone_Screen_age_bmi$Normal_Weight<- ifelse(Phone_Screen_age_bmi$BMI=="Normal", "Yes", "No")
+Phone_Screen_age_bmi$OB_OW<- ifelse(Phone_Screen_age_bmi$BMI=="Obese and Overweight", "Yes", "No")
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#filter for participants who completed phone screen
+Phone_Screen_age_bmi= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+###making data frame for barplot
+PS_BMI_NW <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$Normal_Weight=="Yes",]
+PS_BMI_NW<- na.omit(PS_BMI_NW)
+barplot_BMI_NW = (table(PS_BMI_NW$Recruitment))
+PS_BMI_OB <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$OB_OW=="Yes",]
+PS_BMI_OB<- na.omit(PS_BMI_OB)
+barplot_BMI_OB = (table(PS_BMI_OB$Recruitment))
+#counting values
+data <- data.frame(barplot_BMI_NW,barplot_BMI_OB)
+names(data)[1] <- "Recruitment"
+names(data)[2] <- "Normal Weight"
+names(data)[4] <- "Obese/Overweight"
+data <- data[ -c(3) ]
+#changing column titles, cutting out extra recruitment type column
+data <- as.data.frame(t(data))
+names(data) <- data[1,]
+data <- data[-1,]
+#switching column and row
+data$`Flyer` <- as.numeric(data$`Flyer` )
+data$ `Other` <- as.numeric(data$ `Other`)
+data$`Social Media` <- as.numeric(data$`Social Media`)
+data$`Word-of-mouth` <- as.numeric(data$`Word-of-mouth`)
+#changing variables in data frame to be numeric instead of character
+data1 <- as.matrix(data)
+#making matrix to plug into barplot
+x11()
+library(graphics)
+#run for graphics to work correctly
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+###barplot
+barplot( data1,beside=TRUE, col = c("blue","orange"),xlab = "Recruitment Method" , ylab = "Participants", ylim = c(0,60), legend.text = TRUE)
+
+
+
+```
+
+# BMI % Consented 
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+###making data frame for barplot
+PS_Eligible_NW <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$beachphone_pass_fail=="Pass" & Phone_Screen_age_bmi$Normal_Weight=="Yes",]
+PS_Eligible_NW <- na.omit(PS_Eligible_NW)
+PS_Eligible_NW <- PS_Eligible_NW[!PS_Eligible_NW$Recruitment=="Incomplete",]
+barplot_eligible_NW = (table(PS_Eligible_NW$Recruitment))
+
+PS_Eligible_OB <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$beachphone_pass_fail=="Pass" & Phone_Screen_age_bmi$OB_OW=="Yes",]
+PS_Eligible_OB <- na.omit(PS_Eligible_OB)
+PS_Eligible_OB <- PS_Eligible_OB[!PS_Eligible_OB$Recruitment=="Incomplete",]
+barplot_eligible_OB = (table(PS_Eligible_OB$Recruitment))
+
+PS_BMI_NW <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$Normal_Weight=="Yes" & Phone_Screen_age_bmi$Consent=="Yes",]
+PS_BMI_NW<- na.omit(PS_BMI_NW)
+barplot_BMI_NW = (table(PS_BMI_NW$Recruitment))
+PS_BMI_OB <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$OB_OW=="Yes" & Phone_Screen_age_bmi$Consent=="Yes",]
+PS_BMI_OB<- na.omit(PS_BMI_OB)
+barplot_BMI_OB = (table(PS_BMI_OB$Recruitment))
+#counting values
+data <- data.frame(barplot_eligible_NW,barplot_BMI_NW,barplot_eligible_OB,barplot_BMI_OB)
+names(data)[1] <- "Recruitment"
+names(data)[2] <- "Eligible NW"
+names(data)[4] <- "Normal Weight"
+names(data)[6] <- "Eligible OB"
+names(data)[8] <- "Obese/Overweight"
+data <- data[ -c(3,5,7) ]
+#changing column titles, cutting out extra recruitment type column
+data <- as.data.frame(t(data))
+names(data) <- data[1,]
+data <- data[-1,]
+#switching column and row
+data$`Flyer` <- as.numeric(data$`Flyer` )
+data$ `Other` <- as.numeric(data$ `Other`)
+data$`Social Media` <- as.numeric(data$`Social Media`)
+data$`Word-of-mouth` <- as.numeric(data$`Word-of-mouth`)
+#changing variables in data frame to be numeric instead of character
+data1 <- as.matrix(data)
+#making matrix to plug into barplot
+x11()
+library(graphics)
+#run for graphics to work correctly
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#convert to percentages
+`Consented_NW` <- round((data1[2, ] / data1[1, ])*100, digits = 0)
+data2 <- rbind(data1, `Consented_NW`)
+`Consented_OB` <- round((data1[4, ] / data1[3, ])*100, digits = 0)
+data2 <- rbind(data2, `Consented_OB`)
+#`Completed` <- round((data1[3, ] / data1[2, ])*100, digits = 0)
+#data3 <- rbind(data2, `Completed`)
+
+#delete rows 
+data3  <- data2 [-c(1, 2,3,4), ]
+rownames(data3)[1] <- "Normal Weight"
+rownames(data3)[2] <- "Obese/Overweight"
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+###barplot
+barplot( data3,beside=TRUE, col = c("steelblue","seagreen"), ylab = "Percent Consented", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE)
+
+
+```
+
+
+# BMI % Completed 
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Phone_Screen_age_bmi$Normal_Weight<- ifelse(Phone_Screen_age_bmi$BMI=="Normal", "Yes", "No")
+Phone_Screen_age_bmi$OB_OW<- ifelse(Phone_Screen_age_bmi$BMI=="Obese and Overweight", "Yes", "No")
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+###making data frame for barplot
+PS_BMI_NW <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$Normal_Weight=="Yes" & Phone_Screen_age_bmi$Consent=="Yes",]
+PS_BMI_NW<- na.omit(PS_BMI_NW)
+barplot_BMI_NW = (table(PS_BMI_NW$Recruitment))
+PS_BMI_OB <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$OB_OW=="Yes" & Phone_Screen_age_bmi$Consent=="Yes",]
+PS_BMI_OB<- na.omit(PS_BMI_OB)
+barplot_BMI_OB = (table(PS_BMI_OB$Recruitment))
+
+PS_BMI_NW_Com <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$Normal_Weight=="Yes" & Phone_Screen_age_bmi$Complete=="Yes",]
+PS_BMI_NW_Com<- na.omit(PS_BMI_NW_Com)
+barplot_BMI_NW_Com = (table(PS_BMI_NW_Com$Recruitment))
+PS_BMI_OB_Com <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$OB_OW=="Yes" & Phone_Screen_age_bmi$Complete=="Yes",]
+PS_BMI_OB_Com<- na.omit(PS_BMI_OB_Com)
+barplot_BMI_OB_Com = (table(PS_BMI_OB_Com$Recruitment))
+
+# Get the current length of the vector
+barplot_BMI_OB_Com_2 <- length(barplot_BMI_OB_Com)
+
+# Add a length of 1 to the vector
+barplot_BMI_OB_Com_3 <- barplot_BMI_OB_Com_2 + 1
+
+# Update the vector with the new length
+length(barplot_BMI_OB_Com) <- barplot_BMI_OB_Com_3
+
+#counting values
+data <- data.frame(barplot_BMI_NW_Com,barplot_BMI_NW,barplot_BMI_OB_Com,barplot_BMI_OB)
+data  [is.na(data  )] <- 0
+names(data)[1] <- "Recruitment"
+names(data)[2] <- "Complete NW"
+names(data)[4] <- "Consent NW"
+names(data)[5] <- "Complete OB"
+names(data)[7] <- "Consent OB"
+data <- data[ -c(3,6) ]
+#changing column titles, cutting out extra recruitment type column
+data <- as.data.frame(t(data))
+names(data) <- data[1,]
+data <- data[-1,]
+#switching column and row
+data$`Flyer` <- as.numeric(data$`Flyer` )
+data$ `Other` <- as.numeric(data$ `Other`)
+data$`Social Media` <- as.numeric(data$`Social Media`)
+data$`Word-of-mouth` <- as.numeric(data$`Word-of-mouth`)
+#changing variables in data frame to be numeric instead of character
+data1 <- as.matrix(data)
+#making matrix to plug into barplot
+x11()
+library(graphics)
+#run for graphics to work correctly
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#convert to percentages
+`Complete_NW` <- round((data1[1, ] / data1[2, ])*100, digits = 0)
+data2 <- rbind(data1, `Complete_NW`)
+`Complete_OB` <- round((data1[3, ] / data1[4, ])*100, digits = 0)
+data2 <- rbind(data2, `Complete_OB` )
+#`Completed` <- round((data1[3, ] / data1[2, ])*100, digits = 0)
+#data3 <- rbind(data2, `Completed`)
+
+#delete rows 
+data3  <- data2 [-c(1, 2,3,4), ]
+rownames(data3)[1] <- "Normal Weight"
+rownames(data3)[2] <- "Obese/Overweight"
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+###barplot
+barplot( data3,beside=TRUE, col = c("coral","skyblue"), ylab = "Percent Completed", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE)
+
+
+```
