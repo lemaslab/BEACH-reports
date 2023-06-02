@@ -1,0 +1,80 @@
+---
+title: "anaylze_Recruitment_BMI_Type"
+author: "Yasmine Gillespie"
+date: "2023-06-02"
+output: html_document
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+# Author:      Dominick Lemas
+# Date:        Nov 17, 2020 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event and combine into final dataset. 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#NW vs OW+Ob
+vtree(Eligible_Pass, "Recruitment BMI beachphone_pass_fail Consent Complete ", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+#Table 4 anaylsis
+#check if this is correct, or if I need/can use % for frequency
+
+#two-factor ANOVA
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+CP_anova = Eligible_Pass %>% select(BMI, Recruitment, Consent, Complete)
+consent_anova = CP_anova %>% select (-Complete)
+complete_anova = CP_anova %>% select (-Consent)
+
+
+consent_anova$BMI_Type <- as.factor(consent_anova$BMI)
+consent_anova$Recruitment <- as.factor(consent_anova$Recruitment)  
+consent_aov_counted <- count(consent_anova)
+
+anova <- aov(freq ~ BMI_Type*Recruitment, data = consent_aov_counted)
+summary(anova)
+
+```
+
