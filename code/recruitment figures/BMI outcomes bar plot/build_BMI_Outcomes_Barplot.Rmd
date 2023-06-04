@@ -102,7 +102,16 @@ library(graphics)
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 ###barplot
-barplot( data1,beside=TRUE, col = c("blue","orange"),xlab = "Recruitment Method" , ylab = "Participants", ylim = c(0,60), legend.text = TRUE)
+barplot( data1,beside=TRUE, col = c( "#F8766D","#00BFC4"),xlab = "Recruitment Method" , ylab = "Participants", ylim = c(0,60), legend.text = TRUE)
+
+# Create the legend title and labels
+legend_title <- "Obesity Status"
+legend_labels <- c("Normal", "Obese/Overweight")
+
+# Add the legend with the title and labels
+legend("topright", legend = legend_labels, fill = c("#F8766D", "#00BFC4"),
+       title = legend_title)
+
 
 
 
@@ -170,7 +179,15 @@ rownames(data3)[2] <- "Obese/Overweight"
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 ###barplot
-barplot( data3,beside=TRUE, col = c("steelblue","seagreen"), ylab = "Percent Consented", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE)
+barplot( data3,beside=TRUE, col = c( "#F8766D","#00BFC4"), ylab = "Percent Consented", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE)
+
+# Create the legend title and labels
+legend_title <- "Obesity Status"
+legend_labels <- c("Normal", "Obese/Overweight")
+
+# Add the legend with the title and labels
+legend("topright", legend = legend_labels, fill = c("#F8766D", "#00BFC4"),
+       title = legend_title)
 
 
 ```
@@ -255,7 +272,15 @@ rownames(data3)[2] <- "Obese/Overweight"
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 ###barplot
-barplot( data3,beside=TRUE, col = c("coral","skyblue"), ylab = "Percent Completed", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE)
+barplot( data3,beside=TRUE, col = c( "#F8766D","#00BFC4"), ylab = "Percent Completed", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE)
+
+# Create the legend title and labels
+legend_title <- "Obesity Status"
+legend_labels <- c("Normal", "Obese/Overweight")
+
+# Add the legend with the title and labels
+legend("topright", legend = legend_labels, fill = c("#F8766D", "#00BFC4"),
+       title = legend_title)
 
 
 ```
