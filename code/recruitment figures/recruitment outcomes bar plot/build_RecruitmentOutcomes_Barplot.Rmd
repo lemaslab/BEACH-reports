@@ -93,6 +93,14 @@ library(graphics)
 ###barplot
 barplot( data1,beside=TRUE, col = c("blue","orange", "black"), ylab = "Participants", ylim = c(0,60), legend.text = TRUE)
 
+# Create the legend title and labels
+legend_title <- "Recruitment Status"
+legend_labels <- c("Eligible", "Consented", "Completed")
+
+# Add the legend with the title and labels
+legend("topright", legend = legend_labels, fill = c("blue","orange", "black"),
+       title = legend_title)
+
 
 
 ```
@@ -115,7 +123,15 @@ data3  <- data3 [-c(1, 2,3), ]
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 ###barplot
-barplot( data3,beside=TRUE, col = c("steelblue","seagreen"), ylab = "Percentages (%)", ylim = c(0,100), xlab = "Recruitment", legend.text = TRUE)
+barplot( data3,beside=TRUE, col = c("blue","orange"), ylab = "Percentage", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE)
+
+# Create the legend title and labels
+legend_title <- "Recruitment Status"
+legend_labels <- c("Consented", "Completed")
+
+# Add the legend with the title and labels
+legend("topright", legend = legend_labels, fill = c("blue","orange"),
+       title = legend_title)
 
 
 ```
