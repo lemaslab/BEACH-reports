@@ -54,8 +54,8 @@ library(readr)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-load("~/BEACH-facebook/data/raw/Current_Particpant_raw.RData")
-#load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
+#load("~/BEACH-facebook/data/raw/Current_Particpant_raw.RData")
+load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
@@ -78,7 +78,7 @@ CP_raw=CP_raw %>%
   mutate(beachphone_hear_about_us=recode(beachphone_hear_about_us,
                               "1"="Flyer",
                               "2"="Radio",
-                              "3"="Social Media",
+                              "3"="Facebook",
                               "4"="Newspaper",
                               "5"="Word-of-mouth",
                               "6"="Other"
@@ -87,7 +87,7 @@ CP_raw=CP_raw %>%
   mutate(beach_learn_about_study=recode(beach_learn_about_study,
                               "1"="Flyer",
                               "2"="Physician",
-                              "3"="Social Media",
+                              "3"="Facebook",
                               "4"="Mail",
                               "5"="Other"
                                ))
