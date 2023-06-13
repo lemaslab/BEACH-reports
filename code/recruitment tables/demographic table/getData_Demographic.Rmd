@@ -37,8 +37,8 @@ library(tidyverse)
 
 ```{r, message=FALSE}
 # Windows
-source("~/BEACH-facebook/code/utils/utils.R")
-api_token=get_API_token("BEACH-Facebook")
+source("~/BEACH-reports/code/utils/utils.R")
+api_token=get_API_token("beach_api")
 
 #source("~/BEACH-reports/code/utils/utils.R")
 #api_token=get_API_token("BEACH-reports")
@@ -62,8 +62,8 @@ PD_raw=redcap_report(
   raw_or_label_headers="raw",
   guess_type=FALSE)$data
 
-save(list=c("PD_raw"),file="~/BEACH-facebook/data/raw/Particpant_Demographic_raw.RData")
-#save(list=c("PD_raw"),file="~/BEACH-reports/data/raw/Particpant_Demographic_raw.RData")
+#save(list=c("PD_raw"),file="~/BEACH-facebook/data/raw/Particpant_Demographic_raw.RData")
+save(list=c("PD_raw"),file="~/BEACH-reports/data/raw/Particpant_Demographic_raw.RData")
 ```
 
 

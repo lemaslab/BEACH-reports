@@ -54,7 +54,7 @@ library(readr)
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #ensure getData_Demographic.Rmd 
-load("~/BEACH-facebook/data/raw/Particpant_Demographic_raw.RData")
+load("~/BEACH-reports/data/raw/Particpant_Demographic_raw.RData")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
