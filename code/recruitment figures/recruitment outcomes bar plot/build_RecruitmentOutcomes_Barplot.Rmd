@@ -3,9 +3,12 @@ title: "build_RecruitmentOutcomes_Barplot"
 author: "Yasmine Gillespie"
 date: "2023-06-02"
 output: html_document
+editor_options: 
+  chunk_output_type: inline
 ---
 
-# run getData_Current_Participant and anaylze_Current_Participant_table1 before 
+# run getData_Current_Participant and anaylze_Current_Participant_table1 before
+
 ```{r, include=FALSE}
 ##-------------- 
 # **************************************************************************** #
@@ -54,9 +57,9 @@ library(tidyquant)
 library(readr)
 ```
 
-
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-
+Phone_Screen_age_bmi = Phone_Screen_age_bmi %>%
+  select(test_id, Recruitment, Consent, Complete, beachphone_pass_fail)
 
 ###making data frame for barplot
 PS_Consented <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$Consent=="Yes",]
@@ -91,9 +94,10 @@ library(graphics)
 #run for graphics to work correctly
 ```
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
+```{r echo=, message=FALSE, warning=FALSE}
 ###barplot
-barplot( data1,beside=TRUE, col = c("blue","orange", "black"), ylab = "Participants", ylim = c(0,60), legend.text = TRUE)
+
+barplot( data1,beside=TRUE, col = c("blue","orange", "black"), ylab = "Counts", ylim = c(0,60), legend.text = TRUE)
 
 # Create the legend title and labels
 legend_title <- "Recruitment Status"
@@ -103,13 +107,7 @@ legend_labels <- c("Eligible", "Consented", "Completed")
 legend("topright", legend = legend_labels, fill = c("blue","orange", "black"),
        title = legend_title)
 
-
-
 ```
-
-
-
-
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #convert to percentages
@@ -137,4 +135,3 @@ legend("topright", legend = legend_labels, fill = c("blue","orange"),
 
 
 ```
-
