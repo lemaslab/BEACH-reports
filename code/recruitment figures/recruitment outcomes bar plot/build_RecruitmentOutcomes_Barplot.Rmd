@@ -56,6 +56,8 @@ library(readr)
 
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+
 ###making data frame for barplot
 PS_Consented <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$Consent=="Yes",]
 barplot_consent = (table(PS_Consented$Recruitment))
@@ -79,7 +81,7 @@ data <- data[-1,]
 #switching column and row
 data$`Flyer` <- as.numeric(data$`Flyer` )
 data$ `Other` <- as.numeric(data$ `Other`)
-data$`Social Media` <- as.numeric(data$`Social Media`)
+data$`Facebook` <- as.numeric(data$`Facebook`)
 data$`Word-of-mouth` <- as.numeric(data$`Word-of-mouth`)
 #changing variables in data frame to be numeric instead of character
 data1 <- as.matrix(data)

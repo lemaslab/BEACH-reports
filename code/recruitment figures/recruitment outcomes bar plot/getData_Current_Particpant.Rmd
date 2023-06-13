@@ -38,8 +38,8 @@ library(tidyverse)
 
 ```{r, message=FALSE}
 # Windows
-source("~/BEACH-facebook/code/utils/utils.R")
-api_token=get_API_token("BEACH-Facebook")
+source("~/BEACH-reports/code/utils/utils.R")
+api_token=get_API_token("beach_api")
 
 #source("~/BEACH-reports/code/utils/utils.R")
 #api_token=get_API_token("BEACH-reports")
@@ -61,7 +61,7 @@ CP_raw=redcap_report(
 CP_raw[2733,16] <- "Flyer"
 
 
-#save(list=c("CP_raw"),file="~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
-save(list=c("CP_raw"),file="~/BEACH-facebook/data/raw/Current_Particpant_raw.RData")
+save(list=c("CP_raw"),file="~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
+#save(list=c("CP_raw"),file="~/BEACH-facebook/data/raw/Current_Particpant_raw.RData")
 ```
 
