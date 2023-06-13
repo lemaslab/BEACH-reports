@@ -3,6 +3,8 @@ title: "build_BMI_Outcomes_Barplot"
 author: "Yasmine Gillespie"
 date: "2023-06-02"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 ```{r, include=FALSE}
 ##-------------- 
@@ -217,35 +219,26 @@ PS_BMI_OB_Com <- Phone_Screen_age_bmi[Phone_Screen_age_bmi$OB_OW=="Yes" & Phone_
 PS_BMI_OB_Com<- na.omit(PS_BMI_OB_Com)
 barplot_BMI_OB_Com = (table(PS_BMI_OB_Com$Recruitment))
 
-# Get the current length of the vector
-barplot_BMI_OB_Com_2 <- length(barplot_BMI_OB_Com)
-
-# Add a length of 1 to the vector
-barplot_BMI_OB_Com_3 <- barplot_BMI_OB_Com_2 + 1
-
-# Update the vector with the new length
-length(barplot_BMI_OB_Com) <- barplot_BMI_OB_Com_3
-
 #counting values
-data1 <- data.frame(barplot_BMI_NW_Com,barplot_BMI_NW,barplot_BMI_OB_Com,barplot_BMI_OB)
-data1  [is.na(data1  )] <- 0
-names(data1)[1] <- "Recruitment"
-names(data1)[2] <- "Complete NW"
-names(data1)[4] <- "Consent NW"
-names(data1)[5] <- "Complete OB"
-names(data1)[7] <- "Consent OB"
-data1 <- data1[ -c(3,6) ]
+data <- data.frame(barplot_BMI_NW_Com,barplot_BMI_NW,barplot_BMI_OB_Com,barplot_BMI_OB)
+data  [is.na(data  )] <- 0
+names(data)[1] <- "Recruitment"
+names(data)[2] <- "Complete NW"
+names(data)[4] <- "Consent NW"
+names(data)[5] <- "Complete OB"
+names(data)[7] <- "Consent OB"
+data <- data[ -c(3,5,7) ]
 #changing column titles, cutting out extra recruitment type column
-data1 <- as.data.frame(t(data1))
-names(data1) <- data1[1,]
-data1 <- data1[-1,]
+data <- as.data.frame(t(data))
+names(data) <- data[1,]
+data <- data[-1,]
 #switching column and row
-data1$`Flyer` <- as.numeric(data1$`Flyer` )
-data1$ `Other` <- as.numeric(data1$ `Other`)
-data1$`Facebook` <- as.numeric(data1$`Facebook`)
-data1$`Word-of-mouth` <- as.numeric(data1$`Word-of-mouth`)
+data$`Flyer` <- as.numeric(data$`Flyer` )
+data$ `Other` <- as.numeric(data$ `Other`)
+data$`Facebook` <- as.numeric(data$`Facebook`)
+data$`Word-of-mouth` <- as.numeric(data$`Word-of-mouth`)
 #changing variables in data frame to be numeric instead of character
-data2 <- as.matrix(data1)
+data1 <- as.matrix(data)
 #making matrix to plug into barplot
 x11()
 library(graphics)
@@ -256,11 +249,11 @@ library(graphics)
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #convert to percentages
-`Complete_NW` <- round((data2[1, ] / data2[2, ])*100, digits = 0)
-data2 <- rbind(data2, `Complete_NW`)
-`Complete_OB` <- round((data2[3, ] / data2[4, ])*100, digits = 0)
+`Complete_NW` <- round((data1[1, ] / data1[2, ])*100, digits = 0)
+data2 <- rbind(data1, `Complete_NW`)
+`Complete_OB` <- round((data1[3, ] / data1[4, ])*100, digits = 0)
 data2 <- rbind(data2, `Complete_OB` )
-#`Completed` <- round((data2[3, ] / data2[2, ])*100, digits = 0)
+#`Completed` <- round((data1[3, ] / data1[2, ])*100, digits = 0)
 #data3 <- rbind(data2, `Completed`)
 
 #delete rows 
