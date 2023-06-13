@@ -63,7 +63,7 @@ library(readr)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-load("~/BEACH-facebook/data/raw/Maternal_Race_Ethnicity_raw.RData")
+load("~/BEACH-reports/data/raw/Maternal_Race_Ethnicity_raw.RData")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
