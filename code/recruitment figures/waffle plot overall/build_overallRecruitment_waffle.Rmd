@@ -83,11 +83,11 @@ library(stringi)
 library("anytime")  
 
 #make waffles by recruitment types
-Social_media= filter(recruitment_report, Recruitment == "Social Media")
+Facebook= filter(recruitment_report, Recruitment == "Facebook")
 Flyer = filter(recruitment_report, Recruitment == "Flyer")
 Word_of_mouth = filter(recruitment_report, Recruitment == "Word-of-mouth")
 
-all <- (rbind(Social_media,Word_of_mouth,Flyer))
+all <- (rbind(Facebook,Word_of_mouth,Flyer))
 all$time = anydate(all$timecoalesce)
 
 all_waffle <- count(all$time) %>% ungroup()
@@ -147,11 +147,11 @@ sum(all_counts$month == 'Jul' | all_counts$month == 'Aug' | all_counts$month == 
 sum(all_counts$month == 'Oct' | all_counts$month == 'Nov' | all_counts$month == 'Dec')
 
 all_bar <- count(all_counts$month) %>% ungroup()
-names(all_bar)[1] <- "months"
-names(all_bar)[2] <- "participants"
+names(all_bar)[1] <- "Months"
+names(all_bar)[2] <- "Counts"
 
 #Barplot
-b <- ggplot(all_bar, aes(x=months, y=participants, fill = participants)) + geom_bar(stat = "identity") + ylim(0,60) + geom_text(aes(label = participants), vjust = -1) + xlab("Months") + ylab("Participants") + theme_light() + guides(fill = guide_legend(title = "Participants")) + theme(legend.title = element_text(size = 12), legend.text= element_text(size=12), text = element_text(size = 14)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+b <- ggplot(all_bar, aes(x=Months, y=Counts, fill = Counts)) + geom_bar(stat = "identity") + ylim(0,60) + geom_text(aes(label = Counts), vjust = -1) + xlab("Months") + ylab("Counts") + theme_light() + guides(fill = guide_legend(title = "Counts")) + theme(legend.title = element_text(size = 12), legend.text= element_text(size=12), text = element_text(size = 14)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 b     
  
