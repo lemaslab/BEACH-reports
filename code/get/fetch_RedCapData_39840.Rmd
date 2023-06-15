@@ -3,7 +3,6 @@ title: "Get RedCap Data: Plasma Metabolomics Report"
 author: "Dominick J. Lemas"
 date: "04/15/2023"
 output: html_document
-
 ---
 
 ```{r, include=FALSE}
@@ -15,7 +14,7 @@ output: html_document
 # Author:            Dominick J. Lemas
 # Start Date:        04/15/2023 
 # Date Modify:       
-# Project:           The Breastfeeding and EArly Child Health Study
+# Project:           The Breastfeeding and Early Child Health Study
 # IRB:               IRB201601034
 #                   
 #
@@ -61,8 +60,8 @@ source("~/plasma-metabolomics/code/utils/utils.R")
 # API & URL
 #----------
 uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
-api_token=get_API_token("beach_api")
-#api_token=""
+api_token = get_API_token("beach_api")
+#api_token="14BC9225EDC31A7B6B2D069BF7E93954"
 
 # REPORT IDS
 #-----------
@@ -121,25 +120,43 @@ names(infant)
 ```{r, message=FALSE, include=FALSE}
 
 # **************************************************************************** #
-# ***************                Carolines Space               *************** #
+# ***************                Caroline's Space               *************** #
 # **************************************************************************** #
 
 # subset to tmao
 tmao=plasma %>%
   filter(metabolite_name=="tmao")
 
-hist(tmao$metabolite_value)
+# tmao scatterplot
+scatter.smooth(tmao$metabolite_value, col = 'pink', pch = 19, main = 'Scatterplot of TMAO Metabolite Value Index', xlab="patient index", ylab="concentration of TMAO (ng/mL)")
 
-# scatterplots
+# tmao histogram
+hist(tmao$metabolite_value, col='pink', border="white", xlab = 'concentration', main= 'Frequency of TMAO Concentration (ng/mL)')
 
-# histograms
+# subset to choline
+choline=plasma %>%
+  filter(metabolite_name=="choline")
+
+# choline histograms 
+hist(choline$metabolite_value, col = 'pink', border = "white", xlab = 'concentration', main = 'Frequency of Choline Concentration (ng/mL)')
+
+#choline scatterplots
+scatter.smooth(choline$metabolite_value, col = 'pink', pch = 19, main = 'Scatterplot of Choline Metabolite Value Index', xlab="patient index", ylab="concentration of choline (ng/mL)")
+
+# subset to betanine
+betanine=plasma %>%
+  filter(metabolite_name=="betanine")
+
+# betanine histograms 
+hist(betanine$metabolite_value, col = 'pink', border = "white", xlab = 'concentration', main = 'Frequency of Betanine Concentration (ng/mL)')
+
+
+#betanine scatterplots
+scatter.smooth(betanine$metabolite_value, col = 'pink', pch = 19, main = 'Scatterplot of Betanine Metabolite Value Index', xlab="patient index", ylab="concentration of betanine (ng/mL)")
 
 # other visualization
 
 
-
-
-```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
 # ***************              Save Data Local                 *************** #
@@ -152,4 +169,3 @@ output_directory="~/BEACH-reports/data/raw/"
 output_file_name="report_39840.RData"
 
 ```
-
