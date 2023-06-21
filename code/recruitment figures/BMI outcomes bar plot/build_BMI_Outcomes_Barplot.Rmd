@@ -55,7 +55,12 @@ library(readr)
 ```
 
 #Overweight +Obese
+
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#remove age grouping
+Phone_Screen_age_bmi = Phone_Screen_age_bmi %>%
+  select(-Age_grouping)
+
 Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Obese"] <- "Obese and Overweight"
 Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Overweight"] <- "Obese and Overweight"
 Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Normal"] <- "Normal"
@@ -69,6 +74,7 @@ Phone_Screen_age_bmi$OB_OW<- ifelse(Phone_Screen_age_bmi$BMI=="Obese and Overwei
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #filter for participants who completed phone screen
 Phone_Screen_age_bmi= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
+Phone_Screen_age_bmi = filter(Phone_Screen_age_bmi, Recruitment != "Incomplete")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}

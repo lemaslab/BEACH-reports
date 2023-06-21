@@ -58,7 +58,6 @@ Recruitment_raw=redcap_report(
   report_id,
   raw_or_label_headers="raw",
   guess_type=FALSE)$data
-Recruitment_raw[2733,6] <- "Flyer"
 
 save(list=c("Recruitment_raw"),file="~/BEACH-Reports/data/raw/Recruitment_Particpant_raw.RData")
 ```

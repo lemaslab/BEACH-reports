@@ -57,8 +57,6 @@ CP_raw=redcap_report(
   report_id,
   raw_or_label_headers="raw",
   guess_type=FALSE)$data
-#changing one participant's info that can't be inputted in RedCap
-CP_raw[2733,16] <- "Flyer"
 
 
 save(list=c("CP_raw"),file="~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
