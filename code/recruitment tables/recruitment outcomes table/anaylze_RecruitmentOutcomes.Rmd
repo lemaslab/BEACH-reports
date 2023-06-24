@@ -52,22 +52,55 @@ library(tidyquant)
 library(readr)
 ```
 
+#Who is Elgibile 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #recruitment outcomes for each recruitment type
-vtree(Eligible_Pass, "Recruitment beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(Phone_Screen_age_bmi, "Recruitment beachphone_pass_fail", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
+#Based on who is elgibile who consented
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #recruitment outcomes for each recruitment type
 vtree(Eligible_Pass, "Recruitment Consent", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
+#Based on who consented who completed
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #recruitment outcomes for each recruitment type
-vtree(Eligible_Pass, "Recruitment Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
+vtree(Eligible_Pass, "Recruitment Consent Complete", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 #Table 3 anaylsis
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_total = select(filter(Phone_Screen_age_bmi),c(Recruitment, Outcomes))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_total <- na.omit(CP_total) 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(CP_total$Recruitment, CP_total$Outcomes)
+#X^2=73.851
+#p=9.126e-10
+```
+
+#Anaylsis from deleted table 
+#Eligible
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_table2_eligible = select(filter(Phone_Screen_age_bmi),c(Recruitment, beachphone_pass_fail))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_table2_eligible <- na.omit(CP_table2_eligible) 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+chisq.test(CP_table2_eligible$Recruitment, CP_table2_eligible$beachphone_pass_fail)
+#X^2=64.192
+#p=5.785e-10
+```
+
 #Consent
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 CP_table2_Consent = select(filter(Eligible_Pass),c(Recruitment, Consent))
@@ -78,14 +111,18 @@ CP_table2_Consent <- na.omit(CP_table2_Consent)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(CP_table2_Consent$Recruitment, CP_table2_Consent$Consent, correct=FALSE)
+chisq.test(CP_table2_Consent$Recruitment, CP_table2_Consent$Consent)
 #X^2=11.7
 #p=0.01973
 ```
 
 #Complete
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-CP_table2_Complete = select(filter(Eligible_Pass),c(Recruitment, Complete))
+consent_Pass= filter(Eligible_Pass, Consent== "Yes")
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_table2_Complete = select(filter(consent_Pass),c(Recruitment, Complete))
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
@@ -93,8 +130,22 @@ CP_table2_Complete <- na.omit(CP_table2_Complete)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-chisq.test(CP_table2_Complete$Recruitment, CP_table2_Complete$Complete, correct=FALSE)
-#X^2=3.9165
-#p=0.4174
+chisq.test(CP_table2_Complete$Recruitment, CP_table2_Complete$Complete)
+#X^2=0.34375
+#p=0.9516
 ```
+
+
+#Looking at who is incomplete
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#filter for participants who completed phone screen
+Test_Incomplete= filter(Phone_Screen_age_bmi, Recruitment == "Incomplete")
+```
+
+
+
+
+
+
+
 
