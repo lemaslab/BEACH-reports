@@ -69,6 +69,7 @@ library(readr)
 # ****************************************************************************#
 
 load("~/BEACH-Reports/data/raw/Recruitment_Particpant_raw.RData")
+load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
 
 ```
 
@@ -79,7 +80,7 @@ recruitment_report <- Recruitment_raw[ -c(2:4) ]
 ```{r, message=FALSE,warning=FALSE,echo=FALSE}
 
 # **************************************************************************** #
-# ***************              Eligible_Pass Data              *************** #
+# ***************              Recruitment Data              *************** #
 # **************************************************************************** #
 
 #renames the first row containing column titles
@@ -137,8 +138,39 @@ recruitment_report$Recruitment = coalesce(recruitment_report$beachphone_hear_abo
 
 recruitment_report$timecoalesce = coalesce(recruitment_report$prescreen_date, recruitment_report$beach_encounter_date, recruitment_report$beachphone_date)
 
+
 ```
 
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                    CP Data                  *************** #
+# **************************************************************************** #
+
+#join columns for BMI
+CP_raw$BMI = coalesce(CP_raw$beach_final_bmi, CP_raw$beachphone_prepreg_bmi, CP_raw$prescreen_prepreg_bmi)
+
+
+#renaming and recoding, selecting out columns for BMI and age
+CP_bmi = CP_raw %>%
+   mutate(BMI = case_when((BMI >= 29) ~ "Obese",
+                                  (BMI >= 26 & BMI<29) ~ "Overweight",
+                                  (BMI <26) ~ "Normal"))
+
+```
+
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+
+# **************************************************************************** #
+# ***************                Join Dataset                *************** #
+# **************************************************************************** #
+ 
+BMI_barplot <- cbind(recruitment_report, CP_bmi$BMI)
+colnames(BMI_barplot)[18] <- "bmi_group"
+
+
+```
 
 ```{r, message=FALSE,include=FALSE}
 
@@ -147,7 +179,7 @@ recruitment_report$timecoalesce = coalesce(recruitment_report$prescreen_date, re
 # **************************************************************************** #
 # Save the data in your local laptop (Github path: /data)
 
-save(list=c("recruitment_report"),file="~/BEACH-Reports/output/reports/recruitment/recruitment_clean.RData")
+save(list=c("BMI_barplot"),file="~/BEACH-Reports/output/reports/recruitment/BMI_barplot.RData")
 
 
 ```
