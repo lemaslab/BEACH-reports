@@ -1,0 +1,155 @@
+---
+title: "Get RedCap Data: Problems During Pregnancy"
+author: "Dominick J. Lemas, Michele Himadi"
+date: "08/31/2023"
+output: html_document
+pandoc_args: ["--wrap=preserve"]
+
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:            Dominick J. Lemas, Michele Himadi
+# Start Date:        08/31/2023 
+# Date Modify:       
+# Project:           The Breastfeeding and EArly Child Health Study
+# IRB:               IRB201601034
+#                   
+#
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
+```
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+library(keyringr)
+library(redcapAPI)
+library(REDCapR)
+library(tidyverse)
+# library(ezknitr)
+source("~/BEACH-reports/code/utils/utils.R")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+
+# REPORT IDS
+#-----------
+
+# Study Overview
+report_id<-37206L
+report_name= "Problems During Pregnancy"
+
+
+# PULL DATA
+#-----------
+report_raw <-
+  REDCapR::redcap_report(
+    redcap_uri = uri,
+    token      = api_token,
+    report_id  = report_id
+  )$data 
+
+report = report_raw %>%
+  select(-redcap_repeat_instrument,-redcap_repeat_instance, -redcap_survey_identifier, -health_update_3rd_trimester_v5082518_timestamp)   # drop out variables not needed)
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+
+# Save the data in your local laptop (Github path: /data)
+save(list=c("report"),file="~/BEACH-reports/data/raw/report_37206.RData")
+
+output_directory="~/BEACH-reports/data/raw/"
+output_file_name="report_37206.RData"
+
+```
+
+#### __Project Details__
+Title: `r project_name`  
+IRB Number: `r irb_number`  
+Redcap URL: `r uri`  
+Report Name: `r report_name`  
+Report ID: `r report_id`
+
+#### __Data Processing Summary__
+Variables of interest are stored as RedCap reports. Data is extracted from REdcap via REDCapR using URL and API token. The extracted data is lightly formatted and output as an *.rda object for downstream analysis.  
+![](redcap_workflow.png)
+
+
+### __Variables Available for Analysis__
+
+Prenatal Vaginal Bleeding  
+3rd Trimester: `r length(which(report$mom3t_prenat_vagbleed=="1"))`  
+2 Weeks: `r length(which(report$mom2wk_vagbleed=="1"))`  
+UTI  
+3rd Trimester: `r length(which(report$mom3t_uti=="1"))`  
+2 Weeks: `r length(which(report$mom2wk_uti=="1"))`  
+Severe Nausea, Vomiting, Dehydration  
+3rd Trimester: `r length(which(report$mom3t_nausea=="1"))`  
+2 Weeks: `r length(which(report$mom2wk_nausea=="1"))`  
+Cervix had to be sewn shut  
+3rd Trimester: `r length(which(report$mom3t_cervix=="1"))`  
+2 Week: `r length(which(report$mom2wk_cervix=="1"))`  
+High Blood Pressure  
+3rd Trimester: `r length(which(report$mom3t_high_bp2=="1"))`  
+2 Week: `r length(which(report$mom2wk_high_bp=="1"))`  
+Problems with the Placenta  
+3rd Trimester: `r length(which(report$mom3t_placenta=="1"))`  
+2 Week: `r length(which(report$mom2wk_placenta=="1"))`  
+Labor Pains  
+3rd Trimester: `r length(which(report$mom3t_labor_pains=="1"))`  
+2 Week: `r length(which(report$mom2wk_labor_pains=="1"))`  
+Water Broke Early  
+3rd Trimester: `r length(which(report$mom3t_water_broke=="1"))`  
+2 Week: `r length(which(report$mom2wk_water_broke=="1"))`  
+Blood Transfusion  
+3rd Trimester: `r length(which(report$mom3t_blood_trans=="1"))`  
+2 Week: `r length(which(report$mom2wk_blood_trans=="1"))`  
+Car Accident  
+3rd Trimester: `r length(which(report$mom3t_car_accident=="1"))`  
+2 Week: `r length(which(report$mom2wk_car_accident=="1"))`  
+NICU?  
+`r length(which(report$mom2wk_infant_nicu=="1"))` 
+
+```{r, echo=FALSE, message=FALSE}
+"Infant Hospital Stay"  
+table(report$mom2wk_infant_hosp_stay)
+summary(report)
+
+```
+
