@@ -115,7 +115,7 @@ ds_lu_gender <- tibble::tribble(
 
 ds_lu_race <- tibble::tribble(
   ~input , ~displayed                                   ,
-  "NativeAmerican"    , "American Indian/Alaska Native"              ,
+  "NativeAmerican"    , "American Indian or Alaska Native"              ,
   "Asian"             , "Asian",
   "PacificIsland"    , "Native Hawaiian or Other Pacific Islander"  ,
   "Black"    , "Black or African American"                  ,
