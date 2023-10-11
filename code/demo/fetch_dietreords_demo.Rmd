@@ -72,10 +72,7 @@ source("~/BEACH-reports/code/utils/utils.R")
 
 
 data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester_example.csv") %>%
-  rename(item_name="Item Name",
-          quanity=Quantity,
-          measure=Measure,
-          wgt_g="Wgt (g)",
+  rename( wgt_g="Wgt (g)",
           cals_kcal="Cals (kcal)",
           fatcals_kcal="FatCals (kcal)",
           satcals_kcal="SatCals (kcal)",
@@ -138,10 +135,15 @@ data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10
           chln_mg="Chln (mg)")
 
 
-data_long=gather(data_wide, key="nutrient", value="value", wgt_g:chln_mg) %>%
-  mutate(value = replace(value, value == "--", NA))
+data_long=gather(data_wide, key="food_record_nutrient", value="food_record_value", wgt_g:chln_mg) %>%
+  mutate(food_record_value = replace(food_record_value, food_record_value == "--", NA),
+         redcap_event_name="third_trimester_arm_1",
+         redcap_repeat_instrument="diet_record_processed",
+         redcap_repeat_instance=row_number(),
+         test_id=food_record_test_id) %>%
+  select(test_id,redcap_event_name,redcap_repeat_instrument,redcap_repeat_instance,everything())
 
-# names(data)
+# names(data_long)
 
 write_csv(data_long,"C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester_import.csv" )
 
