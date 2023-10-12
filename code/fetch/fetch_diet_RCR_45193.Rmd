@@ -84,6 +84,18 @@ report_raw <-
 
 ```
 
+```{r, message=FALSE,include=FALSE}
+
+test=report_raw %>%
+  filter(test_id=="BLS030A") %>%
+  filter(meal_type=="full_day") %>%
+  filter(food_record_nutrient=="cals_kcal") %>%
+  group_by(food_record_day) %>%
+  summarize(food_record_value)
+
+
+```
+
 
 ```{r, message=FALSE,include=FALSE}
 
