@@ -145,7 +145,7 @@ data_long=gather(data_wide, key="food_record_nutrient", value="food_record_value
 
 # names(data_long)
 
-write_csv(data_long,"C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester_import.csv" )
+write_csv(data_long,"C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester_redcap_ready.csv" )
 
 ```
 
