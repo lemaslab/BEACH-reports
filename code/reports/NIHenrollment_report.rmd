@@ -64,6 +64,12 @@ library(tidyverse)
 
 load("~/BEACH-reports/data/processed/21221_NIHenrollment_clean.RData")
 
+#remove participants who have more than one race listed and change their type to "two or more races" ("M")
+data$combined = paste(data$test_id, data$participant_type)
+data$race=as.character(data$race)
+data$race[duplicated(data$combined) | duplicated(data$combined, fromLast = TRUE)] <- "M"
+data = data[!duplicated(data$combined),]
+
 ds=data %>%
   rename(gender=sex_nih,
          ethnicity=ethnicity_nih) %>%
@@ -109,7 +115,7 @@ ds_lu_gender <- tibble::tribble(
 
 ds_lu_race <- tibble::tribble(
   ~input , ~displayed                                   ,
-  "NativeAmerican"    , "American Indian/Alaska Native"              ,
+  "NativeAmerican"    , "American Indian or Alaska Native"              ,
   "Asian"             , "Asian",
   "PacificIsland"    , "Native Hawaiian or Other Pacific Islander"  ,
   "Black"    , "Black or African American"                  ,
