@@ -64,7 +64,7 @@ library(tidyverse)
 
 load("~/BEACH-reports/data/processed/21221_NIHenrollment_clean.RData")
 
-#remove participants who have more than one race listed and change their type to "more than one race" ("M")
+#remove participants who have more than one race listed and change their type to "two or more races" ("M")
 data$combined = paste(data$test_id, data$participant_type)
 data$race=as.character(data$race)
 data$race[duplicated(data$combined) | duplicated(data$combined, fromLast = TRUE)] <- "M"
