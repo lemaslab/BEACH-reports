@@ -1,5 +1,5 @@
 ---
-title: "Fetch/Format Diet Records"
+title: "dietrecord2redcap: Formatting Diet Records for Import to RedCap"
 author: "Dominick J. Lemas"
 date: "10/11/2023"
 output: html_document
@@ -14,7 +14,7 @@ output: html_document
 
 # Author:            Dominick J. Lemas
 # Start Date:        10/11/2023 
-# Date Modify:       
+# Date Modify:       10/20/2023
 # Project:           The Breastfeeding and EArly Child Health Study
 # IRB:               IRB201601034
 #                   
@@ -28,6 +28,7 @@ output: html_document
 # **************************************************************************** #
 
 # import diet record and format for import to redcap and downstream analysis
+# create a function that simplifies the code. 
 
 project_name="The Breastfeeding and EArly Child Health Study"
 irb_number="IRB201601034"
