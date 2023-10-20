@@ -52,6 +52,20 @@ library(tidyverse)
 library(gtsummary)
 library(dplyr)
 
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************         WIP / Build Summary Table            *************** #
+# **************************************************************************** #
+
+
+
+tb_sum <- table1_formatted %>%
+  tbl_summary(by = BMI_Group)
+
+print(tb_sum)
 
 ```
 
@@ -60,7 +74,6 @@ library(dplyr)
 # **************************************************************************** #
 # ***************              Load/Trim Data                  *************** #
 # **************************************************************************** #
-
 load("~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
 
 #creating table 1 groups based on BMI Group
