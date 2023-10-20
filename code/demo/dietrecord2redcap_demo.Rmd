@@ -43,25 +43,8 @@ irb_number="IRB201601034"
 
 
 library(tidyverse)
+library(readxl)
 source("~/BEACH-reports/code/utils/utils.R")
-
-```
-
-```{r, message=FALSE,include=FALSE}
-
-# **************************************************************************** #
-# ***************              Demo Data                    *************** #
-# **************************************************************************** #
-
-
-# Load data
-#-----------
-
-# load("~/BEACH-reports/data/demo/NHANES_19992000.rda")
-# NHANES_19992000
-# list(NHANES_19992000)
-# 
-# NHANES_19992000$WJFRT
 
 ```
 
@@ -71,78 +54,113 @@ source("~/BEACH-reports/code/utils/utils.R")
 # ***************           Load Experimental Data Local       *************** #
 # **************************************************************************** #
 
+# import CSV
+data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester_example.csv") %>% as_tibble()
 
-data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester_example.csv") %>%
-  rename( wgt_g="Wgt (g)",
-          cals_kcal="Cals (kcal)",
-          fatcals_kcal="FatCals (kcal)",
-          satcals_kcal="SatCals (kcal)",
-          prot_g="Prot (g)",
-          carb_g="Carb (g)",
-          totfib_g="TotFib (g)",
-          totsolfib_g="TotSolFib (g)",
-          fib16_g="Fib(16) (g)",
-          solfib16_g="SolFib(16) (g)",
-          sugar_g="Sugar (g)",
-          sugadd_g="SugAdd (g)",
-          monsac_g="MonSac (g)",
-          disacc_g="Disacc (g)",
-          ocarb_g="OCarb (g)",
-          fat_g="Fat (g)",
-          satfat_g="SatFat (g)",
-          monofat_g="MonoFat (g)",
-          polyfat_g="PolyFat (g)",
-          transfat_g="TransFat (g)",
-          chol_mg="Chol (mg)",
-          water_g="Water (g)",
-          vita_iu="Vit A-IU (IU)",
-          vita_mcg="Vit A-RAE (mcg)",
-          caroten_mcg="Caroten (mcg)",
-          retinol_mcg="Retinol (mcg)",
-          betacaro_mcg="BetaCaro (mcg)",
-          vitb1_mg="Vit B1 (mg)",
-          vitb2_mg="Vit B2 (mg)",
-          vitb3_mg="Vit B3 (mg)",
-          vitb3_ne_mg="Vit B3-NE (mg)",
-          vitb6_mg="Vit B6 (mg)",
-          vitb12_mcg="Vit B12 (mcg)",
-          biot_mcg="Biot (mcg)",
-          vitc_mg="Vit C (mg)",
-          vitd_iu="Vit D-IU (IU)",
-          vitd_mcg="Vit D-mcg (mcg)",
-          vite_mg="Vit E-a-Toco (mg)",
-          folate_mcg="Folate (mcg)",
-          foldfe_mcg="Fol-DFE (mcg DFE)",
-          vitk_mcg="Vit K (mcg)",
-          panto_mg="Panto (mg)",
-          calc_mg="Calc (mg)",
-          chrom_mcg="Chrom (mcg)",
-          copp_mg="Copp (mg)",
-          flour_mg="Fluor (mg)",
-          iodine_mcg="Iodine (mcg)",
-          iron_mg="Iron (mg)",
-          magn_mg="Magn (mg)",
-          mang_mg="Mang (mg)",
-          moly_mcg="Moly (mcg)",
-          phos_mg="Phos (mg)",
-          pot_mg="Pot (mg)",
-          sel_mcg="Sel (mcg)",
-          sod_mg="Sod (mg)",
-          zinc_mg="Zinc (mg)",
-          omega3_g="Omega3 (g)",
-          omega6_g="Omega6 (g)",
-          alc_g="Alc (g)",
-          caff_mg="Caff (mg)",
-          chln_mg="Chln (mg)")
+# # import data
+# data_wide=read_excel("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester_example.xlsx", sheet = "sheet1") %>% as.data.frame
 
+```
 
-data_long=gather(data_wide, key="food_record_nutrient", value="food_record_value", wgt_g:chln_mg) %>%
+```{r, message=FALSE,include=FALSE}
+
+#' Outersect Function
+#' Description: To find the non-duplicated elements between two or more vector
+
+outersect <- function(x, y) {
+  sort(c(setdiff(x, y),
+         setdiff(y, x)))
+} # END FUNCTION
+
+#' dietrecord2redcap Function
+#' Description: Formats the diet-record data for import to redcap
+
+redcap_event_name="third_trimester_arm_1"
+
+dietrecord2redcap <- function(diet_wide, redcap_event_name) {
+            data_wide_rename=diet_wide %>%
+                rename( wgt_g="Wgt (g)",
+                        cals_kcal="Cals (kcal)",
+                        fatcals_kcal="FatCals (kcal)",
+                        satcals_kcal="SatCals (kcal)",
+                        prot_g="Prot (g)",
+                        carb_g="Carb (g)",
+                        totfib_g="TotFib (g)",
+                        totsolfib_g="TotSolFib (g)",
+                        fib16_g="Fib(16) (g)",
+                        solfib16_g="SolFib(16) (g)",
+                        sugar_g="Sugar (g)",
+                        sugadd_g="SugAdd (g)",
+                        monsac_g="MonSac (g)",
+                        disacc_g="Disacc (g)",
+                        ocarb_g="OCarb (g)",
+                        fat_g="Fat (g)",
+                        satfat_g="SatFat (g)",
+                        monofat_g="MonoFat (g)",
+                        polyfat_g="PolyFat (g)",
+                        transfat_g="TransFat (g)",
+                        chol_mg="Chol (mg)",
+                        water_g="Water (g)",
+                        vita_iu="Vit A-IU (IU)",
+                        vita_mcg="Vit A-RAE (mcg)",
+                        caroten_mcg="Caroten (mcg)",
+                        retinol_mcg="Retinol (mcg)",
+                        betacaro_mcg="BetaCaro (mcg)",
+                        vitb1_mg="Vit B1 (mg)",
+                        vitb2_mg="Vit B2 (mg)",
+                        vitb3_mg="Vit B3 (mg)",
+                        vitb3_ne_mg="Vit B3-NE (mg)",
+                        vitb6_mg="Vit B6 (mg)",
+                        vitb12_mcg="Vit B12 (mcg)",
+                        biot_mcg="Biot (mcg)",
+                        vitc_mg="Vit C (mg)",
+                        vitd_iu="Vit D-IU (IU)",
+                        vitd_mcg="Vit D-mcg (mcg)",
+                        vite_mg="Vit E-a-Toco (mg)",
+                        folate_mcg="Folate (mcg)",
+                        foldfe_mcg="Fol-DFE (mcg DFE)",
+                        vitk_mcg="Vit K (mcg)",
+                        panto_mg="Panto (mg)",
+                        calc_mg="Calc (mg)",
+                        chrom_mcg="Chrom (mcg)",
+                        copp_mg="Copp (mg)",
+                        flour_mg="Fluor (mg)",
+                        iodine_mcg="Iodine (mcg)",
+                        iron_mg="Iron (mg)",
+                        magn_mg="Magn (mg)",
+                        mang_mg="Mang (mg)",
+                        moly_mcg="Moly (mcg)",
+                        phos_mg="Phos (mg)",
+                        pot_mg="Pot (mg)",
+                        sel_mcg="Sel (mcg)",
+                        sod_mg="Sod (mg)",
+                        zinc_mg="Zinc (mg)",
+                        omega3_g="Omega3 (g)",
+                        omega6_g="Omega6 (g)",
+                        alc_g="Alc (g)",
+                        caff_mg="Caff (mg)",
+                        chln_mg="Chln (mg)")
+
+data_long=gather(data_wide_rename, key="food_record_nutrient", value="food_record_value", wgt_g:chln_mg) %>%
   mutate(food_record_value = replace(food_record_value, food_record_value == "--", NA),
-         redcap_event_name="third_trimester_arm_1",
+         redcap_event_name=redcap_event_name,
          redcap_repeat_instrument="diet_record_processed",
          redcap_repeat_instance=row_number(),
          test_id=food_record_test_id) %>%
   select(test_id,redcap_event_name,redcap_repeat_instrument,redcap_repeat_instance,everything())
+
+return(data_long)
+
+} # END FUNCTION
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+demo=dietrecord2redcap(data_wide,"third_trimester_arm_1")
+
+```
+
 
 # names(data_long)
 
