@@ -64,14 +64,15 @@ data_wide=read_excel("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_
 
 ```{r, message=FALSE,include=FALSE}
 
-demo=dietrecord2redcap(data_wide,"third_trimester_arm_1")
+BLS001A_3rdtri_diet_redcap_ready=dietrecord2redcap(data_wide,"third_trimester_arm_1")
 
 ```
 
+```{r, message=FALSE,include=FALSE}
 
-# names(data_long)
+# write to file
 
-write_csv(data_long,"C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester_redcap_ready.csv" )
+write_csv(BLS001A_3rdtri_diet_redcap_ready,"C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS001A_Third_Trimester_redcap_ready.csv" )
 
 ```
 
