@@ -1,5 +1,5 @@
 ---
-title: "Format BEACH Table 1"
+title: "Plasma Metabolomics Metadata"
 author: "Dominick J. Lemas, Michele Himadi"
 date: "2/14/2023"
 
@@ -32,9 +32,9 @@ date: "2/14/2023"
 project_name="The Breastfeeding and EArly Child Health Study"
 irb_number="IRB201601034"
 upstream_code="~/code/get/get_RedCapData_36804.Rmd"
-report_id<-36804L
-report_name= "BEACH Table 1"
-input_file="report_36804.RData"
+report_id<-39840L
+report_name= "Plasma Metabolomics and Maternal-Infant Outcomes"
+input_file="report_39840.RData"
 
 ```
 
@@ -70,10 +70,10 @@ participants <- report %>%
   fill(everything(), .direction = "up") %>%
   slice(1)
 
-metadata_v4 <- participants %>% select(test_id, crc_specimen_barcode_v2, crc_specimen_number_v2, beach_final_bmi, maternal_study_groups, overview_birthweight, overview_inf_twowk_weight, overview_inf_twomo_weight, overview_inf_twemo_weight, overview_bf_check, overview_mom_bf, overview_gest_age, part_dob, mom2wk_delivery_date, infant_delivery___1, infant_delivery___2, infant_delivery___3, infant_delivery___4, infant_delivery___5, infant_delivery___6, beach_last_visit_nih)
+metadata_v4 <- participants %>% select(test_id, beach_final_bmi, maternal_study_groups, overview_birthweight, overview_inf_twowk_weight, overview_inf_twomo_weight, overview_inf_twemo_weight, overview_bf_check, overview_mom_bf, overview_gest_age, part_dob, mom2wk_delivery_date, infant_sex_nih, infant_delivery___1, infant_delivery___2, infant_delivery___3, infant_delivery___4, infant_delivery___5, infant_delivery___6, beach_last_visit_nih)
 
 #can take out if using metabolite name
-metadata_v4 <- metadata_v4[-1]
+metadata_v4 <- metadata_v4[-1] #metabolite_name doesn't get removed for some reason
 metadata_v4_merged <- metadata_v4 %>%
   group_by(test_id) %>%
   fill(everything(), .direction = "down") %>%
@@ -84,6 +84,11 @@ metadata_v4_merged <- metadata_v4 %>%
 metadata_v4_merged$maternal_study_groups[metadata_v4_merged$maternal_study_groups == "1"] <- "NW"
 metadata_v4_merged$maternal_study_groups[metadata_v4_merged$maternal_study_groups == "2"] <- "OW"
 metadata_v4_merged$maternal_study_groups[metadata_v4_merged$maternal_study_groups == "3"] <- "OB"
+
+metadata_v4_merged$infant_sex_nih[metadata_v4_merged$infant_sex_nih == "1"] <- "Male"
+metadata_v4_merged$infant_sex_nih[metadata_v4_merged$infant_sex_nih == "2"] <- "Female"
+metadata_v4_merged$infant_sex_nih[metadata_v4_merged$infant_sex_nih == "3"] <- NA
+
 metadata_v4_merged$beach_last_visit_nih[metadata_v4_merged$beach_last_visit_nih == "1"] <- "3rd Trimester"
 metadata_v4_merged$beach_last_visit_nih[metadata_v4_merged$beach_last_visit_nih == "2"] <- "2 Week"
 metadata_v4_merged$beach_last_visit_nih[metadata_v4_merged$beach_last_visit_nih == "3"] <- "2 Month"
@@ -98,7 +103,13 @@ metadata_v4_merged$overview_mom_bf <- as.numeric(metadata_v4_merged$overview_mom
 
 metadata_v4_merged$breastfeeding_months <- coalesce(metadata_v4_merged$overview_mom_bf, metadata_v4_merged$overview_bf_check)
 
-#delivery location
+```
+
+```{r, message=FALSE, include=FALSE}
+# **************************************************************************** #
+# ***************               Delivery Location               *************** #
+# **************************************************************************** #
+
 metadata_v4_merged$infant_delivery___1[metadata_v4_merged$infant_delivery___1 == "1"] <- "UF Health"
 metadata_v4_merged$infant_delivery___2[metadata_v4_merged$infant_delivery___2 == "1"] <- "North Florida"
 metadata_v4_merged$infant_delivery___3[metadata_v4_merged$infant_delivery___3 == "1"] <- "Alliance Pediatrics"
@@ -114,13 +125,6 @@ metadata_v4_merged$infant_delivery___6[metadata_v4_merged$infant_delivery___6 ==
 
 metadata_v4_merged$delivery_location <- coalesce(metadata_v4_merged$infant_delivery___1, metadata_v4_merged$infant_delivery___2, metadata_v4_merged$infant_delivery___3, metadata_v4_merged$infant_delivery___4, metadata_v4_merged$infant_delivery___5, metadata_v4_merged$infant_delivery___6)
 
-```
-
-```{r, message=FALSE, include=FALSE}
-# **************************************************************************** #
-# ***************               Delivery Location               *************** #
-# **************************************************************************** #
-
 
 ```
 
@@ -133,25 +137,17 @@ metadata_v4_merged$delivery_location <- coalesce(metadata_v4_merged$infant_deliv
 
 
 for (i in 1:nrow(metadata_v4_merged)) {
-  if(is.na(metadata_v4_merged[[i,13]]) == FALSE & is.na(metadata_v4_merged[[i,14]]) == FALSE){
-    metadata_v4_merged[i,24] <- (as.numeric(difftime(metadata_v4_merged[[i,14]], metadata_v4_merged[[i,13]], units = "days"))) / 365
+  if(is.na(metadata_v4_merged[[i,11]]) == FALSE & is.na(metadata_v4_merged[[i,12]]) == FALSE){
+    metadata_v4_merged[i,23] <- (as.numeric(difftime(metadata_v4_merged[[i,12]], metadata_v4_merged[[i,11]], units = "days"))) / 365
   }
 }
-colnames(metadata_v4_merged)[24] <- "Maternal_Age"
+colnames(metadata_v4_merged)[23] <- "Maternal_Age"
 metadata_v4_merged$Maternal_Age <- round(metadata_v4_merged$Maternal_Age, digits = 2)
 
 
-metadata_v4_cleaned <- metadata_v4_merged %>% select(test_id, crc_specimen_barcode_v2, crc_specimen_number_v2, beach_final_bmi, maternal_study_groups, overview_birthweight, overview_inf_twowk_weight, overview_inf_twomo_weight, overview_inf_twemo_weight, delivery_location, breastfeeding_months, Maternal_Age)
+metadata_v4_cleaned <- metadata_v4_merged %>% select(test_id, beach_final_bmi, maternal_study_groups, Maternal_Age, overview_gest_age, infant_sex_nih, overview_birthweight, overview_inf_twowk_weight, overview_inf_twomo_weight, overview_inf_twemo_weight, breastfeeding_months, delivery_location, beach_last_visit_nih)
 ```
 
-```{r, message=FALSE, include=FALSE}
-# **************************************************************************** #
-# ***************            Sorting By BMI_Group              *************** #
-# **************************************************************************** #
-
-table1_formatted <- age_calc_final[order(age_calc_final$BMI),]
-
-```
 
 ```{r, message=FALSE, include=FALSE}
 
