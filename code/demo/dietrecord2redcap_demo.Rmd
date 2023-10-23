@@ -55,10 +55,10 @@ source("~/BEACH-reports/code/utils/utils.R")
 # **************************************************************************** #
 
 # import CSV
-# data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester_example.csv") %>% as_tibble()
+data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS001A_Third_Trimester.csv") %>% as_tibble()
 
-# # import data
-data_wide=read_excel("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS001A_Third_Trimester.xlsx", sheet = "sheet1") %>% as.data.frame
+data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS001A_Third_Trimester.csv") %>% as_tibble()
+
 
 ```
 
