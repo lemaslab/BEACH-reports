@@ -59,25 +59,25 @@ data_output_directory="C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10
 # **************************************************************************** #
 
 # import CSV
-data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS001A_Third_Trimester.csv") %>% as_tibble()
+# data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS001A_Third_Trimester.csv") %>% as_tibble()
 
-data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS001A_Third_Trimester.csv") %>% as_tibble()
+data_wide <- read_csv("C:/Users/djlemas/Dropbox (UFL)/02_Projects/BEACH_STUDY/10_Diet/BLS030A_Third_Trimester.csv") %>% as_tibble()
 
 
 ```
 
 ```{r, message=FALSE,include=FALSE}
 
-BLS001A_3rdtri_diet_redcap_ready=dietrecord2redcap(data_wide,"third_trimester_arm_1")
+redcap_ready=dietrecord2redcap(data_wide,"third_trimester_arm_1")
 
 ```
 
 ```{r, message=FALSE,include=FALSE}
 
 # write to file
-file_name=paste0(unique(BLS001A_3rdtri_diet_redcap_ready$test_id),"_",unique(BLS001A_3rdtri_diet_redcap_ready$redcap_event_name),"_redcap_ready.csv")
+file_name=paste0(unique(redcap_ready$test_id),"_",unique(redcap_ready$redcap_event_name),"_redcap_ready.csv")
 file_directory_path=paste0(data_output_directory,file_name)
-write_csv(BLS001A_3rdtri_diet_redcap_ready,file_directory_path)
+write_csv(redcap_ready,file_directory_path)
 
 ```
 
