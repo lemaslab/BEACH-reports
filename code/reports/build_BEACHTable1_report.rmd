@@ -51,10 +51,12 @@ library(codified)
 library(tidyverse)
 library(gtsummary)
 library(dplyr)
+library(r2rtf)
+library(R2wd)
 
 ```
 
-```{r, message=FALSE,include=FALSE}
+```{r, echo=FALSE}
 
 # **************************************************************************** #
 # ***************         WIP / Build Summary Table            *************** #
@@ -63,11 +65,27 @@ library(dplyr)
 
 
 tb_sum <- table1_formatted %>%
-  tbl_summary(by = BMI_Group)
+  tbl_summary(by = BMI_Group) %>%
+  add_p() %>%
+  bold_labels()
 
 print(tb_sum)
 
+my_flextable <- as_flex_table(tb_sum)
+
+doc <- read_docx()
+
+doc <- doc %>%
+  body_add_flextable(value = my_flextable)
+
+print(doc, target = "C:/Users/miche/Downloads/my_table.docx")
+
+
 ```
+
+
+
+##ignore these##
 
 ```{r, message=FALSE,include=FALSE}
 
