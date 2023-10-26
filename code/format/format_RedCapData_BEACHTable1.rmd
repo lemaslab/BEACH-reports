@@ -63,7 +63,7 @@ library(zoo)
 # ***************              Load/Trim Data                  *************** #
 # **************************************************************************** #
 
-#load("~/BEACH-reports/data/raw/report_36804.RData")
+load("~/BEACH-reports/data/raw/report_36804.RData")
 
 ###table 1 data
 #select out extra data
@@ -218,7 +218,7 @@ table1_formatted <- table1[order(table1$BMI),]
 # **************************************************************************** #
 
 # Save the data in your local laptop (Github path: /data)
-save(list=c("table1_formatted", "sample_grouping"),file="~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
+save(list=c("table1_formatted"),file="~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
 
 output_directory="~/BEACH-reports/data/processed/"
 output_file_name="BEACHTable1.RData"

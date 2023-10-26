@@ -51,8 +51,10 @@ library(codified)
 library(tidyverse)
 library(gtsummary)
 library(dplyr)
-library(r2rtf)
-library(R2wd)
+library(flextable)
+library(officer)
+
+load("~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
 
 ```
 
