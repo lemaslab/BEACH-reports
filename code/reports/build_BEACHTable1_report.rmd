@@ -101,8 +101,11 @@ combined_table <- tbl_merge(list(overall_summary, tb_sum), tab_spanner = FALSE)
 print(combined_table)
 print(tb_sum)
 
-flextable_sum <- as_flex_table(tb_sum)
-flextable_combined <- as_flex_table(combined_table)
+flextable_sum <- as_flex_table(tb_sum) %>%
+  set_table_properties(layout = "autofit")
+flextable_combined <- as_flex_table(combined_table) %>%
+  set_table_properties(layout = "autofit")
+  
 
 doc_1 <- read_docx()
 
@@ -112,7 +115,7 @@ doc_1 <- doc_1 %>%
   body_add_flextable(value = flextable_combined)
 
 
-print(doc_1, target = "C:/Users/miche/Downloads/test123.docx")
+print(doc_1, target = "~/GitHub/BEACH-reports/data/table1_all_v2.docx")
 
 
 ```
@@ -140,7 +143,7 @@ tb_OWOB <- tbl1_OWOB %>%
       all_continuous() ~ "{mean} ({sd})",
       all_categorical() ~ "{n} / {N} ({p}%)"
       )) %>%
-  add_p() #mat get warning that exact p-value cannot be computed
+  add_p() %>% #might get warning that exact p-value cannot be computed
   bold_labels()
 
 
@@ -151,17 +154,19 @@ OWOB_combined <- tbl_merge(list(overall_summary, tb_OWOB), tab_spanner = FALSE)
 print(OWOB_combined)
 print(tb_OWOB)
 
-flextable_OWOB <- as_flex_table(OWOB_combined)
-flextable_OWOBcombined <- as_flex_table(tb_OWOB)
+flextable_OWOB <- as_flex_table(OWOB_combined) %>%
+  set_table_properties(layout = "autofit")
+flextable_OWOBcombined <- as_flex_table(tb_OWOB) %>%
+  set_table_properties(layout = "autofit")
 
 doc_2 <- read_docx()
 
 doc_2 <- doc_2 %>%
-  body_add_flextable(value = flextable_OWOB) %>%
-  body_add_par("") %>%
-  body_add_flextable(value = flextable_OWOBcombined)
+  body_add_flextable(value = flextable_OWOBcombined) %>%
+  body_add_break() %>%
+  body_add_flextable(value = flextable_OWOB)
 
-print(doc_2, target = "C:/Users/miche/Downloads/Table_1_v2.docx")
+print(doc_2, target = "~/GitHub/BEACH-reports/data/table1_OWOB_v1.docx")
 
 
 ```
