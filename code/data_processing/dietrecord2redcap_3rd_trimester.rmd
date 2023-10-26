@@ -1,0 +1,73 @@
+---
+title: "dietrecord2redcap: Formatting Diet Records for Import to RedCap"
+author: "Dominick J. Lemas"
+date: "10/11/2023"
+output: html_document
+
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:            Dominick J. Lemas
+# Start Date:        10/11/2023 
+# Date Modify:       10/20/2023
+# Project:           The Breastfeeding and EArly Child Health Study
+# IRB:               IRB201601034
+#                   
+#
+# R version 4.3.1 (2023-06-16 ucrt) -- "Beagle Scouts"
+# Copyright (C) 2023 The R Foundation for Statistical Computing
+# Platform: x86_64-w64-mingw32/x64 (64-bit) 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# import diet record and format for import to redcap and downstream analysis
+# create a function that simplifies the code. 
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
+```
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+
+library(tidyverse)
+library(readxl)
+source("C:/Users/hanna/Documents/GitHub/BEACH-reports/code/utils/utils.R")
+
+# data directories
+data_input_directory='C:/Users/hanna/Documents/GitHub/BEACH-reports/data/processed/diet/third_trimester/'
+data_output_directory="C:/Users/hanna/Documents/GitHub/BEACH-reports/data/processed/diet/third_trimester/"
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ********************     BLS030A       ************************************* #
+# **************************************************************************** #
+
+# import CSV
+data_wide <- read_csv("C:/Users/hanna/Documents/GitHub/BEACH-reports/data/processed/diet/third_trimester/BLS030A_third_trimester.csv") %>% as_tibble()
+
+# Run function
+redcap_ready=dietrecord2redcap(data_wide,"third_trimester_arm_1")
+
+# write to file
+file_name=paste0(unique(redcap_ready$test_id),"_",unique(redcap_ready$redcap_event_name),"_redcap_ready.csv")
+file_directory_path=paste0(data_output_directory,file_name)
+write_csv(redcap_ready,file_directory_path)
+
+```
+
