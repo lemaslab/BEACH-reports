@@ -173,7 +173,7 @@ part_coal$race <- NA
 
 #joining race to column
 row_names <- paste0("maternal_race_nih___", 1:6)
-labels <- c("AIAN", "AS", "B", "NHPI", "W", "NA")
+labels <- c("AIAN", "AS", "B", "NHPI", "W", NA)
 for (i in 1:length(row_names)) {
   condition <- part_coal[[row_names[i]]] == 1
   part_coal$race[condition] <- labels[i]
@@ -204,6 +204,20 @@ part_coal$race_final <- coalesce(part_coal$race_multiple, part_coal$race)
 #changing column names
 table1 <- part_coal %>% 
   select(BMI_Group, BMI, Gestational_Age, Maternal_Age, Breastfeeding_Months = breastfeeding_months, Inf_Birthweight = overview_birthweight, Race_NIH = race_final, Ethnicity_NIH = mom_ethnicity_nih, BF_conf_2wk = bf_two_week_arm_1, BF_conf_2mo = bf_two_month_arm_1, BF_conf_6mo = bf_six_month_arm_1, BF_conf_12mo = bf_twelve_month_arm_1, BF_avg_conf = average_bf_confidence)
+
+table1 <- table1 %>%
+  mutate(Race_NIH = case_when(
+    Race_NIH == "W" ~ "White",
+    Race_NIH == "B" ~ "Black or African American",
+    Race_NIH == "AS" ~ "Asian",
+    Race_NIH == "M" ~ "Two or More Races",
+    TRUE ~ Race_NIH
+  )) %>%
+  mutate(Ethnicity_NIH = case_when(
+    Ethnicity_NIH == "HL" ~ "Hispanic or Latino",
+    Ethnicity_NIH == "no" ~ "Not Hispanic or Latino"
+  ))
+
 
 #sorting by BMI group
 table1_formatted <- table1[order(table1$BMI),]
