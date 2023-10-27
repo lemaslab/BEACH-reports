@@ -203,7 +203,8 @@ part_coal$race_final <- coalesce(part_coal$race_multiple, part_coal$race)
 
 #changing column names
 table1 <- part_coal %>% 
-  select(BMI_Group, BMI, Gestational_Age, Maternal_Age, Breastfeeding_Months = breastfeeding_months, Inf_Birthweight = overview_birthweight, Race_NIH = race_final, Ethnicity_NIH = mom_ethnicity_nih, BF_conf_2wk = bf_two_week_arm_1, BF_conf_2mo = bf_two_month_arm_1, BF_conf_6mo = bf_six_month_arm_1, BF_conf_12mo = bf_twelve_month_arm_1, BF_avg_conf = average_bf_confidence)
+  select(BMI_Group, BMI, Gestational_Age, Maternal_Age, Breastfeeding_Months = breastfeeding_months, Infant_Birthweight = overview_birthweight, Race_NIH = race_final, Ethnicity_NIH = mom_ethnicity_nih, Breastfeeding_Confidence_2_Weeks = bf_two_week_arm_1, Breastfeeding_Confidence_2_Months = bf_two_month_arm_1, Breastfeeding_Confidence_6_Months = bf_six_month_arm_1, Breastfeeding_Confidence_12_Months = bf_twelve_month_arm_1, Breastfeeding_Confidence_Average = average_bf_confidence)
+
 
 table1 <- table1 %>%
   mutate(Race_NIH = case_when(
