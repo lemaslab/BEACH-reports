@@ -1,0 +1,289 @@
+---
+title: "dietrecord2redcap: Formatting Diet Records for Import to RedCap"
+author: "Dominick J. Lemas"
+date: "10/11/2023"
+output: html_document
+
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:            Dominick J. Lemas
+# Start Date:        10/11/2023 
+# Date Modify:       10/20/2023
+# Project:           The Breastfeeding and EArly Child Health Study
+# IRB:               IRB201601034
+#                   
+#
+# R version 4.3.1 (2023-06-16 ucrt) -- "Beagle Scouts"
+# Copyright (C) 2023 The R Foundation for Statistical Computing
+# Platform: x86_64-w64-mingw32/x64 (64-bit) 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# import diet record and format for import to redcap and downstream analysis
+# create a function that simplifies the code. 
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
+```
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+
+library(tidyverse)
+library(readxl)
+library(keyringr)
+library(redcapAPI)
+library(REDCapR)
+library(glue)
+library(tidyr)
+library(stringr)
+
+source("~/BEACH-reports/code/utils/utils.R")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************           Load Diet Record txt File          *************** #
+# **************************************************************************** #
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+
+# REPORT IDS
+#-----------
+#these are the only things you need to change
+record_id <- "BLS030A"  # Replace with the target record ID
+field_name <- "dietrecord_txt_output"
+field_name_output <- "dietrecord_csv_redcap" #replace this if you're trying to upload the output file elsewhere
+event_name <- "third_trimester_arm_1" #replace if different event 
+
+#fixes naming issue with redcap_download_file
+event_name_short <- strsplit(event_name, "_")[[1]][1:2] 
+event_name_short <- paste(event_name_short, collapse = "_")
+file_name <- glue("{record_id}_{event_name_short}.txt")
+
+#download file directly from Redcap to R with API token
+redcap_download_file_oneshot(file_name = file_name, redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name)
+
+#format txt file into dataframe
+txt_file <- read.delim(file_name)
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************                 Format Data File             *************** #
+# **************************************************************************** #
+
+#put in first row as header
+names(txt_file) <- txt_file[1,]
+txt_file <- txt_file[-1,]
+
+#change names of items, quantity, measure
+names(txt_file)[names(txt_file) == "Item Name"] <- "item_name"
+names(txt_file)[names(txt_file) == "Quantity"] <- "food_record_quantity"
+names(txt_file)[names(txt_file) == "Measure"] <- "food_measure_quantity"
+
+###fill food_record_day with Day# from item name and food_record_day_date with date
+#matching day # and day date
+day_numbers <- integer(nrow(txt_file))
+day_dates <- character(nrow(txt_file))
+#set pattern
+pattern <- "^Day (\\d+) \\((\\d{1,2}/\\d{1,2}/\\d{4})\\)"
+#check for matches
+matches <- str_match(txt_file$item_name, pattern)
+valid_matches <- complete.cases(matches)
+day_numbers[valid_matches] <- as.integer(matches[valid_matches, 2])
+day_dates[valid_matches] <- matches[valid_matches, 3]
+#insert 
+txt_file$food_record_day <- day_numbers
+txt_file$food_record_day_date <- day_dates
+
+###fill meal_type with meal types
+#copy meal types
+meal_types <- character(nrow(txt_file))
+
+pattern <- "^\\s{4}([A-Z][a-z]+)(.+)"
+
+for (i in 1:nrow(txt_file)) {
+  match <- regmatches(txt_file[i, "item_name"], gregexpr(pattern, txt_file[i, "item_name"]))
+  if (length(match[[1]]) > 0) {
+    meal_types[i] <- match[[1]][1]
+  }
+}
+txt_file$meal_type <- meal_types
+#remove capital letters and add a _ in between two words (e.g. Morning Snack --> morning_snack)
+txt_file$meal_type <- tolower(gsub("\\b \\b", "_", txt_file$meal_type, perl = TRUE))
+#remove trailing spaces
+txt_file$meal_type <- gsub("^\\s+|\\s+$", "", txt_file$meal_type)
+#copy days and change to full_day
+day_pattern <- "\\bDay\\b"
+day_present <- grepl(day_pattern, txt_file$item_name)
+txt_file$meal_type <- ifelse(day_present, "full_day", txt_file$meal_type)
+
+###fill down for meal_types, day, and date
+txt_file$meal_type[txt_file$meal_type == ""] <- NA
+txt_file$food_record_day[txt_file$food_record_day == "0"] <- NA
+txt_file$food_record_day_date[txt_file$food_record_day_date == ""] <- NA
+txt_file <- txt_file %>%
+  fill(meal_type, .direction = "down") %>%
+  fill(food_record_day, .direction = "down") %>%
+  fill(food_record_day_date, .direction = "down")
+
+###fill food_record_test_id with record_id
+txt_file$food_record_test_id <- record_id
+
+###fill food_record_study_visit with event_name
+txt_file$food_record_study_visit <- event_name_short
+
+###rearranging columns
+txt_file <- txt_file %>%
+  select(food_record_day, meal_type, item_name, food_record_test_id,	food_record_study_visit, food_record_day_date,  everything())
+
+#remove trailing space
+txt_file$item_name <- gsub("^\\s+|\\s+$", "", txt_file$item_name)
+
+```
+
+```{r, message=FALSE,include=FALSE}
+#run if you want to check output
+write.csv(txt_file, "testdiet.csv", row.names = FALSE)
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************          dietrecord2redcap function          *************** #
+# **************************************************************************** #
+
+#function attached at bottom if it doesn't populate automatically
+
+redcap_ready=dietrecord2redcap(txt_file,event_name_short)
+
+```
+
+```{r, message=FALSE,include=FALSE}
+#run if you want to check input
+write.csv(redcap_ready, "testredcapready.csv" , row.names = FALSE)
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************        Create File & Upload to RedCap        *************** #
+# **************************************************************************** #
+
+file_upload=paste0(unique(redcap_ready$test_id),"_",unique(redcap_ready$redcap_event_name),"_redcap_ready.csv")
+write.csv(redcap_ready, file_upload, row.names = FALSE)
+assign(file_name, read.csv(file_name))
+
+
+#if this doesn't work you may have to upload it directly :(
+redcap_upload_file_oneshot(
+file_name = file_upload,
+record = record_id,
+redcap_uri = uri,
+token = api_token,
+field = field_name_output,
+event = "event_name",
+verbose = TRUE
+)
+
+```
+
+```{r, message=FALSE,include=FALSE}
+#function if it doesn't load into environment properly
+dietrecord2redcap <- function(diet_wide, redcap_event_name) {
+  data_long=diet_wide %>%
+    rename( wgt_g="Wgt (g)",
+            cals_kcal="Cals (kcal)",
+            fatcals_kcal="FatCals (kcal)",
+            satcals_kcal="SatCals (kcal)",
+            prot_g="Prot (g)",
+            carb_g="Carb (g)",
+            totfib_g="TotFib (g)",
+            totsolfib_g="TotSolFib (g)",
+            fib16_g="Fib(16) (g)",
+            solfib16_g="SolFib(16) (g)",
+            sugar_g="Sugar (g)",
+            sugadd_g="SugAdd (g)",
+            monsac_g="MonSac (g)",
+            disacc_g="Disacc (g)",
+            ocarb_g="OCarb (g)",
+            fat_g="Fat (g)",
+            satfat_g="SatFat (g)",
+            monofat_g="MonoFat (g)",
+            polyfat_g="PolyFat (g)",
+            transfat_g="TransFat (g)",
+            chol_mg="Chol (mg)",
+            water_g="Water (g)",
+            vita_iu="Vit A-IU (IU)",
+            vita_mcg="Vit A-RAE (mcg)",
+            caroten_mcg="Caroten (mcg)",
+            retinol_mcg="Retinol (mcg)",
+            betacaro_mcg="BetaCaro (mcg)",
+            vitb1_mg="Vit B1 (mg)",
+            vitb2_mg="Vit B2 (mg)",
+            vitb3_mg="Vit B3 (mg)",
+            vitb3_ne_mg="Vit B3-NE (mg)",
+            vitb6_mg="Vit B6 (mg)",
+            vitb12_mcg="Vit B12 (mcg)",
+            biot_mcg="Biot (mcg)",
+            vitc_mg="Vit C (mg)",
+            vitd_iu="Vit D-IU (IU)",
+            vitd_mcg="Vit D-mcg (mcg)",
+            vite_mg="Vit E-a-Toco (mg)",
+            folate_mcg="Folate (mcg)",
+            foldfe_mcg="Fol-DFE (mcg DFE)",
+            vitk_mcg="Vit K (mcg)",
+            panto_mg="Panto (mg)",
+            calc_mg="Calc (mg)",
+            chrom_mcg="Chrom (mcg)",
+            copp_mg="Copp (mg)",
+            flour_mg="Fluor (mg)",
+            iodine_mcg="Iodine (mcg)",
+            iron_mg="Iron (mg)",
+            magn_mg="Magn (mg)",
+            mang_mg="Mang (mg)",
+            moly_mcg="Moly (mcg)",
+            phos_mg="Phos (mg)",
+            pot_mg="Pot (mg)",
+            sel_mcg="Sel (mcg)",
+            sod_mg="Sod (mg)",
+            zinc_mg="Zinc (mg)",
+            omega3_g="Omega3 (g)",
+            omega6_g="Omega6 (g)",
+            alc_g="Alc (g)",
+            caff_mg="Caff (mg)",
+            chln_mg="Chln (mg)") %>%
+    gather(key="food_record_nutrient", value="food_record_value", wgt_g:chln_mg) %>%
+    mutate(food_record_value = replace(food_record_value, food_record_value == "--", NA),
+           redcap_event_name=redcap_event_name,
+           redcap_repeat_instrument="diet_record_processed",
+           redcap_repeat_instance=row_number(),
+           test_id=food_record_test_id) %>%
+    select(test_id,redcap_event_name,redcap_repeat_instrument,redcap_repeat_instance,everything())
+  
+  return(data_long)
+  
+} # END FUNCTION
+
+```
