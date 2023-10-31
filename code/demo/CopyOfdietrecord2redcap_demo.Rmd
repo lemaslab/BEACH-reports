@@ -1,8 +1,8 @@
 ---
 title: "dietrecord2redcap: Formatting Diet Records for Import to RedCap"
-author: "Dominick J. Lemas"
+author: "Dominick J. Lemas & Michele Himadi"
 date: "10/11/2023"
-output: html_document
+output: csv file for RedCap upload
 
 ---
 
@@ -41,6 +41,10 @@ irb_number="IRB201601034"
 # ***************                Library                       *************** #
 # **************************************************************************** #
 
+### make sure you're running libraries
+#ensure you're on the UF VPN
+
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
 
 library(tidyverse)
 library(readxl)
@@ -69,8 +73,8 @@ api_token=get_API_token("beach_api")
 # REPORT IDS
 #-----------
 #these are the only things you need to change
-record_id <- "BLS030A"  # Replace with the target record ID
-field_name <- "dietrecord_txt_output"
+record_id <- "BLS030A"  #***Replace with the target record ID
+field_name <- "dietrecord_txt_output" #replace this if you're editing a different file (but shouldn't need to)
 field_name_output <- "dietrecord_csv_redcap" #replace this if you're trying to upload the output file elsewhere
 event_name <- "third_trimester_arm_1" #replace if different event 
 
@@ -158,13 +162,17 @@ txt_file$food_record_study_visit <- event_name_short
 txt_file <- txt_file %>%
   select(food_record_day, meal_type, item_name, food_record_test_id,	food_record_study_visit, food_record_day_date,  everything())
 
+#change meal type and day to "all"
+txt_file[nrow(txt_file)-1, 1:2] <- "all"
+txt_file[nrow(txt_file), 1:2] <- "all"
+
 #remove trailing space
 txt_file$item_name <- gsub("^\\s+|\\s+$", "", txt_file$item_name)
 
 ```
 
 ```{r, message=FALSE,include=FALSE}
-#run if you want to check output
+#OPTIONAL - run if you want to check output
 write.csv(txt_file, "testdiet.csv", row.names = FALSE)
 
 ```
@@ -181,7 +189,7 @@ redcap_ready=dietrecord2redcap(txt_file,event_name_short)
 ```
 
 ```{r, message=FALSE,include=FALSE}
-#run if you want to check input
+#OPTIONAL - run if you want to check input
 write.csv(redcap_ready, "testredcapready.csv" , row.names = FALSE)
 
 ```
