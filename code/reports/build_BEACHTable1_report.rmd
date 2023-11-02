@@ -54,6 +54,7 @@ library(dplyr)
 library(flextable)
 library(officer)
 library(gt)
+library(ggplot2)
 
 load("~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
 
@@ -170,87 +171,78 @@ print(doc_2, target = "~/GitHub/BEACH-reports/data/table1_OWOB_v1.docx")
 
 
 ```
-##ignore these##
+
+
+
+###Grahping Breastfeeding Confidence, Infant Outcomes
 
 ```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
-# ***************              Load/Trim Data                  *************** #
+# ***************          Breastfeeding Confidence            *************** #
 # **************************************************************************** #
-load("~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
+#making table for breastfeeding confidence
+bf_conf_graph <- table1_formatted %>% select(BMI_Group, bf_2wk = "Breastfeeding Confidence (2 Weeks)", bf_2mo = "Breastfeeding Confidence (2 Months)", bf_12mo = "Breastfeeding Confidence (12 Months)")
+bf_conf_graph <- bf_conf_graph %>%
+    mutate(BMI_Group = recode(BMI_Group, "NW" = 'NW', "OW" = 'OW+OB', "OB" =  'OW+OB' ))
 
-#creating table 1 groups based on BMI Group
-table1_nw <- table1_formatted[table1_formatted$BMI_Group == "NW", ]
-table1_ow <- table1_formatted[table1_formatted$BMI_Group == "OW", ]
-table1_ob <- table1_formatted[table1_formatted$BMI_Group == "OB", ]
+#averaging by group
+avg_bf_2wk <- mean(bf_conf_graph$bf_2wk, na.rm = TRUE)
+avg_bf_2mo <- mean(bf_conf_graph$bf_2mo, na.rm = TRUE)
+avg_bf_12mo <- mean(bf_conf_graph$bf_12mo, na.rm = TRUE)
+avg_bf_NW_2wk <- mean(subset(bf_conf_graph, BMI_Group == "NW")$bf_2wk, na.rm = TRUE)
+avg_bf_NW_2mo <- mean(subset(bf_conf_graph, BMI_Group == "NW")$bf_2mo, na.rm = TRUE)
+avg_bf_NW_12mo <- mean(subset(bf_conf_graph, BMI_Group == "NW")$bf_12mo, na.rm = TRUE)
+avg_bf_OWOB_2wk <- mean(subset(bf_conf_graph, BMI_Group == "OW+OB")$bf_2wk, na.rm = TRUE)
+avg_bf_OWOB_2mo <- mean(subset(bf_conf_graph, BMI_Group == "OW+OB")$bf_2mo, na.rm = TRUE)
+avg_bf_OWOB_12mo <- mean(subset(bf_conf_graph, BMI_Group == "OW+OB")$bf_12mo, na.rm = TRUE)
 
-#creating sample groups based on BMI Group
-sample_grouping_nw <- sample_grouping[sample_grouping$BMI_Group == "NW", ]
-sample_grouping_ow <- sample_grouping[sample_grouping$BMI_Group == "OW", ]
-sample_grouping_ob <- sample_grouping[sample_grouping$BMI_Group == "OB", ]
+
+plot_df <- data.frame(
+  Time = rep(factor(c("2 weeks", "2 months", "12 months"), levels = c("2 weeks", "2 months", "12 months")), 2),
+  Avg_Breastfeeding_Confidence = c(avg_bf_2wk, avg_bf_2mo, avg_bf_12mo, avg_bf_NW_2wk, avg_bf_NW_2mo, avg_bf_NW_12mo, avg_bf_OWOB_2wk, avg_bf_OWOB_2mo, avg_bf_OWOB_12mo),
+  BMI_Group = rep(c("NW", "OWOB"), each = 6) 
+)
+
+# Create the plot with separate lines for each BMI group
+ggplot(plot_df, aes(x = Time, y = Avg_Breastfeeding_Confidence, group = BMI_Group, color = BMI_Group)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Time", y = "Breastfeeding Confidence") +
+  ggtitle("Average Breastfeeding Confidence Over Time")
+
+df_all <- data.frame(
+  Time = factor(c("2 weeks", "2 months", "12 months"), levels = c("2 weeks", "2 months", "12 months")),
+  Avg_Breastfeeding_Confidence = c(avg_bf_2wk, avg_bf_2mo, avg_bf_12mo),
+  BMI_Group = "all"
+)
+
+df_NW <- data.frame(
+  Time = factor(c("2 weeks", "2 months", "12 months"), levels = c("2 weeks", "2 months", "12 months")),
+  Avg_Breastfeeding_Confidence = c(avg_bf_NW_2wk, avg_bf_NW_2mo, avg_bf_NW_12mo),
+  BMI_Group = rep("NW", 3)
+)
+
+df_OWOB <- data.frame(
+  Time = factor(c("2 weeks", "2 months", "12 months"), levels = c("2 weeks", "2 months", "12 months")),
+  Avg_Breastfeeding_Confidence = c(avg_bf_OWOB_2wk, avg_bf_OWOB_2mo, avg_bf_OWOB_12mo),
+  BMI_Group = rep("OWOB", 3)
+)
+
+# Combine the data frames
+plot_df <- rbind(df_all, df_NW, df_OWOB)
+
+# Create the plot with separate lines for each BMI group
+ggplot(plot_df, aes(x = Time, y = Avg_Breastfeeding_Confidence, group = BMI_Group, color = BMI_Group)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Time", y = "Breastfeeding Confidence") +
+  ggtitle("Average Breastfeeding Confidence Over Time")
 
 ```
 
 
-```{r, message=FALSE,include=FALSE}
 
-# **************************************************************************** #
-# ***************          Calculating Table 1 Stats           *************** #
-# **************************************************************************** #
-#create table frame with rows to describe maternal age, gestational age, breastfeeding (months)
-table1 <- data.frame(Variables = c("n and p values", "Maternal Age", "Gestational Age", "Breastfeeding (months)", "BMI"))
-  #will fill in n and p values at the end
-
-#adding means for overall category
-table1[2,2] = paste(mean(table1_formatted$Maternal_Age, na.rm = TRUE), "+/-", sd(table1_formatted$Maternal_Age, na.rm = TRUE))
-table1[3,2] = paste(mean(table1_formatted$Gestational_Age, na.rm = TRUE), "+/-", sd(table1_formatted$Gestational_Age, na.rm = TRUE))
-table1[4,2] = paste(mean(table1_formatted$Breastfeeding_Months, na.rm = TRUE), "+/-", sd(table1_formatted$Breastfeeding_Months, na.rm = TRUE))
-table1[5,2] = paste(mean(table1_formatted$BMI, na.rm = TRUE),"+/-",sd(table1_formatted$BMI))
-
-#adding means for normal weight category
-table1[2,3] = paste(mean(table1_nw$Maternal_Age, na.rm = TRUE), "+/-", sd(table1_nw$Maternal_Age, na.rm = TRUE))
-table1[3,3] = paste(mean(table1_nw$Gestational_Age, na.rm = TRUE), "+/-", sd(table1_nw$Gestational_Age, na.rm = TRUE))
-table1[4,3] = paste(mean(table1_nw$Breastfeeding_Months, na.rm = TRUE), "+/-", sd(table1_nw$Breastfeeding_Months, na.rm = TRUE))
-table1[5,3] = paste(mean(table1_nw$BMI, na.rm = TRUE), "+/-", sd(table1_nw$BMI))
-
-class(table1_nw$BMI)
-
-#adding means for overweight weight category
-table1[2,4] = paste(mean(table1_ow$Maternal_Age, na.rm = TRUE), "+/-", sd(table1_ow$Maternal_Age, na.rm = TRUE))
-table1[3,4] = paste(mean(table1_ow$Gestational_Age, na.rm = TRUE), "+/-", sd(table1_ow$Gestational_Age, na.rm = TRUE))
-table1[4,4] = paste(mean(table1_ow$Breastfeeding_Months, na.rm = TRUE), "+/-", sd(table1_ow$Breastfeeding_Months, na.rm = TRUE))
-table1[5,4] = paste(mean(table1_ow$BMI, na.rm = TRUE), "+/-", sd(table1_ow$BMI, na.rm = TRUE))
-
-#adding means for obese category
-table1[2,5] = paste(mean(table1_ob$Maternal_Age, na.rm = TRUE), "+/-", sd(table1_ob$Maternal_Age, na.rm = TRUE))
-table1[3,5] = paste(mean(table1_ob$Gestational_Age, na.rm = TRUE), "+/-", sd(table1_ob$Gestational_Age, na.rm = TRUE))
-table1[4,5] = paste(mean(table1_ob$Breastfeeding_Months, na.rm = TRUE), "+/-", sd(table1_ob$Breastfeeding_Months, na.rm = TRUE))
-table1[5,5] = paste(mean(table1_ob$BMI, na.rm = TRUE), "+/-", sd(table1_ob$BMI))
-
-
-```
-
-
-```{r, message=FALSE,include=FALSE}
-
-# **************************************************************************** #
-# ***************                n and p values                *************** #
-# **************************************************************************** #
-
-
-#add n value and p value for each category: overall, normal weight, overweight, obese
-table1[1,2] = (paste("n =",nrow(table1_formatted),"( p =",nrow(table1_formatted)/nrow(table1_formatted)," )"))
-table1[1,3] = (paste("n =",nrow(table1_nw),"( p =", round(nrow(table1_nw)/nrow(table1_formatted), digits = 2)," )"))
-table1[1,4] = (paste("n =",nrow(table1_ow),"( p =", round(nrow(table1_ow)/nrow(table1_formatted), digits = 2)," )"))
-table1[1,5] = (paste("n =",nrow(table1_ob),"( p =", round(nrow(table1_ob)/nrow(table1_formatted), digits = 2)," )"))
-
-#rename table columns to reflect category
-colnames(table1)[2] <- "Overall"
-colnames(table1)[3] <- "Normal Weight"
-colnames(table1)[4] <- "Overweight"
-colnames(table1)[5] <- "Obese"
-
-```
 
 ```{r, message=FALSE,include=FALSE}
 

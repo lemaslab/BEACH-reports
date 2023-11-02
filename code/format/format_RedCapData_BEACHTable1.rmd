@@ -67,7 +67,7 @@ load("~/BEACH-reports/data/raw/report_36804.RData")
 
 ###table 1 data
 #select out extra data
-df_part <- report %>% select(test_id, redcap_event_name, maternal_study_groups, beach_final_bmi, inf2wk_gest_age, part_dob, mom2wk_delivery_date, overview_bf_check, overview_mom_bf, feedefficacy_score, overview_birthweight, maternal_race_nih___1, maternal_race_nih___2, maternal_race_nih___3, maternal_race_nih___4, maternal_race_nih___5, maternal_race_nih___6, mom_ethnicity_nih)
+df_part <- report %>% select(test_id, redcap_event_name, maternal_study_groups, beach_final_bmi, inf2wk_gest_age, part_dob, mom2wk_delivery_date, overview_bf_check, overview_mom_bf, feedefficacy_score, overview_birthweight, maternal_race_nih___1, maternal_race_nih___2, maternal_race_nih___3, maternal_race_nih___4, maternal_race_nih___5, maternal_race_nih___6, mom_ethnicity_nih, overview_inf_twowk_weight, overview_inf_twomo_weight, overview_inf_twemo_weight)
 
 #splitting breastfeeding confidence by visit
 df_part <- cbind(df_part, bf_two_week_arm_1=NA, bf_two_month_arm_1=NA, bf_six_month_arm_1=NA, bf_twelve_month_arm_1=NA)
@@ -128,10 +128,10 @@ part_calc <- participants %>% select(-redcap_event_name, -feedefficacy_score)
 
 for (i in 1:nrow(part_calc)) {
   if(is.na(part_calc[[i,5]]) == FALSE & is.na(part_calc[[i,6]]) == FALSE){
-    part_calc[i,21] <- (as.numeric(difftime(part_calc[[i,6]], part_calc[[i,5]], units = "days"))) / 365
+    part_calc[i,24] <- (as.numeric(difftime(part_calc[[i,6]], part_calc[[i,5]], units = "days"))) / 365
   }
 }
-colnames(part_calc)[21] <- "Maternal_Age"
+colnames(part_calc)[24] <- "Maternal_Age"
 part_calc$Maternal_Age <- round(part_calc$Maternal_Age, digits = 2)
 
 
@@ -139,7 +139,7 @@ part_calc$Maternal_Age <- round(part_calc$Maternal_Age, digits = 2)
 
 part_calc <- part_calc %>%
   ungroup() %>%
-  mutate_at(vars(17:20), as.numeric)
+  mutate_at(vars(20:23), as.numeric)
 
 cols_to_average <- c("bf_two_week_arm_1", "bf_two_month_arm_1", "bf_six_month_arm_1", "bf_twelve_month_arm_1")
 
@@ -201,24 +201,23 @@ part_coal$race_final <- coalesce(part_coal$race_multiple, part_coal$race)
 # ***************                  Cleaning                    *************** #
 # **************************************************************************** #
 
-#changing column names
-table1 <- part_coal %>% 
-  select(BMI_Group, BMI, Gestational_Age, Maternal_Age, Breastfeeding_Months = breastfeeding_months, Infant_Birthweight = overview_birthweight, Race_NIH = race_final, Ethnicity_NIH = mom_ethnicity_nih, Breastfeeding_Confidence_2_Weeks = bf_two_week_arm_1, Breastfeeding_Confidence_2_Months = bf_two_month_arm_1, Breastfeeding_Confidence_6_Months = bf_six_month_arm_1, Breastfeeding_Confidence_12_Months = bf_twelve_month_arm_1, Breastfeeding_Confidence_Average = average_bf_confidence)
-
-
-table1 <- table1 %>%
-  mutate(Race_NIH = case_when(
-    Race_NIH == "W" ~ "White",
-    Race_NIH == "B" ~ "Black or African American",
-    Race_NIH == "AS" ~ "Asian",
-    Race_NIH == "M" ~ "Two or More Races",
-    TRUE ~ Race_NIH
+#renaming race/ethnicity
+table1_raceeth <- part_coal %>%
+  mutate(race_final = case_when(
+    race_final == "W" ~ "White",
+    race_final == "B" ~ "Black or African American",
+    race_final == "AS" ~ "Asian",
+    race_final == "M" ~ "Two or More Races",
+    TRUE ~ race_final
   )) %>%
-  mutate(Ethnicity_NIH = case_when(
-    Ethnicity_NIH == "HL" ~ "Hispanic or Latino",
-    Ethnicity_NIH == "no" ~ "Not Hispanic or Latino"
+  mutate(mom_ethnicity_nih = case_when(
+    mom_ethnicity_nih == "HL" ~ "Hispanic or Latino",
+    mom_ethnicity_nih == "no" ~ "Not Hispanic or Latino"
   ))
 
+#changing column names
+table1 <- table1_raceeth %>% 
+  select(BMI_Group, BMI, Gestational_Age, "Maternal Age" = Maternal_Age, "Breastfeeding Months" = breastfeeding_months, "Infant Birthweight" = overview_birthweight, "Infant 2wk Weight" = overview_inf_twowk_weight, "Infant 2mo Weight" = overview_inf_twomo_weight, "Infant 12mo Weight" = overview_inf_twemo_weight,"NIH Race" = race_final, "NIH Ethnicity" = mom_ethnicity_nih, "Breastfeeding Confidence (2 Weeks)" = bf_two_week_arm_1, "Breastfeeding Confidence (2 Months)" = bf_two_month_arm_1, "Breastfeeding Confidence (6 Months)" = bf_six_month_arm_1, "Breastfeeding Confidence (12 Months)" = bf_twelve_month_arm_1, "Average Breastfeeding Confidence" = average_bf_confidence)
 
 #sorting by BMI group
 table1_formatted <- table1[order(table1$BMI),]
