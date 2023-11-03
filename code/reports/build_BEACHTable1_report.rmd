@@ -176,7 +176,7 @@ print(doc_2, target = "~/GitHub/BEACH-reports/data/table1_OWOB_v1.docx")
 
 ###Grahping Breastfeeding Confidence, Infant Outcomes
 
-```{r, message=FALSE,include=FALSE}
+```{r message=FALSE, include=FALSE}
 
 # **************************************************************************** #
 # ***************          Breastfeeding Confidence            *************** #
@@ -198,19 +198,6 @@ avg_bf_OWOB_2mo <- mean(subset(bf_conf_graph, BMI_Group == "OW+OB")$bf_2mo, na.r
 avg_bf_OWOB_12mo <- mean(subset(bf_conf_graph, BMI_Group == "OW+OB")$bf_12mo, na.rm = TRUE)
 
 
-plot_df <- data.frame(
-  Time = rep(factor(c("2 weeks", "2 months", "12 months"), levels = c("2 weeks", "2 months", "12 months")), 2),
-  Avg_Breastfeeding_Confidence = c(avg_bf_2wk, avg_bf_2mo, avg_bf_12mo, avg_bf_NW_2wk, avg_bf_NW_2mo, avg_bf_NW_12mo, avg_bf_OWOB_2wk, avg_bf_OWOB_2mo, avg_bf_OWOB_12mo),
-  BMI_Group = rep(c("NW", "OWOB"), each = 6) 
-)
-
-# Create the plot with separate lines for each BMI group
-ggplot(plot_df, aes(x = Time, y = Avg_Breastfeeding_Confidence, group = BMI_Group, color = BMI_Group)) +
-  geom_line() +
-  geom_point() +
-  labs(x = "Time", y = "Breastfeeding Confidence") +
-  ggtitle("Average Breastfeeding Confidence Over Time")
-
 df_all <- data.frame(
   Time = factor(c("2 weeks", "2 months", "12 months"), levels = c("2 weeks", "2 months", "12 months")),
   Avg_Breastfeeding_Confidence = c(avg_bf_2wk, avg_bf_2mo, avg_bf_12mo),
@@ -231,17 +218,75 @@ df_OWOB <- data.frame(
 
 # Combine the data frames
 plot_df <- rbind(df_all, df_NW, df_OWOB)
+plot_df <- plot_df %>%
+    mutate(BMI_Group = recode(BMI_Group, "NW" = 'Normal Weight', "OWOB" = 'Overweight + Obese', "all" =  'All Participants' ))
 
 # Create the plot with separate lines for each BMI group
 ggplot(plot_df, aes(x = Time, y = Avg_Breastfeeding_Confidence, group = BMI_Group, color = BMI_Group)) +
-  geom_line() +
-  geom_point() +
+  geom_line(size=1.5) +
+  geom_point(size=4) +
   labs(x = "Time", y = "Breastfeeding Confidence") +
-  ggtitle("Average Breastfeeding Confidence Over Time")
-
+  ggtitle("Average Breastfeeding Confidence Over Time") +
+  theme_bw() +
+  theme(panel.grid.major.x = element_blank()) +
+  scale_color_discrete(name = "BMI Group")
 ```
 
+```{r message=FALSE, include=FALSE}
 
+# **************************************************************************** #
+# ***************          Infant Outcomes - Weight            *************** #
+# **************************************************************************** #
+#making table for breastfeeding confidence
+infweight_conf_graph <- table1_formatted %>% select(BMI_Group, iw_2wk = "Infant 2wk Weight", iw_2mo = "Infant 2mo Weight", iw_12mo = "Infant 12mo Weight")
+iw_conf_graph <- infweight_conf_graph %>%
+    mutate(BMI_Group = recode(BMI_Group, "NW" = 'NW', "OW" = 'OW+OB', "OB" =  'OW+OB' ))
+
+#averaging by group
+avg_iw_2wk <- mean(iw_conf_graph$iw_2wk, na.rm = TRUE)
+avg_iw_2mo <- mean(iw_conf_graph$iw_2mo, na.rm = TRUE)
+avg_iw_12mo <- mean(iw_conf_graph$iw_12mo, na.rm = TRUE)
+avg_iw_NW_2wk <- mean(subset(iw_conf_graph, BMI_Group == "NW")$iw_2wk, na.rm = TRUE)
+avg_iw_NW_2mo <- mean(subset(iw_conf_graph, BMI_Group == "NW")$iw_2mo, na.rm = TRUE)
+avg_iw_NW_12mo <- mean(subset(iw_conf_graph, BMI_Group == "NW")$iw_12mo, na.rm = TRUE)
+avg_iw_OWOB_2wk <- mean(subset(iw_conf_graph, BMI_Group == "OW+OB")$iw_2wk, na.rm = TRUE)
+avg_iw_OWOB_2mo <- mean(subset(iw_conf_graph, BMI_Group == "OW+OB")$iw_2mo, na.rm = TRUE)
+avg_iw_OWOB_12mo <- mean(subset(iw_conf_graph, BMI_Group == "OW+OB")$iw_12mo, na.rm = TRUE)
+
+
+df_all_iw <- data.frame(
+  Time = factor(c("2 weeks", "2 months", "12 months"), levels = c("2 weeks", "2 months", "12 months")),
+  Avg_Inf_Weight = c(avg_iw_2wk, avg_iw_2mo, avg_iw_12mo),
+  BMI_Group = "all"
+)
+
+df_NW_iw <- data.frame(
+  Time = factor(c("2 weeks", "2 months", "12 months"), levels = c("2 weeks", "2 months", "12 months")),
+  Avg_Inf_Weight = c(avg_iw_NW_2wk, avg_iw_NW_2mo, avg_iw_NW_12mo),
+  BMI_Group = rep("NW", 3)
+)
+
+df_OWOB_iw <- data.frame(
+  Time = factor(c("2 weeks", "2 months", "12 months"), levels = c("2 weeks", "2 months", "12 months")),
+  Avg_Inf_Weight = c(avg_iw_OWOB_2wk, avg_iw_OWOB_2mo, avg_iw_OWOB_12mo),
+  BMI_Group = rep("OWOB", 3)
+)
+
+# Combine the data frames
+plot_df <- rbind(df_all_iw, df_NW_iw, df_OWOB_iw)
+plot_df <- plot_df %>%
+    mutate(BMI_Group = recode(BMI_Group, "NW" = 'Normal Weight', "OWOB" = 'Overweight + Obese', "all" =  'All Participants' ))
+
+# Create the plot with separate lines for each BMI group
+ggplot(plot_df, aes(x = Time, y = Avg_Inf_Weight, group = BMI_Group, color = BMI_Group)) +
+  geom_line(size=1.5) +
+  geom_point(size=4) +
+  labs(x = "Time", y = "Infant Weight") +
+  ggtitle("Average Infant Weight Over Time") +
+  theme_bw() +
+  theme(panel.grid.major.x = element_blank()) +
+  scale_color_discrete(name = "BMI Group")
+```
 
 
 ```{r, message=FALSE,include=FALSE}
