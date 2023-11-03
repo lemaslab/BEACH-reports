@@ -64,6 +64,12 @@ library(tidyverse)
 
 load("~/BEACH-reports/data/processed/21221_NIHenrollment_clean.RData")
 
+#remove participants who have more than one race listed and change their type to "one or more races" ("M")
+data$combined = paste(data$test_id, data$participant_type)
+data$race=as.character(data$race)
+data$race[duplicated(data$combined) | duplicated(data$combined, fromLast = TRUE)] <- "M"
+data = data[!duplicated(data$combined),]
+
 ds=data %>%
   rename(gender=sex_nih,
          ethnicity=ethnicity_nih) %>%
@@ -76,16 +82,6 @@ ds$race=as.character(ds$race)
 # ds[ds$gender=="<NA>"]=NA
 
 ```
-
-#### __Project Details__
-Title: `r project_name`  
-IRB Number: `r irb_number`  
-Report Name (source-data): `r report_name`  
-Report ID (source-data): `r report_id`  
-Upstream Code: `r upstream_code`  
-Input Data: `r input_file`
-
-#### __Data Description__
 
 
 ```{r, message=FALSE,echo=FALSE}

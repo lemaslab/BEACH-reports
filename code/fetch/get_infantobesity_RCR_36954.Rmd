@@ -1,7 +1,7 @@
 ---
-title: "Get RedCap Data: BEACH Table 1"
+title: "Get RedCap Data: Infant Obesity Outcomes"
 author: "Dominick J. Lemas"
-date: "2/14/2023"
+date: "07/19/2022"
 output: html_document
 
 ---
@@ -13,8 +13,8 @@ output: html_document
 # **************************************************************************** #
 
 # Author:            Dominick J. Lemas
-# Start Date:        02/07/2023 
-# Date Modify:       3/01/2023
+# Start Date:        07/19/2022 
+# Date Modify:       10/18/2022
 # Project:           The Breastfeeding and EArly Child Health Study
 # IRB:               IRB201601034
 #                   
@@ -66,8 +66,8 @@ api_token=get_API_token("beach_api")
 #-----------
 
 # Study Overview
-report_id<-36804L
-report_name= "BEACH Table 1"
+report_id<-36954L
+report_name= "Infant Obesity Outcomes"
 
 
 # PULL DATA
@@ -91,10 +91,10 @@ report = report_raw %>%
 # **************************************************************************** #
 
 # Save the data in your local laptop (Github path: /data)
-save(list=c("report"),file="~/BEACH-reports/data/raw/report_36804.RData")
+save(list=c("report"),file="~/BEACH-reports/data/raw/report_36954.RData")
 
 output_directory="~/BEACH-reports/data/raw/"
-output_file_name="report_36804.RData"
+output_file_name="report_36954.RData"
 
 ```
 

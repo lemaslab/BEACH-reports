@@ -66,8 +66,8 @@ api_token=get_API_token("beach_api")
 #-----------
 
 # Study Overview
-report_id<-39840L
-report_name= "Plasma Metabolomics and Maternal-Infant Outcomes"
+report_id<-36804L
+report_name= "BEACH Table 1"
 
 
 # PULL DATA
@@ -80,7 +80,7 @@ report_raw <-
   )$data 
 
 report = report_raw %>%
-  select(-redcap_repeat_instrument,-redcap_repeat_instance)   # drop out variables not needed)
+  select(-redcap_repeat_instrument,-redcap_repeat_instance, -redcap_survey_identifier)   # drop out variables not needed)
 
 ```
 
@@ -91,10 +91,10 @@ report = report_raw %>%
 # **************************************************************************** #
 
 # Save the data in your local laptop (Github path: /data)
-save(list=c("report"),file="~/BEACH-reports/data/raw/report_39840.RData")
+save(list=c("report"),file="~/BEACH-reports/data/raw/report_36804.RData")
 
 output_directory="~/BEACH-reports/data/raw/"
-output_file_name="report_39840.RData"
+output_file_name="report_36804.RData"
 
 ```
 

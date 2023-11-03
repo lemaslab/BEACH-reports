@@ -55,6 +55,8 @@ library(zoo)
 
 ```
 
+### Table One Participant Info ###
+
 ```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
@@ -65,15 +67,29 @@ load("~/BEACH-reports/data/raw/report_36804.RData")
 
 ###table 1 data
 #select out extra data
-df <- report %>% select(test_id, maternal_study_groups, beach_final_bmi,inf2wk_gest_age, mom3t_birth_date, mom2wk_delivery_date, inf2mo_bfpump_age_stop, inf2mo_bfpump_age_stop_units )
+df_part <- report %>% select(test_id, redcap_event_name, maternal_study_groups, beach_final_bmi, inf2wk_gest_age, part_dob, mom2wk_delivery_date, overview_bf_check, overview_mom_bf, feedefficacy_score, overview_birthweight, maternal_race_nih___1, maternal_race_nih___2, maternal_race_nih___3, maternal_race_nih___4, maternal_race_nih___5, maternal_race_nih___6, mom_ethnicity_nih, overview_inf_twowk_weight, overview_inf_twomo_weight, overview_inf_twemo_weight)
+
+#splitting breastfeeding confidence by visit
+df_part <- cbind(df_part, bf_two_week_arm_1=NA, bf_two_month_arm_1=NA, bf_six_month_arm_1=NA, bf_twelve_month_arm_1=NA)
+
+conditions <- c("two_week_arm_1", "two_month_arm_1", "six_month_arm_1", "twelve_month_arm_1")
+
+for (condition in conditions) {
+  condition_check <- df_part$redcap_event_name == condition
+  target_col <- paste0("bf_", condition)
+  df_part[[target_col]][condition_check] <- ifelse(
+  is.na(df_part$feedefficacy_score[condition_check]),
+  NA,
+  df_part$feedefficacy_score[condition_check]
+)
+}
 
 #create one row for each participant with their respective data
-participants <- df %>%
+participants <- df_part %>%
   group_by(test_id) %>%
   fill(everything(), .direction = "down") %>%
   fill(everything(), .direction = "up") %>%
   slice(1)
-
 
 #renaming column headings
 names(participants)[names(participants) == "maternal_study_groups"] <- "BMI_Group"
@@ -82,10 +98,156 @@ names(participants)[names(participants) == "inf2wk_gest_age"] <- "Gestational_Ag
 
 
 #coding some of the values for study groups and breastfeeding units
-bmi_recode <- participants %>%
-    mutate(BMI_Group = recode(BMI_Group, "1" = 'NW', "2" = 'OW', "3" =  'OB' ))
-months_recode <- bmi_recode %>%
-    mutate(inf2mo_bfpump_age_stop_units = recode(inf2mo_bfpump_age_stop_units, "1" = 'Weeks', "2" = "Months"))
+participants <- participants %>%
+  mutate(
+    BMI_Group = recode(BMI_Group, "1" = 'NW', "2" = 'OW', "3" =  'OB' ),
+    overview_bf_check = case_when(
+      overview_bf_check == "2" ~ "12",
+      TRUE ~ as.character(NA)  
+    ),
+    mom_ethnicity_nih = case_when(
+      mom_ethnicity_nih == "2" ~ "HL", 
+      mom_ethnicity_nih == "1" ~ "no",
+      TRUE ~ as.character(NA)  
+    )
+  )
+
+#trimming data for calculating age section
+part_calc <- participants %>% select(-redcap_event_name, -feedefficacy_score)
+
+```
+
+```{r, message=FALSE, include=FALSE}
+# **************************************************************************** #
+# ***************        Calculate: Age & BF Confidence        *************** #
+# **************************************************************************** #
+
+#ensure ggplot2 and eeptools are downloaded
+
+#maternal age calculating
+
+part_calc$Maternal_Age <- NA #new column for calculated ages
+
+for (i in 1:nrow(part_calc)) {
+  if (!is.na(part_calc$part_dob[i]) & !is.na(part_calc$mom2wk_delivery_date[i])){
+    part_calc$Maternal_Age[i] <- (as.numeric(difftime( part_calc$mom2wk_delivery_date[i], part_calc$part_dob[i], units = "days"))) / 365
+  }
+}
+
+part_calc$Maternal_Age <- round(part_calc$Maternal_Age, digits = 2)
+
+
+#breastfeeding confidence
+
+part_calc <- part_calc %>%
+  ungroup() %>%
+  mutate_at(vars(20:23), as.numeric)
+
+cols_to_average <- c("bf_two_week_arm_1", "bf_two_month_arm_1", "bf_six_month_arm_1", "bf_twelve_month_arm_1")
+
+part_calc$average_bf_confidence <- NA
+
+for (i in 1:nrow(part_calc)) {
+  non_na_values <- part_calc[i, cols_to_average][!is.na(part_calc[i, cols_to_average])]
+  if (length(non_na_values) > 0) {
+    part_calc$average_bf_confidence[i] <- mean(non_na_values)
+  }
+}
+
+#trimming data for coalesce section
+part_coal <- part_calc %>% select(-part_dob, -mom2wk_delivery_date)
+  
+```
+
+```{r, message=FALSE, include=FALSE}
+# **************************************************************************** #
+# ***************               Coalesce: BF, Race             *************** #
+# **************************************************************************** #
+
+#breastfeeding
+part_coal$overview_bf_check <- as.numeric(part_coal$overview_bf_check)
+part_coal$overview_mom_bf <- as.numeric(part_coal$overview_mom_bf)
+
+part_coal$breastfeeding_months <- coalesce(part_coal$overview_mom_bf, part_coal$overview_bf_check)
+
+#race
+part_coal$race <- NA
+
+#joining race to column
+row_names <- paste0("maternal_race_nih___", 1:6)
+labels <- c("AIAN", "AS", "B", "NHPI", "W", NA)
+for (i in 1:length(row_names)) {
+  condition <- part_coal[[row_names[i]]] == 1
+  part_coal$race[condition] <- labels[i]
+}
+
+##multiple race
+multiple_nih <- function(row) {
+  if (sum(row == 1) > 1) {
+    return("M")
+  } else {
+    return(NA)
+  }
+}
+cols_to_check <- c("maternal_race_nih___1", "maternal_race_nih___2", "maternal_race_nih___3", "maternal_race_nih___4", "maternal_race_nih___5", "maternal_race_nih___6")
+part_coal$race_multiple <- apply(part_coal[cols_to_check], 1, multiple_nih)
+
+#combine to race_final
+part_coal$race_final <- coalesce(part_coal$race_multiple, part_coal$race)
+
+
+```
+
+```{r, message=FALSE, include=FALSE}
+# **************************************************************************** #
+# ***************                  Cleaning                    *************** #
+# **************************************************************************** #
+
+#renaming race/ethnicity
+table1_raceeth <- part_coal %>%
+  mutate(race_final = case_when(
+    race_final == "W" ~ "White",
+    race_final == "B" ~ "Black or African American",
+    race_final == "AS" ~ "Asian",
+    race_final == "M" ~ "Two or More Races",
+    TRUE ~ race_final
+  )) %>%
+  mutate(mom_ethnicity_nih = case_when(
+    mom_ethnicity_nih == "HL" ~ "Hispanic or Latino",
+    mom_ethnicity_nih == "no" ~ "Not Hispanic or Latino"
+  ))
+
+#changing column names
+table1 <- table1_raceeth %>% 
+  select(BMI_Group, BMI, Gestational_Age, "Maternal Age" = Maternal_Age, "Breastfeeding Months" = breastfeeding_months, "Infant Birthweight" = overview_birthweight, "Infant 2wk Weight" = overview_inf_twowk_weight, "Infant 2mo Weight" = overview_inf_twomo_weight, "Infant 12mo Weight" = overview_inf_twemo_weight,"NIH Race" = race_final, "NIH Ethnicity" = mom_ethnicity_nih, "Breastfeeding Confidence (2 Weeks)" = bf_two_week_arm_1, "Breastfeeding Confidence (2 Months)" = bf_two_month_arm_1, "Breastfeeding Confidence (6 Months)" = bf_six_month_arm_1, "Breastfeeding Confidence (12 Months)" = bf_twelve_month_arm_1, "Average Breastfeeding Confidence" = average_bf_confidence)
+
+#sorting by BMI group
+table1_formatted <- table1[order(table1$BMI),]
+
+```
+
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+
+# Save the data in your local laptop (Github path: /data)
+save(list=c("table1_formatted"),file="~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
+
+output_directory="~/BEACH-reports/data/processed/"
+output_file_name="BEACHTable1.RData"
+
+```
+
+### Table One Samples ###
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************               Sample Data                    *************** #
+# **************************************************************************** #
 
 ###samples
 samples <- report %>% select (test_id, maternal_study_groups, mom3t_crc_blood_time, mom3t_crc_stool_time, mompostnat_crc_milk_time, mompostnat_crc_blood_time, mompostnat_crc_stool_time, infant_crc_blood_time, infant_crc_stool_time, beach_foodrecord_hardcopy)
@@ -99,76 +261,6 @@ samples <- samples %>%
 sample_grouping <- samples %>%
     fill(BMI_Group, .direction = "down")
 
-```
-
-```{r, message=FALSE, include=FALSE}
-# **************************************************************************** #
-# ***************      Changing Specific Breastfeeding Data    *************** #
-# **************************************************************************** #
-
-#cleaning data for specific values that have specific inconsistencies for easier analysis
-
-#changing row 44 column 7-8, BLS056A, from 3 weeks to 1.5 months as it's the only data listed in weeks
-#and the value for inf2mo_bf_pump_age_stop is listed as 6 weeks for their 6 month and 12 month visits
-months_recode[44,7] = "1.5"
-months_recode[44,8] = "months"
-
-#chaning row 54 column 7, BLS070A inf2mo_bfpump_age_stop, from "9 1/2" to "9.5"
-months_recode[54,7] = "9.5"
-
-#changing row 58 column 7, BLS078A inf2mo_bfpump_age_stop, from "5-6" to "5.5," to provide an average of the range for an easier numerical value for analysis
-months_recode[58,7] = "5.5"
-
-#since all data is now in months, renaming column to just be in months and removing units column
-names(months_recode)[names(months_recode) == "inf2mo_bfpump_age_stop"] <- "Breastfeeding_Months"
-months_recode$Breastfeeding_Months <- as.numeric(months_recode$Breastfeeding_Months, na.rm = TRUE)
-age_calculate <- months_recode %>% select(BMI_Group, BMI, Gestational_Age, mom3t_birth_date, mom2wk_delivery_date, Breastfeeding_Months)
-
-
-```
-
-```{r, message=FALSE, include=FALSE}
-# **************************************************************************** #
-# ***************                Calculating Age               *************** #
-# **************************************************************************** #
-
-#ensure ggplot2 and eeptools are downloaded
-
-
-for (i in 1:nrow(age_calculate)) {
-  if(is.na(age_calculate[[i,5]]) == FALSE & is.na(age_calculate[[i,6]]) == FALSE){
-    age_calculate[i,8] <- (as.numeric(difftime(age_calculate[[i,6]], age_calculate[[i,5]], units = "days"))) / 365
-  }
-}
-colnames(age_calculate)[8] <- "Maternal_Age"
-age_calculate$Maternal_Age <- round(age_calculate$Maternal_Age, digits = 2)
-
-#remove dates as they're not needed for final table 1
-age_calc_final <- age_calculate %>% select(BMI_Group, BMI, Maternal_Age, Gestational_Age, Breastfeeding_Months)
-
-
-```
-
-```{r, message=FALSE, include=FALSE}
-# **************************************************************************** #
-# ***************            Sorting By BMI_Group              *************** #
-# **************************************************************************** #
-
-table1_formatted <- age_calc_final[order(age_calc_final$BMI),]
-
-```
-
-```{r, message=FALSE, include=FALSE}
-
-# **************************************************************************** #
-# ***************              Save Data Local                 *************** #
-# **************************************************************************** #
-
-# Save the data in your local laptop (Github path: /data)
-save(list=c("table1_formatted", "sample_grouping"),file="~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
-
-output_directory="~/BEACH-reports/data/processed/"
-output_file_name="BEACHTable1.RData"
 
 ```
 
