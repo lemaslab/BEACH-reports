@@ -126,12 +126,14 @@ part_calc <- participants %>% select(-redcap_event_name, -feedefficacy_score)
 
 #maternal age calculating
 
+part_calc$Maternal_Age <- NA #new column for calculated ages
+
 for (i in 1:nrow(part_calc)) {
-  if(is.na(part_calc[[i,5]]) == FALSE & is.na(part_calc[[i,6]]) == FALSE){
-    part_calc[i,24] <- (as.numeric(difftime(part_calc[[i,6]], part_calc[[i,5]], units = "days"))) / 365
+  if (!is.na(part_calc$part_dob[i]) & !is.na(part_calc$mom2wk_delivery_date[i])){
+    part_calc$Maternal_Age[i] <- (as.numeric(difftime( part_calc$mom2wk_delivery_date[i], part_calc$part_dob[i], units = "days"))) / 365
   }
 }
-colnames(part_calc)[24] <- "Maternal_Age"
+
 part_calc$Maternal_Age <- round(part_calc$Maternal_Age, digits = 2)
 
 
