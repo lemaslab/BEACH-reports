@@ -68,7 +68,7 @@ load("~/BEACH-reports/data/processed/36804_BEACHTable1_clean.RData")
 
 #making table 1 that's grouped by NW, OW, OB
 ##changing names to reorganize columns
-table1_formatted <- table1_formatted %>%
+table1_summary <- table1_formatted %>%
   mutate(BMI_Group = case_when(
     BMI_Group == "NW" ~ "1. Normal Weight",
     BMI_Group == "OW" ~ "2. Overweight",
@@ -77,7 +77,7 @@ table1_formatted <- table1_formatted %>%
   ))
 
 #making table
-tb_sum <- table1_formatted %>%
+tb_sum <- table1_summary %>%
   tbl_summary(by = BMI_Group, type = list(Gestational_Age ~ "continuous"),
     statistic = list(
       all_continuous() ~ "{mean} ({sd})",
@@ -87,7 +87,7 @@ tb_sum <- table1_formatted %>%
   bold_labels()
 
 #making overall table
-overall_summary <- table1_formatted %>%
+overall_summary <- table1_summary %>%
   select(-BMI_Group) %>%
   tbl_summary(type = list(Gestational_Age ~ "continuous"),
     statistic = list(
@@ -128,7 +128,7 @@ print(doc_1, target = "~/GitHub/BEACH-reports/data/table1_all_v2.docx")
 # **************************************************************************** #
 
 #creating table that merges OB+OW
-tbl1_OWOB <- table1_formatted %>%
+tbl1_OWOB <- table1_summary %>%
   mutate(BMI_Group = case_when(
     BMI_Group == "NW" ~ "1. Normal Weight",
     BMI_Group == "2. Overweight" ~ "2. Overweight + Obese",
@@ -222,7 +222,7 @@ plot_df <- plot_df %>%
     mutate(BMI_Group = recode(BMI_Group, "NW" = 'Normal Weight', "OWOB" = 'Overweight + Obese', "all" =  'All Participants' ))
 
 # Create the plot with separate lines for each BMI group
-ggplot(plot_df, aes(x = Time, y = Avg_Breastfeeding_Confidence, group = BMI_Group, color = BMI_Group)) +
+a <- ggplot(plot_df, aes(x = Time, y = Avg_Breastfeeding_Confidence, group = BMI_Group, color = BMI_Group)) +
   geom_line(size=1.5) +
   geom_point(size=4) +
   labs(x = "Time", y = "Breastfeeding Confidence") +
@@ -230,6 +230,10 @@ ggplot(plot_df, aes(x = Time, y = Avg_Breastfeeding_Confidence, group = BMI_Grou
   theme_bw() +
   theme(panel.grid.major.x = element_blank()) +
   scale_color_discrete(name = "BMI Group")
+a
+
+ggsave(a, filename = "~/GitHub/BEACH-reports/data/bfconf.png")
+
 ```
 
 ```{r message=FALSE, include=FALSE}
@@ -278,7 +282,7 @@ plot_df <- plot_df %>%
     mutate(BMI_Group = recode(BMI_Group, "NW" = 'Normal Weight', "OWOB" = 'Overweight + Obese', "all" =  'All Participants' ))
 
 # Create the plot with separate lines for each BMI group
-ggplot(plot_df, aes(x = Time, y = Avg_Inf_Weight, group = BMI_Group, color = BMI_Group)) +
+b <- ggplot(plot_df, aes(x = Time, y = Avg_Inf_Weight, group = BMI_Group, color = BMI_Group)) +
   geom_line(size=1.5) +
   geom_point(size=4) +
   labs(x = "Time", y = "Infant Weight") +
@@ -286,6 +290,9 @@ ggplot(plot_df, aes(x = Time, y = Avg_Inf_Weight, group = BMI_Group, color = BMI
   theme_bw() +
   theme(panel.grid.major.x = element_blank()) +
   scale_color_discrete(name = "BMI Group")
+b
+
+ggsave(b, filename = "~/GitHub/BEACH-reports/data/infweight.png")
 ```
 
 
