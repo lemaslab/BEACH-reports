@@ -73,7 +73,7 @@ api_token=get_API_token("beach_api")
 # REPORT IDS
 #-----------
 #these are the only things you need to change
-record_id <- "BLS030A"  #***Replace with the target record ID
+record_id <- "BLS001A"  #***Replace with the target record ID
 field_name <- "dietrecord_txt_output" #replace this if you're editing a different file (but shouldn't need to)
 field_name_output <- "dietrecord_csv_redcap" #replace this if you're trying to upload the output file elsewhere
 event_name <- "third_trimester_arm_1" #replace if different event 
@@ -87,8 +87,7 @@ file_name <- glue("{record_id}_{event_name_short}.txt")
 redcap_download_file_oneshot(file_name = file_name, redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name)
 
 #format txt file into dataframe
-txt_file <- read.delim(file_name)
-
+txt_file <- read.delim(file_name, skip = 2)
 ```
 
 ```{r, message=FALSE,include=FALSE}
