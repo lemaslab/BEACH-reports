@@ -87,7 +87,8 @@ file_name <- glue("{record_id}_{event_name_short}.txt")
 redcap_download_file_oneshot(file_name = file_name, redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name)
 
 #format txt file into dataframe
-txt_file <- read.delim(file_name, skip = 2)
+txt_file <- read.delim(file_name, skip = 2, head=FALSE) #header is skipped so it doesn't weirdly format the first row of data as a "header" and so this script can be continuous with the diet2redcap function
+
 ```
 
 ```{r, message=FALSE,include=FALSE}
@@ -96,7 +97,7 @@ txt_file <- read.delim(file_name, skip = 2)
 # ***************                 Format Data File             *************** #
 # **************************************************************************** #
 
-#put in first row as header
+#this puts in first row as header
 names(txt_file) <- txt_file[1,]
 txt_file <- txt_file[-1,]
 
