@@ -218,36 +218,6 @@ verbose = TRUE
 ```
 
 ```{r, message=FALSE,include=FALSE}
-# **************************************************************************** #
-# ***************            Fix File Upload Issues            *************** #
-# **************************************************************************** #
-
-# Get a list of all files in the current working directory (cwd) that match the pattern
-file_list <- list.files(pattern = "BLS\\d+A_third_trimester_redcap_ready.csv")
-
-# Loop through each file
-for(file_name in file_list) {
-  # Read the CSV file
-  df <- read.csv(file_name)
-  
-  # Task 1: Rename the file
-  new_file_name <- gsub("third_trimester", "third_trimester_arm_1", file_name)
-  file.rename(file_name, new_file_name)
-  
-  # Task 2: Change the "redcap_event_name" column
-  df$redcap_event_name <- "third_trimester_arm_1"
-  
-  # Task 3: Rename the "food_measure_quantity" column
-  colnames(df)[colnames(df) == "food_measure_quantity"] <- "food_record_quantity"
-  
-  # Save the modified dataframe back to a CSV file
-  write.csv(df, new_file_name, row.names = FALSE)
-}
-
-
-```
-
-```{r, message=FALSE,include=FALSE}
 #function if it doesn't load into environment properly
 dietrecord2redcap <- function(diet_wide, redcap_event_name) {
   data_long=diet_wide %>%
