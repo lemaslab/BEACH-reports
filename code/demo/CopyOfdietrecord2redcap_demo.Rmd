@@ -73,7 +73,7 @@ api_token=get_API_token("beach_api")
 # REPORT IDS
 #-----------
 #these are the only things you need to change
-record_id <- "BLS001A"  #***Replace with the target record ID
+record_id <- "BLS006A"  #***Replace with the target record ID
 field_name <- "dietrecord_txt_output" #replace this if you're editing a different file (but shouldn't need to)
 field_name_output <- "dietrecord_csv_redcap" #replace this if you're trying to upload the output file elsewhere
 event_name <- "third_trimester_arm_1" #replace if different event 
@@ -104,7 +104,7 @@ txt_file <- txt_file[-1,]
 #change names of items, quantity, measure
 names(txt_file)[names(txt_file) == "Item Name"] <- "item_name"
 names(txt_file)[names(txt_file) == "Quantity"] <- "food_record_quantity"
-names(txt_file)[names(txt_file) == "Measure"] <- "food_measure_quantity"
+names(txt_file)[names(txt_file) == "Measure"] <- "food_record_measure"
 
 ###fill food_record_day with Day# from item name and food_record_day_date with date
 #matching day # and day date
@@ -184,7 +184,7 @@ write.csv(txt_file, "testdiet.csv", row.names = FALSE)
 
 #function attached at bottom if it doesn't populate automatically
 
-redcap_ready=dietrecord2redcap(txt_file,event_name_short)
+redcap_ready=dietrecord2redcap(txt_file,event_name)
 
 ```
 
@@ -214,6 +214,15 @@ field = field_name_output,
 event = "event_name",
 verbose = TRUE
 )
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************            Fix File Upload Issues            *************** #
+# **************************************************************************** #
+
+
 
 ```
 
