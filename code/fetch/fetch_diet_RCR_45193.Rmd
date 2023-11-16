@@ -86,12 +86,14 @@ report_raw <-
 
 ```{r, message=FALSE,include=FALSE}
 
-test=report_raw %>%
-  filter(test_id=="BLS030A") %>%
-  filter(meal_type=="full_day") %>%
+# complete some preliminary analysis
+
+full_day=report_raw %>%
+  filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
   filter(food_record_nutrient=="cals_kcal") %>%
-  group_by(food_record_day) %>%
-  summarize(food_record_value)
+  group_by(test_id) %>%
+  select(test_id,food_record_value) %>%
+  summarise(mean=mean(food_record_value))
 
 
 ```
