@@ -47,7 +47,9 @@ library(keyringr)
 library(redcapAPI)
 library(REDCapR)
 library(tidyverse)
-source("~/plasma-metabolomics/code/utils/utils.R")
+# source("E:/documents/BEACH-reports/code/utils/utils.R")
+# source("~/BEACH-reports/code/utils/utils.R")
+
 
 
 ```
@@ -88,14 +90,39 @@ report_raw <-
 
 # complete some preliminary analysis
 
-full_day=report_raw %>%
+full_day_kcals=report_raw %>%
   filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
   filter(food_record_nutrient=="cals_kcal") %>%
   group_by(test_id) %>%
   select(test_id,food_record_value) %>%
-  summarise(mean=mean(food_record_value))
+  summarise(mean=mean(food_record_value)) %>%
+  rename(cals_kcal_average=mean) %>%
+  mutate(study_visit="third_trimester")
+  
+# next diet variable
+
+# next diet variable
 
 
+# merge into eachother
+
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# you can find the list of diet variables in the ~/BEACH-reports/code/utils/utils.R
+
+# based on your tables, these seem like variables of interest. 
+
+            cals_kcal="Cals (kcal)",
+            fatcals_kcal="FatCals (kcal)",
+            satcals_kcal="SatCals (kcal)",
+            prot_g="Prot (g)",
+            carb_g="Carb (g)",
+            totfib_g="TotFib (g)",
+            totsolfib_g="TotSolFib (g)",
+            
 ```
 
 
@@ -108,8 +135,8 @@ full_day=report_raw %>%
 # # Save the data in your local laptop (Github path: /data)
 # save(list=c("report"),file="~/BEACH-reports/data/raw/report_39840.RData")
 # 
-# output_directory="~/BEACH-reports/data/raw/"
-# output_file_name="report_39840.RData"
+# output_directory="~/BEACH-reports/data/processed/"
+# output_file_name="third_trimester_diet_data.RData"
 
 ```
 
