@@ -1,8 +1,10 @@
 ---
-title: "Get RedCap Data: Diet Records Report"
+title: 'Get RedCap Data: Diet Records Report'
 author: "Dominick J. Lemas"
 date: "10/11/2023"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r, include=FALSE}
