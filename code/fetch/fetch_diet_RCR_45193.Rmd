@@ -48,8 +48,8 @@ library(keyringr)
 library(redcapAPI)
 library(REDCapR)
 library(tidyverse)
-# source("E:/documents/BEACH-reports/code/utils/utils.R")
-# source("~/Documents/BEACH-reports/code/utils/utils.R")
+# source("E:/Documents/BEACH-reports/code/utils/utils.R")
+source("C:/Users/djlemas/Documents/BEACH-reports/code/utils/utils.R")
 
 
 
@@ -64,7 +64,7 @@ library(tidyverse)
 # API & URL
 #----------
 uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
-api_token <- "14BC9225EDC31A7B6B2D069BF7E93954"
+api_token=get_API_token("beach_api")
 
 # REPORT IDS
 #-----------
@@ -94,7 +94,7 @@ full_day_kcals=report_raw %>%
   filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
   filter(food_record_nutrient=="cals_kcal") %>%
   group_by(test_id) %>%
-  select(test_id,food_record_value) %>%
+  select(test_id,food_record_day,food_record_value) %>%
   summarise(mean=mean(food_record_value)) %>%
   rename(cals_kcal_average=mean) %>%
   mutate(study_visit="third_trimester")
@@ -104,7 +104,7 @@ full_day_prot_g=report_raw %>%
   filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
   filter(food_record_nutrient=="prot_g") %>%
   group_by(test_id) %>%
-  select(test_id,food_record_value) %>%
+  select(test_id,food_record_day,food_record_value) %>%
   summarise(mean=mean(food_record_value)) %>%
   rename(prot_g_average=mean) %>%
   mutate(study_visit="third_trimester")
