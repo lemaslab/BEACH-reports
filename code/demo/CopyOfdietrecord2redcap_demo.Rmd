@@ -73,18 +73,30 @@ api_token=get_API_token("beach_api")
 # REPORT IDS
 #-----------
 #these are the only things you need to change
-record_id <- "BLS002A"  #***Replace with the target record ID
+record_id <- "BLS030A"  #***Replace with the target record ID
 field_name <- "dietrecord_txt_output" #replace this if you're editing a different file (but shouldn't need to)
 field_name_output <- "dietrecord_csv_redcap" #replace this if you're trying to upload the output file elsewhere
-event_name <- "third_trimester_arm_1" #replace if different event 
+event_name <- "two_month_arm_1" #replace if different event
+
+#Third_trimester = third_trimester_arm_1
+#Two_week = two_week_arm_1
+#Two_month = two_month_arm_1
+#Six_month = six_month_arm_1
+#Twelve_month =	twelve_month_arm_1
 
 #fixes naming issue with redcap_download_file
 event_name_short <- strsplit(event_name, "_")[[1]][1:2] 
-event_name_short <- paste(event_name_short, collapse = "_")
-file_name <- glue("{record_id}_{event_name_short}.txt")
+event_name_short <- paste(event_name_short, collapse = " ")
+file_name <- glue("{record_id} {event_name_short}.txt")
+#check that file_name matches on RedCap 
 
 #download file directly from Redcap to R with API token
-redcap_download_file_oneshot(file_name = file_name, redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name)
+#set overwrite to FALSE if you don't want it to overwrite previous downloaded files
+redcap_download_file_oneshot(file_name = file_name, redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name, overwrite = TRUE)
+
+#redcap_download_file_oneshot(redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name, overwrite = TRUE)
+#downloaded_file <- redcap_download_file_oneshot(redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name, overwrite = TRUE)
+#file_name <- downloaded_file[["file_name"]]
 
 #format txt file into dataframe
 txt_file <- read.table(file_name, skip = 2, header = FALSE, sep = "\t", quote = "")
@@ -120,6 +132,7 @@ day_dates[valid_matches] <- matches[valid_matches, 3]
 #insert 
 txt_file$food_record_day <- day_numbers
 txt_file$food_record_day_date <- day_dates
+#by the end, you should have most columns say 0 - these will be filled in later
 
 ###fill meal_type with meal types
 #copy meal types
@@ -206,13 +219,23 @@ assign(file_name, read.csv(file_name))
 
 #if this doesn't work you may have to upload it directly :(
 redcap_upload_file_oneshot(
-file_name = file_upload,
-record = record_id,
-redcap_uri = uri,
-token = api_token,
-field = field_name_output,
-event = "event_name",
-verbose = TRUE
+  file_name = file_upload,
+  record = record_id,
+  redcap_uri = uri,
+  token = api_token,
+  field = field_name_output,
+  event = event_name,
+  verbose = TRUE
+)
+
+redcap_write_oneshot(
+  ds = redcap_ready,
+  redcap_uri = uri,
+  token = api_token,
+  overwrite_with_blanks = TRUE,
+  convert_logical_to_integer = FALSE,
+  verbose = TRUE,
+  config_options = NULL
 )
 
 ```
@@ -293,5 +316,13 @@ dietrecord2redcap <- function(diet_wide, redcap_event_name) {
   return(data_long)
   
 } # END FUNCTION
+
+```
+
+```{r, message=FALSE,include=FALSE}
+#renaming example
+
+
+
 
 ```
