@@ -1,0 +1,204 @@
+---
+title: "Get RedCap Data: BEACH Study Overview Report"
+author: "Dominick J. Lemas"
+date: "07/19/2022"
+output: html_document
+
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:            Dominick J. Lemas
+# Start Date:        07/19/2022 
+# Date Modify:       10/18/2022
+# Project:           The Breastfeeding and EArly Child Health Study
+# IRB:               IRB201601034
+#                   
+#
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
+```
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+library(keyringr)
+library(redcapAPI)
+library(REDCapR)
+library(tidyverse)
+# library(ezknitr)
+source("~/BEACH-reports/code/utils/utils.R")
+
+```
+
+### RedCap/BEACH Data
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+
+# REPORT IDS
+#-----------
+
+# Study Overview
+report_id<-21221L
+report_name= "BEACH Study Overview"
+
+
+# PULL DATA
+#-----------
+report_raw <-
+  REDCapR::redcap_report(
+    redcap_uri = uri,
+    token      = api_token,
+    report_id  = report_id
+  )$data 
+
+report = report_raw %>%
+  select(-redcap_event_name,-redcap_repeat_instrument,-redcap_repeat_instance,    # drop out variables not needed
+         -clinical_health_update_2wk_v4_042218_complete,
+         -health_update_3rd_trimester_v5082518_complete,-biosample_notes,
+         -infant_postnatal_care_other,-mom_healthcare_other,
+         -exitsurvey_resultsinfo)
+
+```
+
+
+```{r, message=FALSE,echo=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+#library(readxl)
+library(tidyverse)
+# source("~/BEACH-reports/code/utils/utils.R")
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Load/Trim Data                  *************** #
+# **************************************************************************** #
+
+load("~/BEACH-reports/data/raw/report_21221.RData")
+
+enroll = report %>% select(test_id, maternal_sex_nih, mom_ethnicity_nih, 
+                                maternal_race_nih___1, maternal_race_nih___2,
+                                maternal_race_nih___3,
+                                maternal_race_nih___4, maternal_race_nih___5, 
+                                maternal_race_nih___6,
+                                infant_sex_nih, infant_ethnicity_nih,  
+                                infant_race_nih___1, infant_race_nih___2, infant_race_nih___3,
+                                infant_race_nih___4, infant_race_nih___5, infant_race_nih___6)
+  
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# create long dataset where each row is a unique mom or infant. The number of 
+# rows will represent the total number of mom-baby participants that have signed
+# ICF and we have collected data on the infant. 
+
+maternal=enroll %>%
+  mutate(participant_type="maternal") %>%
+  select(test_id, participant_type, maternal_sex_nih, mom_ethnicity_nih, 
+         maternal_race_nih___1,
+         maternal_race_nih___2, maternal_race_nih___3, maternal_race_nih___4,
+         maternal_race_nih___5, maternal_race_nih___6) %>%
+  rename(sex_nih=maternal_sex_nih,
+         ethnicity_nih=mom_ethnicity_nih, 
+         race_nih___1=maternal_race_nih___1,
+         race_nih___2=maternal_race_nih___2, 
+         race_nih___3=maternal_race_nih___3, 
+         race_nih___4=maternal_race_nih___4,
+         race_nih___5=maternal_race_nih___5, 
+         race_nih___6=maternal_race_nih___6)
+  
+#infant= enroll %>%
+#  mutate(participant_type="infant") %>%
+#  select(test_id, participant_type, infant_sex_nih, infant_ethnicity_nih, 
+#         infant_race_nih___1,
+#         infant_race_nih___2, infant_race_nih___3, infant_race_nih___4,
+#         infant_race_nih___5, infant_race_nih___6) %>%
+#  rename(sex_nih=infant_sex_nih,
+#         ethnicity_nih=infant_ethnicity_nih, 
+#         race_nih___1=infant_race_nih___1,
+#         race_nih___2=infant_race_nih___2, 
+#         race_nih___3=infant_race_nih___3, 
+#         race_nih___4=infant_race_nih___4,
+#         race_nih___5=infant_race_nih___5, 
+#         race_nih___6=infant_race_nih___6)
+
+#data_all = rbind(maternal,infant)
+
+data_all = maternal
+
+```
+
+
+```{r, message=FALSE,include=FALSE}
+
+# FORMAT DATA
+#------------
+
+data = data_all  %>% 
+  gather("race", "value", race_nih___1:race_nih___6) %>%
+  filter(value==1) %>%
+  mutate(race=recode_factor(race,
+                                     "race_nih___1" = "NativeAmerican", 
+                                     "race_nih___2" = "Asian", 
+                                     "race_nih___3" = "Black", 
+                                     "race_nih___4" = "PacificIsland", 
+                                     "race_nih___5" = "White",
+                                     "race_nih___6" = "NA")) %>%
+  select(-value) 
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Load/Trim Data                  *************** #
+# **************************************************************************** #
+
+#remove participants who have more than one race listed and change their type to "two or more races" ("M")
+data$combined = paste(data$test_id, data$participant_type)
+data$race=as.character(data$race)
+data$race[duplicated(data$combined) | duplicated(data$combined, fromLast = TRUE)] <- "M"
+data = data[!duplicated(data$combined),]
+
+
+```
+
+### UFHealth/Share Drive
+
