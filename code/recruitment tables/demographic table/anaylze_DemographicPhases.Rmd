@@ -137,6 +137,6 @@ Dem_BMI <- na.omit(Dem_BMI)
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 chisq.test(Dem_BMI$Encounter_Type, Dem_BMI$BMI, correct=FALSE)
-#X^2=4.2823
-#p=0.03851
+#X^2=6.2554
+#p=0.04382
 ```

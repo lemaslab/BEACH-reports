@@ -107,7 +107,7 @@ Part_Dem=CP_raw %>%
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #join columns for BMI
-Part_Dem$BMI = coalesce(Part_Dem$beach_final_bmi, Part_Dem$beachphone_prepreg_bmi)
+Part_Dem$BMI = coalesce(Part_Dem$beach_final_bmi, Part_Dem$beachphone_prepreg_bmi, Part_Dem$prescreen_prepreg_bmi)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
@@ -151,7 +151,8 @@ Part_Dem_age_bmi=Part_Dem %>%
    mutate(prepreg_bmi = BMI)%>%
    mutate(Bmi_grouping = case_when((prepreg_bmi >= 29) ~ "Obese",
                                   (prepreg_bmi >= 26 & prepreg_bmi<29) ~ "Overweight",
-                                  (prepreg_bmi <26) ~ "Normal"))%>%
+                                  (prepreg_bmi >= 18.5 & prepreg_bmi < 26) ~ "Normal",
+                                  (prepreg_bmi < 18.5) ~ "Underweight"))%>%
   select(test_id, Age_grouping,beachphone_age, BMI,Bmi_grouping, bmi_analysis_prepregnant, Recruitment, Consent,Complete, beachphone_pass_fail, Random_Contact,Prescreen_Survey,Phone_Screen, IDR)
 ```
 
@@ -216,6 +217,7 @@ Part_Dem_age_bmi$Encounter_Type[Part_Dem_age_bmi$Prescreen_Survey=="Yes" & Part_
 Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Obese"] <- "Obese and Overweight"
 Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Overweight"] <- "Obese and Overweight"
 Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Normal"] <- "Normal"
+Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Underweight"] <- "Underweight"
 
 ```
 
