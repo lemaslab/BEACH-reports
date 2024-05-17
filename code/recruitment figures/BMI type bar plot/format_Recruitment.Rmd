@@ -141,36 +141,7 @@ recruitment_report$timecoalesce = coalesce(recruitment_report$prescreen_date, re
 
 ```
 
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
 
-# **************************************************************************** #
-# ***************                    CP Data                  *************** #
-# **************************************************************************** #
-
-#join columns for BMI
-CP_raw$BMI = coalesce(CP_raw$beach_final_bmi, CP_raw$beachphone_prepreg_bmi, CP_raw$prescreen_prepreg_bmi)
-
-
-#renaming and recoding, selecting out columns for BMI and age
-CP_bmi = CP_raw %>%
-   mutate(BMI = case_when((BMI >= 29) ~ "Obese",
-                                  (BMI >= 26 & BMI<29) ~ "Overweight",
-                                  (BMI <26) ~ "Normal"))
-
-```
-
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-
-# **************************************************************************** #
-# ***************                Join Dataset                *************** #
-# **************************************************************************** #
- 
-BMI_barplot <- cbind(recruitment_report, CP_bmi$BMI)
-colnames(BMI_barplot)[18] <- "bmi_group"
-
-
-```
 
 ```{r, message=FALSE,include=FALSE}
 

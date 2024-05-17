@@ -158,7 +158,8 @@ Phone_Screen_age_bmi=Phone_Screen %>%
    mutate(prepreg_bmi = BMI)%>%
    mutate(Bmi_grouping = case_when((prepreg_bmi >= 29) ~ "Obese",
                                   (prepreg_bmi >= 26 & prepreg_bmi<29) ~ "Overweight",
-                                  (prepreg_bmi <26) ~ "Normal"))%>%
+                                  (prepreg_bmi >= 18.5 & prepreg_bmi <26) ~ "Normal",
+                                  (prepreg_bmi < 18.5) ~ "Underweight"))%>%
   select(test_id, Age_grouping,Bmi_grouping, bmi_analysis_prepregnant, Recruitment, Consent,Complete, beachphone_pass_fail, Random_Contact,Prescreen_Survey,Phone_Screen, IDR)
 ```
 
