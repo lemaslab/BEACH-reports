@@ -45,6 +45,9 @@ irb_number="IRB201601034"
 library(keyringr)
 library(redcapAPI)
 library(REDCapR)
+library(knitr)
+library(gt)
+library(dplyr)
 library(tidyverse)
 # library(ezknitr)
 source("~/BEACH-reports/code/utils/utils.R")
@@ -90,88 +93,31 @@ report = report_raw %>%
 
 ```
 
-
-```{r, message=FALSE,echo=FALSE,include=FALSE}
-
-# **************************************************************************** #
-# ***************                Library                       *************** #
-# **************************************************************************** #
-
-#library(readxl)
-library(tidyverse)
-# source("~/BEACH-reports/code/utils/utils.R")
-
-```
-
 ```{r, message=FALSE,include=FALSE}
 
 # **************************************************************************** #
 # ***************              Load/Trim Data                  *************** #
 # **************************************************************************** #
-
-load("~/BEACH-reports/data/raw/report_21221.RData")
-
-enroll = report %>% select(test_id, maternal_sex_nih, mom_ethnicity_nih, 
-                                maternal_race_nih___1, maternal_race_nih___2,
-                                maternal_race_nih___3,
-                                maternal_race_nih___4, maternal_race_nih___5, 
-                                maternal_race_nih___6,
-                                infant_sex_nih, infant_ethnicity_nih,  
-                                infant_race_nih___1, infant_race_nih___2, infant_race_nih___3,
-                                infant_race_nih___4, infant_race_nih___5, infant_race_nih___6)
   
-
-```
-
-```{r, message=FALSE,include=FALSE}
-
 # create long dataset where each row is a unique mom or infant. The number of 
 # rows will represent the total number of mom-baby participants that have signed
 # ICF and we have collected data on the infant. 
 
-maternal=enroll %>%
+maternal=report %>%
   mutate(participant_type="maternal") %>%
   select(test_id, participant_type, maternal_sex_nih, mom_ethnicity_nih, 
          maternal_race_nih___1,
          maternal_race_nih___2, maternal_race_nih___3, maternal_race_nih___4,
          maternal_race_nih___5, maternal_race_nih___6) %>%
-  rename(sex_nih=maternal_sex_nih,
-         ethnicity_nih=mom_ethnicity_nih, 
+  rename(ethnicity=mom_ethnicity_nih, 
          race_nih___1=maternal_race_nih___1,
          race_nih___2=maternal_race_nih___2, 
          race_nih___3=maternal_race_nih___3, 
          race_nih___4=maternal_race_nih___4,
          race_nih___5=maternal_race_nih___5, 
          race_nih___6=maternal_race_nih___6)
-  
-#infant= enroll %>%
-#  mutate(participant_type="infant") %>%
-#  select(test_id, participant_type, infant_sex_nih, infant_ethnicity_nih, 
-#         infant_race_nih___1,
-#         infant_race_nih___2, infant_race_nih___3, infant_race_nih___4,
-#         infant_race_nih___5, infant_race_nih___6) %>%
-#  rename(sex_nih=infant_sex_nih,
-#         ethnicity_nih=infant_ethnicity_nih, 
-#         race_nih___1=infant_race_nih___1,
-#         race_nih___2=infant_race_nih___2, 
-#         race_nih___3=infant_race_nih___3, 
-#         race_nih___4=infant_race_nih___4,
-#         race_nih___5=infant_race_nih___5, 
-#         race_nih___6=infant_race_nih___6)
 
-#data_all = rbind(maternal,infant)
-
-data_all = maternal
-
-```
-
-
-```{r, message=FALSE,include=FALSE}
-
-# FORMAT DATA
-#------------
-
-data = data_all  %>% 
+data = maternal  %>% 
   gather("race", "value", race_nih___1:race_nih___6) %>%
   filter(value==1) %>%
   mutate(race=recode_factor(race,
@@ -181,24 +127,184 @@ data = data_all  %>%
                                      "race_nih___4" = "PacificIsland", 
                                      "race_nih___5" = "White",
                                      "race_nih___6" = "NA")) %>%
-  select(-value) 
+  select(-value)
 
-```
-
-```{r, message=FALSE,include=FALSE}
-
-# **************************************************************************** #
-# ***************              Load/Trim Data                  *************** #
-# **************************************************************************** #
-
-#remove participants who have more than one race listed and change their type to "two or more races" ("M")
 data$combined = paste(data$test_id, data$participant_type)
 data$race=as.character(data$race)
 data$race[duplicated(data$combined) | duplicated(data$combined, fromLast = TRUE)] <- "M"
 data = data[!duplicated(data$combined),]
+data <- data %>%
+  mutate(
+    race = case_when(
+      race == 'NA' ~ 'Unknown/Missing',
+      race %in% c('Black', 'White') ~ race,
+      TRUE ~ 'Other'
+    ),
+    ethnicity = case_when(
+      ethnicity == 1 ~ 'Non-Hispanic',
+      ethnicity == 2 ~ 'Hispanic',
+      ethnicity == 3 ~ 'Unknown/Missing',
+      TRUE ~ as.character(ethnicity)  
+    )
+  ) %>%
+  select(race, ethnicity)
 
+BEACH_race_count <- data %>%
+  dplyr::count(race) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  rename(Race = race, Count = n)
+
+BEACH_ethnicity_count <- data %>%
+  dplyr::count(ethnicity) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  rename(Ethnicity = ethnicity, Count = n)
 
 ```
 
 ### UFHealth/Share Drive
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+report_raw <- read.csv("Z:/FACULTY/DJLEMAS/EHR_Data/raw/READ_ONLY_DATASETS/10year_data/2021/dataset_09_2021/baby_mom_at_birth_with_payer.csv") 
+
+report = report_raw %>%
+  select(race_mom, ethnicity_mom)
+
+```
+
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************              Load/Trim Data                  *************** #
+# **************************************************************************** #
+
+data <- report %>%
+  rename(race=race_mom,
+         ethnicity=ethnicity_mom) %>%
+  mutate(
+    race = case_when(
+      race %in% c('/?', 'UNKNOWN', 'PATIENT REFUSED') ~ 'Unknown/Missing',
+      race == 'BLACK' ~ 'Black',
+      race == 'WHITE' ~ 'White',
+      TRUE ~ 'Other'
+    ),
+    ethnicity = case_when(
+      ethnicity %in% c('PATIENT REFUSED', 'UNKNOWN') ~ 'Unknown/Missing',
+      ethnicity == 'HISPANIC' ~ 'Hispanic',
+      ethnicity == 'NOT HISPANIC' ~ 'Non-Hispanic',
+      TRUE ~ ethnicity
+    )
+  )
+
+UF_race_count <- data %>%
+  dplyr::count(race) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  rename(Race = race, Count = n)
+
+UF_ethnicity_count <- data %>%
+  dplyr::count(ethnicity) %>%
+  mutate(Percentage = n / sum(n) * 100) %>%
+  rename(Ethnicity = ethnicity, Count = n)
+
+```
+
+### Florida Charts-Alachua Data and OneFlorida Data
+
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************       Manually Add Data from Online          *************** #
+# **************************************************************************** #
+
+#Florida Charts Alachua County (AC), 2021 https://www.flhealthcharts.gov/ChartsDashboards/rdPage.aspx?rdReport=PregnancyandYoungChild.Report
+
+AC_race_count <- data.frame(
+  Race = c("Black", "Other", "Unknown/Missing", "White"),
+  Count = c(14686, 7338, NA, 47905)
+)
+AC_race_count <- AC_race_count %>%
+  mutate(Percentage = Count / sum(Count, na.rm = TRUE) * 100)
+
+
+AC_ethnicity_count <- data.frame(
+  Ethnicity = c("Hispanic", "Non-Hispanic", "Unknown/Missing"),
+  Count = c(9381, 60548, NA)
+)
+AC_ethnicity_count <- AC_ethnicity_count %>%
+  mutate(Percentage = Count / sum(Count, na.rm = TRUE) * 100)
+
+
+
+#OneFlorida - 
+FL_race_count <- data.frame(
+  Race = c("Black", "Other", "Unknown/Missing", "White"),
+  Count = c(10109, 6550, 1165, 23929)
+)
+FL_race_count <- FL_race_count %>%
+  mutate(Percentage = Count / sum(Count, na.rm = TRUE) * 100)
+
+
+FL_ethnicity_count <- data.frame(
+  Ethnicity = c("Hispanic", "Non-Hispanic", "Unknown/Missing"),
+  Count = c(11158, 25532, 513)
+)
+FL_ethnicity_count <- FL_ethnicity_count %>%
+  mutate(Percentage = Count / sum(Count, na.rm = TRUE) * 100)
+
+
+```
+
+
+### Table
+
+```{r, message=FALSE,include=FALSE}
+# **************************************************************************** #
+# ***************    Create Demographic Comparison Table       *************** #
+# **************************************************************************** #
+combined_race <- bind_rows(
+  BEACH_race_count %>% mutate(Source = "BEACH"),
+  UF_race_count %>% mutate(Source = "UF"),
+  AC_race_count %>% mutate(Source = "Alachua"),
+  FL_race_count %>% mutate(Source = "OneFlorida")
+) %>%
+  mutate(Count_Percentage = sprintf("%d (%.2f%%)", Count, Percentage),
+         Race = ifelse(Race == "Unknown/Missing", "Unknown/Missing Race", Race)) 
+
+combined_ethnicity <- bind_rows(
+  BEACH_ethnicity_count %>% mutate(Source = "BEACH"),
+  UF_ethnicity_count %>% mutate(Source = "UF"),
+  AC_ethnicity_count %>% mutate(Source = "Alachua"),
+  FL_ethnicity_count %>% mutate(Source = "OneFlorida")
+) %>%
+  mutate(Count_Percentage = sprintf("%d (%.2f%%)", Count, Percentage),
+         Ethnicity = ifelse(Ethnicity == "Unknown/Missing", "Unknown/Missing Ethnicity", Ethnicity)) 
+
+combined_table <- bind_rows(
+  combined_race %>% rename(Demographic = Race),
+  combined_ethnicity %>% rename(Demographic = Ethnicity)
+) %>%
+  select(Demographic, Source, Count_Percentage) %>%
+  pivot_wider(names_from = Source, values_from = Count_Percentage)
+
+desired_order <- c("White", "Black", "Other", "Unknown/Missing Race", "Hispanic", "Non-Hispanic", "Unknown/Missing Ethnicity")
+
+combined_table <- combined_table %>%
+  arrange(factor(Demographic, levels = desired_order))
+
+gt_table <- combined_table %>%
+  gt() %>%
+  tab_spanner(
+    label = "Location",
+    columns = matches("BEACH|UF|Alachua|OneFlorida")
+  ) %>%
+  tab_header(
+    title = "Demographic Comparisons for the BEACH Study"
+  )
+
+print(gt_table)
+gtsave(gt_table, "demo_table.docx")
+
+```
 
