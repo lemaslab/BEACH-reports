@@ -73,10 +73,10 @@ api_token=get_API_token("beach_api")
 # REPORT IDS
 #-----------
 #*** denote the only things you should need to change
-record_id <- "BLS052A"  #***Replace with the target record ID
+record_id <- "BLS038A"  #***Replace with the target record ID
 field_name <- "dietrecord_txt_output" #this calls the variable/field that holds the text_file diet record/annotation - shouldn't need to be changed
 field_name_output <- "dietrecord_csv_redcap" #this is the variable/field where it will be uploaded - shouldn't need to be changed
-event_name <- "two_week_arm_1" #***replace if different event
+event_name <- "six_month_arm_1" #***replace if different event
 
 ### Naming Conventions
 #Third_trimester = third_trimester_arm_1
