@@ -72,34 +72,33 @@ api_token=get_API_token("beach_api")
 
 # REPORT IDS
 #-----------
-#these are the only things you need to change
-record_id <- "BLS030A"  #***Replace with the target record ID
-field_name <- "dietrecord_txt_output" #replace this if you're editing a different file (but shouldn't need to)
-field_name_output <- "dietrecord_csv_redcap" #replace this if you're trying to upload the output file elsewhere
-event_name <- "two_month_arm_1" #replace if different event
+#*** denote the only things you should need to change
+record_id <- "BLS052A"  #***Replace with the target record ID
+field_name <- "dietrecord_txt_output" #this calls the variable/field that holds the text_file diet record/annotation - shouldn't need to be changed
+field_name_output <- "dietrecord_csv_redcap" #this is the variable/field where it will be uploaded - shouldn't need to be changed
+event_name <- "two_week_arm_1" #***replace if different event
 
+### Naming Conventions
 #Third_trimester = third_trimester_arm_1
 #Two_week = two_week_arm_1
 #Two_month = two_month_arm_1
 #Six_month = six_month_arm_1
 #Twelve_month =	twelve_month_arm_1
 
-#fixes naming issue with redcap_download_file
+#download file directly from Redcap to R with API token
+#set overwrite to FALSE if you don't want it to overwrite previous downloaded files
+redcap_download_file_oneshot(redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name, overwrite = TRUE)
+
+#notes the name of the file, so it can be different from the initial
+downloaded_file <- redcap_download_file_oneshot(redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name, overwrite = TRUE)
+red_file_name <- downloaded_file[["file_name"]]
+#format txt file into dataframe
+txt_file <- read.table(red_file_name, skip = 2, header = FALSE, sep = "\t", quote = "")
+
+#these sort the naming for the output/upload file for later, but also add event_name_short to data file
 event_name_short <- strsplit(event_name, "_")[[1]][1:2] 
 event_name_short <- paste(event_name_short, collapse = " ")
 file_name <- glue("{record_id} {event_name_short}.txt")
-#check that file_name matches on RedCap 
-
-#download file directly from Redcap to R with API token
-#set overwrite to FALSE if you don't want it to overwrite previous downloaded files
-redcap_download_file_oneshot(file_name = file_name, redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name, overwrite = TRUE)
-
-#redcap_download_file_oneshot(redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name, overwrite = TRUE)
-#downloaded_file <- redcap_download_file_oneshot(redcap_uri = uri, token = api_token, record = record_id, field = field_name, event = event_name, overwrite = TRUE)
-#file_name <- downloaded_file[["file_name"]]
-
-#format txt file into dataframe
-txt_file <- read.table(file_name, skip = 2, header = FALSE, sep = "\t", quote = "")
 
 ```
 
@@ -186,7 +185,7 @@ txt_file$item_name <- gsub("^\\s+|\\s+$", "", txt_file$item_name)
 
 ```{r, message=FALSE,include=FALSE}
 #OPTIONAL - run if you want to check output
-write.csv(txt_file, "testdiet.csv", row.names = FALSE)
+#write.csv(txt_file, "testdiet.csv", row.names = FALSE)
 
 ```
 
@@ -203,7 +202,7 @@ redcap_ready=dietrecord2redcap(txt_file,event_name)
 
 ```{r, message=FALSE,include=FALSE}
 #OPTIONAL - run if you want to check input
-write.csv(redcap_ready, "testredcapready.csv" , row.names = FALSE)
+#write.csv(redcap_ready, "testredcapready.csv" , row.names = FALSE)
 
 ```
 
@@ -214,10 +213,9 @@ write.csv(redcap_ready, "testredcapready.csv" , row.names = FALSE)
 
 file_upload=paste0(unique(redcap_ready$test_id),"_",unique(redcap_ready$redcap_event_name),"_redcap_ready.csv")
 write.csv(redcap_ready, file_upload, row.names = FALSE)
-assign(file_name, read.csv(file_name))
+#assign(file_name, read.csv(red_file_name))
 
-
-#if this doesn't work you may have to upload it directly :(
+#uploads csv file
 redcap_upload_file_oneshot(
   file_name = file_upload,
   record = record_id,
@@ -228,6 +226,7 @@ redcap_upload_file_oneshot(
   verbose = TRUE
 )
 
+#uploads long dataset to diet_record_processed
 redcap_write_oneshot(
   ds = redcap_ready,
   redcap_uri = uri,
@@ -316,13 +315,5 @@ dietrecord2redcap <- function(diet_wide, redcap_event_name) {
   return(data_long)
   
 } # END FUNCTION
-
-```
-
-```{r, message=FALSE,include=FALSE}
-#renaming example
-
-
-
 
 ```
