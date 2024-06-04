@@ -1,7 +1,7 @@
 ---
-title: "build_Recruitment_4"
-author: "Yasmine Gillespie"
-date: "2022-12-12"
+title: "BEACH study recruitment overtime"
+author: "Yasmine Gillespie, Michele Himadi"
+date: "2024-06-04"
 output: html_document
 ---
 
@@ -11,9 +11,9 @@ output: html_document
 # ***************                Project Overview              *************** #
 # **************************************************************************** #
 
-# Author:      Yasmine Gillespie
+# Author:      Yasmine Gillespie, Michele Himadi
 # Date:        Oct 25, 2022 
-# Modify:      
+# Modify:      June 4, 2024
 # IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
 
 # version: R version 4.2.2 (2022-10-31)
@@ -82,12 +82,6 @@ library(stringi)
 #install.packages("anytime")   # Install anytime package
 library("anytime")  
 
-#make waffles by recruitment types
-Facebook= filter(recruitment_report, Recruitment == "Facebook")
-Flyer = filter(recruitment_report, Recruitment == "Flyer")
-Word_of_mouth = filter(recruitment_report, Recruitment == "Word-of-mouth")
-
-all <- (rbind(Facebook,Word_of_mouth,Flyer))
 
 all = recruitment_report %>% select(timecoalesce)
 all = na.omit(all)
@@ -108,7 +102,7 @@ all_waffle <- na.omit(all_waffle)
 all_waffle$weekday = as.POSIXlt(all_waffle$time)$wday #finding the day no. of the week
 all_waffle$weekdayf<-factor(all_waffle$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
 
-all_waffle$monthf<- 1
+all_waffle$monthf<- 1 #initialize month column
 
 all_waffle$monthf<-factor(month(all_waffle$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
 
@@ -116,7 +110,17 @@ all_waffle$yearmonth<- factor(as.yearmon(all_waffle$time)) # finding the year an
 
 all_waffle$week <- as.numeric(format(all_waffle$time,"%W")) # finding the week of the year for each date
 
-all_waffle<-ddply(all_waffle,.(yearmonth),transform,monthweek=stringi::stri_datetime_fields(time)$WeekOfMonth) # normalizing the week to start at 1 for every month
+#function to better calculate the week of the month
+calculate_monthweek <- function(date) {
+  first_day <- floor_date(date, "month")
+  day_of_week_first <- wday(first_day)
+  week_of_month <- ceiling((day(date) + day_of_week_first - 1) / 7)
+  return(week_of_month)
+}
+
+all_waffle$monthweek <- sapply(all_waffle$time, calculate_monthweek)
+
+#all_waffle_2<-ddply(all_waffle,.(yearmonth),transform,monthweek=stringi::stri_datetime_fields(time)$WeekOfMonth) # old code to normalizing the week to start at 1 for every month
 
 
 p <- ggplot(all_waffle, aes(monthweek, weekdayf, fill = freq)) + 
@@ -131,7 +135,7 @@ p
 print(p)
 #run individually to ensure the plot looks fine and everything worked so far
 
-ggsave(p, filename = "c:/waffles/overallRecruitment_waffle.png",height = 1.6, width = 10)
+ggsave(p, filename = "overallRecruitment_waffle.png",height = 1.6, width = 10)
 #save to computer to adjust size appropriately. adjust filename to where you want it saved
 
 ```
@@ -159,12 +163,11 @@ b <- ggplot(all_bar, aes(x=Months, y=Counts, fill = Counts)) + geom_bar(stat = "
 
 b     
  
-ggsave(b, filename = "c:/waffles/overallRecruitment_barplot.png", height = 3, width = 10)     
+ggsave(b, filename = "overallRecruitment_barplot.png", height = 3, width = 10)     
 ```
 
 #recruitment based on days of the week
 ```{r,message=FALSE,include=FALSE}
-all_table = all[18]
 all_table <- na.omit(all_counts)
 all_table$weekday = as.POSIXlt(all_table$time)$wday #finding the day no. of the week
 all_table$weekdayf<-factor(all_table$weekday,levels=rev(0:6),labels=rev(c("Sun","Mon","Tue","Wed","Thu","Fri","Sat")),ordered=TRUE) # converting the day no. to factor
