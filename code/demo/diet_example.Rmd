@@ -1,0 +1,142 @@
+---
+title: ""
+author: ""
+date: ""
+output: 
+
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+#some description here (optional)
+
+# R version 4.3.1 (2023-06-16 ucrt) -- "Beagle Scouts"
+# Copyright (C) 2023 The R Foundation for Statistical Computing
+# Platform: x86_64-w64-mingw32/x64 (64-bit) 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
+```
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+### make sure you're running libraries
+#ensure you're on the UF VPN
+
+# keyringr must be installed: https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html
+
+library(tidyverse)
+library(readxl)
+library(keyringr)
+library(redcapAPI)
+library(REDCapR)
+library(glue)
+library(tidyr)
+library(stringr)
+
+source("~/BEACH-reports/code/utils/utils.R")
+
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+#this is usually in a standalone "fetch" file
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+
+# REPORT IDS
+#-----------
+
+# Study Overview
+report_id<-48544L
+report_name= "Diet Records: Data Processing Report"
+
+
+# PULL DATA
+#-----------
+report_raw <-
+  REDCapR::redcap_report(
+    redcap_uri = uri,
+    token      = api_token,
+    report_id  = report_id
+  )$data 
+
+report = report_raw %>%
+  select(-redcap_repeat_instrument,-redcap_repeat_instance)   # drop out variables not needed)
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Format Data                    *************** #
+# **************************************************************************** #
+
+#usually we put this in a different file; workflow typically goes fetch > format > report
+#here is where you can make various dataframes ("df") with the "report" variable, e.g.
+
+total_complete = report %>% select(food_record_collected, food_record_annotated) #selects specific columns from "report"
+records <- count(total_complete) #counts the total_complete data frame and puts it into a nice summary table
+#one good thing to look up is the different symbols in R - between =, <-, etc, it took me a bit getting used to
+
+modified_df <- total_complete %>%  mutate(across(everything(), ~replace_na(.x, 0)))
+#here I replaced NA with 0, because it's basically the same in this case, but I may eventually want to go back and find where the NA values are to replace them in RedCap (the less NA data the better)
+records1 <- count (modified_df)
+#now I can count them again
+
+records2 <- records1 %>%
+  mutate(status = case_when(
+    food_record_collected == 0 & food_record_annotated == 0 ~ "No Record",
+    food_record_collected == 0 & food_record_annotated == 1 ~ "Annotation?",
+    food_record_collected == 1 & food_record_annotated == 0 ~ "Record Collected but Not Annotated",
+    food_record_collected == 1 & food_record_annotated == 1 ~ "Record Collected and Annotated",
+    TRUE ~ "Unknown Status"  # Optional: for any other combinations not specified above
+  ))
+records3 = records2 %>% select(status, freq)
+#formats it so it's more easily usable in a barplot - the formatting can vary between figures, but I just did some basic formatting
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************                Report                      *************** #
+# **************************************************************************** #
+
+#also usually in a separate file, this is usually where we'd make nice graphs, visuals, tables
+
+barplot(records3$freq) #this will create a very basic barplot
+
+{barplot_heights <- barplot(records3$freq, 
+                           col = c("skyblue", "coral", "palegreen", "orchid"), 
+                           ylab = "Frequency", 
+                           xlab = "Status", 
+                           main = "Frequency of Different Record Statuses", 
+                           cex.names = 0.8, 
+                           ylim = c(0, 200))
+text(barplot_heights, records3$freq + 5, labels = records3$freq, cex = 0.8)
+}
+#this just makes the visual a little prettier
+
+```
