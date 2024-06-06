@@ -88,22 +88,44 @@ Only_Phone_Screen_DEM= filter(PD_Gest, Prescreen_Survey == "No")
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #pregnant for phone screen participants
-vtree(Only_Phone_Screen_DEM, "Phone_Screen Prego", palette = 3, sortfill = TRUE, horiz=FALSE)
+#change NA to missing so it is accounted for in vtree
+mod_vtree <- Only_Phone_Screen_DEM
+mod_vtree$`Prego`[is.na(mod_vtree$`Prego`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen Prego", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+
+#vtree(Only_Phone_Screen_DEM, "Phone_Screen Prego", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #delivery in GNV for phone screen participants
-vtree(Only_Phone_Screen_DEM, "Phone_Screen GNV", palette = 3, sortfill = TRUE, horiz=FALSE)
+#change NA to missing so it is accounted for in vtree
+mod_vtree <- Only_Phone_Screen_DEM
+mod_vtree$`GNV`[is.na(mod_vtree$`GNV`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen GNV", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+
+#vtree(Only_Phone_Screen_DEM, "Phone_Screen GNV", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #mode of delivery for phone screen
-vtree(Only_Phone_Screen_DEM, "Phone_Screen Mod", palette = 3, sortfill = TRUE, horiz=FALSE)
+#change NA to missing so it is accounted for in vtree
+mod_vtree <- Only_Phone_Screen_DEM
+mod_vtree$`Mod`[is.na(mod_vtree$`Mod`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen Mod", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+#vtree(Only_Phone_Screen_DEM, "Phone_Screen Mod", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #gestation weeks for phone screen participants
-vtree(Only_Phone_Screen_DEM, "Phone_Screen gest_wks_groups", palette = 3, sortfill = TRUE, horiz=FALSE)
+#change NA to missing so it is accounted for in vtree
+mod_vtree <- Only_Phone_Screen_DEM
+mod_vtree$`gest_wks_groups`[is.na(mod_vtree$`gest_wks_groups`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen gest_wks_groups", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+#vtree(Only_Phone_Screen_DEM, "Phone_Screen gest_wks_groups", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
@@ -113,22 +135,38 @@ Both_DEM= filter(PD_Gest, Phone_Screen == "Yes" & Prescreen_Survey == "Yes")
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #pregnant for both
-vtree(Both_DEM, "Prescreen_Survey Phone_Screen Prego", palette = 3, sortfill = TRUE, horiz=FALSE)
+mod_vtree <- Both_DEM
+mod_vtree$`Prego`[is.na(mod_vtree$`Prego`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen Prego", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+#vtree(Both_DEM, "Prescreen_Survey Phone_Screen Prego", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #delivery in GNV for both
-vtree(Both_DEM, "Prescreen_Survey Phone_Screen GNV", palette = 3, sortfill = TRUE, horiz=FALSE)
+mod_vtree <- Both_DEM
+mod_vtree$`GNV`[is.na(mod_vtree$`GNV`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen GNV", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+#vtree(Both_DEM, "Prescreen_Survey Phone_Screen GNV", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #mode of delivery for both
-vtree(Both_DEM, "Prescreen_Survey Phone_Screen Mod", palette = 3, sortfill = TRUE, horiz=FALSE)
+mod_vtree <- Both_DEM
+mod_vtree$`Mod`[is.na(mod_vtree$`Mod`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen Mod", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+#vtree(Both_DEM, "Prescreen_Survey Phone_Screen Mod", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #gestation weeks for both
-vtree(Both_DEM, "Prescreen_Survey Phone_Screen gest_wks_groups", palette = 3, sortfill = TRUE, horiz=FALSE)
+mod_vtree <- Both_DEM
+mod_vtree$`gest_wks_groups`[is.na(mod_vtree$`gest_wks_groups`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen gest_wks_groups", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+#vtree(Both_DEM, "Prescreen_Survey Phone_Screen gest_wks_groups", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 #anaylsis

@@ -1,5 +1,5 @@
 ---
-title: "anaylze_DemographicPhases"
+title: "Demographics of participant recruitment that were screened for eligibility over time - part 1"
 author: "Yasmine Gillespie"
 date: "2023-06-02"
 output: html_document
@@ -79,12 +79,23 @@ Just_Phone_Screen_Dem= filter(Part_Dem_age_bmi, Prescreen_Survey == "No")
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #age grouping for phone screen only group
-vtree(Just_Phone_Screen_Dem, "Phone_Screen Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+#change NA to missing so it is accounted for in vtree
+mod_vtree <- Just_Phone_Screen_Dem
+mod_vtree$`Age_grouping`[is.na(mod_vtree$`Age_grouping`)] <- "Missing"
+vtree(mod_vtree, "Phone_Screen Age_grouping", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+
+#vtree(Just_Phone_Screen_Dem, "Phone_Screen Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE, showpct = TRUE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #BMI for phone screen only group
-vtree(Just_Phone_Screen_Dem, "Phone_Screen BMI", palette = 3, sortfill = TRUE, horiz=FALSE)
+#change NA to missing so it is accounted for in vtree
+mod_vtree <- Just_Phone_Screen_Dem
+mod_vtree$`BMI`[is.na(mod_vtree$`BMI`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen BMI", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+
+#vtree(Just_Phone_Screen_Dem, "Phone_Screen BMI", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 # Both Phonscreening and Prescreen
@@ -95,12 +106,24 @@ Combined_Dem= filter(Part_Dem_age_bmi, Phone_Screen == "Yes" & Prescreen_Survey 
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #age grouping for combined participants
-vtree(Combined_Dem, "Prescreen_Survey Phone_Screen Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+#change NA to missing so it is accounted for in vtree
+mod_vtree <- Combined_Dem
+mod_vtree$`Age_grouping`[is.na(mod_vtree$`Age_grouping`)] <- "Missing"
+
+vtree(mod_vtree, "Prescreen_Survey Phone_Screen Age_grouping", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+
+#vtree(Combined_Dem, "Prescreen_Survey Phone_Screen Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #BMI for combined participants
-vtree(Combined_Dem, "Prescreen_Survey Phone_Screen BMI", palette = 3, sortfill = TRUE, horiz=FALSE)
+#change NA to missing so it is accounted for in vtree
+mod_vtree <- Combined_Dem
+mod_vtree$`BMI`[is.na(mod_vtree$`BMI`)] <- "Missing"
+
+vtree(mod_vtree, "Phone_Screen BMI", palette = 3, sortfill = TRUE, horiz = FALSE, showpct = TRUE)
+
+#vtree(Combined_Dem, "Prescreen_Survey Phone_Screen BMI", palette = 3, sortfill = TRUE, horiz=FALSE)
 ```
 
 #anaylsis
@@ -137,6 +160,6 @@ Dem_BMI <- na.omit(Dem_BMI)
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 chisq.test(Dem_BMI$Encounter_Type, Dem_BMI$BMI, correct=FALSE)
-#X^2=6.2554
-#p=0.04382
+#X^2=2.1035
+#p=0.3493
 ```
