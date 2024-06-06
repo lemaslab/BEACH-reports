@@ -1,7 +1,7 @@
 ---
-title: "build_Recruitment_4"
-author: "Yasmine Gillespie"
-date: "2022-12-12"
+title: "BEACH study BMI recruitment overtime"
+author: "Yasmine Gillespie, Michele Himadi"
+date: "2024-06-05"
 output: html_document
 ---
 
@@ -11,9 +11,9 @@ output: html_document
 # ***************                Project Overview              *************** #
 # **************************************************************************** #
 
-# Author:      Yasmine Gillespie
+# Author:      Yasmine Gillespie, Michele Himadi
 # Date:        Oct 25, 2022 
-# Modify:      
+# Modify:      June 5, 2024
 # IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
 
 # version: R version 4.2.2 (2022-10-31)
@@ -87,39 +87,32 @@ library(ggpattern)
 # ***************              Load Data                       *************** #
 # ****************************************************************************#
 
-load("~/BEACH-Reports/output/reports/recruitment/recruitment_clean.RData")
 load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
 
 ```
 
 ```{r, message=FALSE,warning=FALSE,echo=FALSE}
-#make bmi waffle
-CP_raw=CP_raw %>%
-  mutate(bmi_analysis_prepregnant=recode(bmi_analysis_prepregnant,
-                              "1"="Normal",
-                              "2"="Overweight",
-                              "3"= "Obese"
-                               ))
+#make bmi categories
 CP_raw$BMI = coalesce(CP_raw$beach_final_bmi, CP_raw$beachphone_prepreg_bmi, CP_raw$prescreen_prepreg_bmi)
 CP_raw = CP_raw %>%
-   mutate(BMI = case_when((BMI >=26) ~ "OWOB", (BMI >= 18.5 & BMI<26) ~ "NW", (BMI < 18.5) ~ "UW"))
-
+   mutate(BMI = case_when((BMI >= 30) ~ "OWOB",
+                          (BMI >= 25 & BMI <30) ~ "OWOB",
+                          (BMI >= 18.5 & BMI <25) ~ "NW",
+                          (BMI < 18.5) ~ "UW"))
  
-BMI_waffle <- cbind(recruitment_report, CP_raw$BMI)
-colnames(BMI_waffle)[18] <- "bmi_group"
+BMI_barplot <- cbind(recruitment_report, CP_raw$BMI)
+colnames(BMI_barplot)[18] <- "bmi_group"
 
-BMI_waffle = BMI_waffle %>% drop_na(`bmi_group`)
-BMI_UW = filter(BMI_waffle, bmi_group =="UW")
-BMI_NW = filter(BMI_waffle, bmi_group == "NW")
-BMI_OWOB = filter(BMI_waffle, bmi_group != "NW")
+BMI_barplot = BMI_barplot %>% drop_na(`bmi_group`)
+BMI_UW = filter(BMI_barplot, bmi_group =="UW")
+BMI_NW = filter(BMI_barplot, bmi_group == "NW")
+BMI_OWOB = filter(BMI_barplot, bmi_group == "OWOB")
 
 BMI_UW$time = anydate(BMI_UW$timecoalesce)
 
 BMI_NW$time = anydate(BMI_NW$timecoalesce)
 
 BMI_OWOB$time = anydate(BMI_OWOB$timecoalesce)
-
-
 
 ```
 
@@ -135,13 +128,14 @@ OWOB_months <- BMI_OWOB[19]
 OWOB_months$month<-factor(month(OWOB_months$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")) 
 
 OWOB_months <- na.omit(OWOB_months)
+NW_months <- na.omit(NW_months)
 UW_months <- na.omit(UW_months)
 
-#normal weight
+#underweight
 sum(UW_months$month == 'Jan' | UW_months$month == 'Feb' | UW_months$month == 'Mar')
 sum(UW_months$month == 'Apr' | UW_months$month == 'May' | UW_months$month == 'Jun')
 sum(UW_months$month == 'Jul' | UW_months$month == 'Aug' | UW_months$month == 'Sep')
-sum(UW_months$month == 'Oct' | UW_months$month == 'Nov' | NW_months$month == 'Dec')
+sum(UW_months$month %in% c('Oct', 'Nov', 'Dec'), na.rm = TRUE) #used slightly different code as nothing for UW in December
 
 #normal weight
 sum(NW_months$month == 'Jan' | NW_months$month == 'Feb' | NW_months$month == 'Mar')
@@ -162,9 +156,9 @@ sum(OWOB_months$month == 'Oct' | OWOB_months$month == 'Nov' | OWOB_months$month 
 
 ```{r,message=FALSE,include=FALSE}
 #make data frames
-BMI_bar <- BMI_waffle[18]
-BMI_bar[2] <- BMI_waffle[17]
-BMI_bar$time <- anydate(BMI_waffle$timecoalesce)
+BMI_bar <- BMI_barplot[18]
+BMI_bar[2] <- BMI_barplot[17]
+BMI_bar$time <- anydate(BMI_barplot$timecoalesce)
 BMI_bar$month<-factor(month(BMI_bar$time),levels=as.character(1:12),labels=c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),ordered=TRUE) # finding the month
 BMI_bar = BMI_bar %>%
   select(bmi_group, month)
@@ -174,19 +168,15 @@ BMI_bar_counted <- count(BMI_bar)
 BMI_bar_counted <- na.omit(BMI_bar_counted)
 BMI_bar_counted=BMI_bar_counted %>%
   mutate(bmi_group=recode(bmi_group,
-                              "NW"="Normal",
-                              "OWOB"="Obese/Overweight"
-                               ))
-
+                              "NW"="2. Normal",
+                              "OWOB"="3. Obese/Overweight",
+                              "UW" = "1. Underweight"))
 
 b <- ggplot(BMI_bar_counted, aes(x = month, y = freq, fill = bmi_group)) + geom_bar(stat = "identity", position = "dodge") + geom_text(aes(label = freq), vjust = -1, position = position_dodge(width = 0.9)) + theme_light() + xlab("Month") + ylab("Counts") + guides(fill = guide_legend(title = "Obesity Status")) + theme(legend.title = element_text(size = 12), legend.text= element_text(size=12), text = element_text(size = 14)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 b
 
-ggsave(b, filename = "BMI_barplot.png",height = 6, width = 10)
+ggsave(b, filename = "BMI_barplot.png",height = 6, width = 12)
 #save to computer to adjust size appropriately. adjust filename to where you want it saved
-
-
-#adjust location of counts on barplot
 
 ```

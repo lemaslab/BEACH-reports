@@ -1,7 +1,7 @@
 ---
-title: "build_Recruitment_4"
-author: "Yasmine Gillespie"
-date: "2022-12-12"
+title: "BEACH study BMI recruitment overtime"
+author: "Yasmine Gillespie, Michele Himadi"
+date: "2024-06-05"
 output: html_document
 ---
 
@@ -11,9 +11,9 @@ output: html_document
 # ***************                Project Overview              *************** #
 # **************************************************************************** #
 
-# Author:      Yasmine Gillespie
+# Author:      Yasmine Gillespie, Michele Himadi
 # Date:        Oct 25, 2022 
-# Modify:      
+# Modify:      June 5, 2024
 # IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
 
 # version: R version 4.2.2 (2022-10-31)
@@ -25,11 +25,6 @@ output: html_document
 
 # PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
 # Note: vpn must be active
-
-# Next steps
-#- function to call the IDs and events
-#- function to batch pull EHR data by year/event 
-
 
 ```
 
@@ -166,7 +161,7 @@ b <- ggplot(BMI_bar_counted, aes(x = month, y = freq, fill = bmi_group)) + geom_
 
 b
 
-ggsave(b, filename = "c:/waffles/BMI_barplot.png",height = 3, width = 10)
+ggsave(b, filename = "BMI_barplot.png",height = 3, width = 10)
 #save to computer to adjust size appropriately. adjust filename to where you want it saved
 
 

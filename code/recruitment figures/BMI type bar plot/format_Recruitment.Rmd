@@ -150,7 +150,7 @@ recruitment_report$timecoalesce = coalesce(recruitment_report$prescreen_date, re
 # **************************************************************************** #
 # Save the data in your local laptop (Github path: /data)
 
-save(list=c("BMI_barplot"),file="~/BEACH-Reports/output/reports/recruitment/BMI_barplot.RData")
+save(list=c("recruitment_report"),file="~/BEACH-Reports/output/reports/recruitment/recruitment_report")
 
 
 ```
