@@ -54,7 +54,7 @@ library(readr)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-load("~/BEACH-facebook/data/raw/Current_Particpant_raw.RData")
+load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
 #load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
 ```
 
