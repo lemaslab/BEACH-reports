@@ -1,7 +1,7 @@
 ---
-title: "format_Recruitment_Age_BMI"
-author: "Yasmine Gillespie"
-date: "2023-06-02"
+title: "format_Outcomes_BMI"
+author: "Michele Himadi"
+date: "2024-06-10"
 output: html_document
 ---
 
@@ -10,9 +10,9 @@ output: html_document
 # **************************************************************************** #
 # ***************                Project Overview              *************** #
 # **************************************************************************** #
-# Author:      Dominick Lemas
+# Author:      Dominick Lemas, Michele Himadi
 # Date:        Nov 17, 2020 
-# Modify:      
+# Modify:      June 10, 2024
 # IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
 # version: R version 4.0.2 (2020-06-22)
 # version: Rstudio version Version 1.3.959 
@@ -54,8 +54,8 @@ library(readr)
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#load("~/BEACH-facebook/data/raw/Current_Particpant_raw.RData")
 load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
+#load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
@@ -78,8 +78,8 @@ CP_raw=CP_raw %>%
   mutate(beachphone_hear_about_us=recode(beachphone_hear_about_us,
                               "1"="Flyer",
                               "2"="Radio",
-                              "3"="Social Media",
-                              "4"="Newspaper",
+                              "3"="Facebook",
+                              "4"="Other",
                               "5"="Word-of-mouth",
                               "6"="Other"
                                ))
@@ -87,8 +87,8 @@ CP_raw=CP_raw %>%
   mutate(beach_learn_about_study=recode(beach_learn_about_study,
                               "1"="Flyer",
                               "2"="Physician",
-                              "3"="Social Media",
-                              "4"="Mail",
+                              "3"="Facebook",
+                              "4"="Other",
                               "5"="Other"
                                ))
                               
@@ -153,11 +153,13 @@ Phone_Screen_age_bmi=Phone_Screen %>%
    mutate(Age_grouping = case_when((age_groups <= 25) ~ "18-25",
                                   (age_groups >25 & age_groups <= 30) ~ "26-30",
                                  (age_groups >30 & age_groups <= 35) ~ "31-35",
-                                 (age_groups >35 & age_groups <= 42) ~ "36-42"))%>%
+                                 (age_groups >35 & age_groups <= 40) ~ "36-40",
+                                  (age_groups > 40) ~ "> 40"))%>%
    mutate(prepreg_bmi = BMI)%>%
-   mutate(Bmi_grouping = case_when((prepreg_bmi >= 29) ~ "Obese",
-                                  (prepreg_bmi >= 26 & prepreg_bmi<29) ~ "Overweight",
-                                  (prepreg_bmi <26) ~ "Normal"))%>%
+   mutate(Bmi_grouping = case_when((prepreg_bmi >= 30) ~ "Obese",
+                                  (prepreg_bmi >= 25 & prepreg_bmi<30) ~ "Overweight",
+                                  (prepreg_bmi >= 18.5 & prepreg_bmi<25) ~ "Normal",
+                                  (prepreg_bmi < 18.5) ~ "Underweight"))%>%
   select(test_id, Age_grouping,Bmi_grouping, bmi_analysis_prepregnant, Recruitment, Consent,Complete, beachphone_pass_fail, Random_Contact,Prescreen_Survey,Phone_Screen, IDR)
 ```
 
@@ -211,6 +213,22 @@ Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
                             ))
 ```
 
+#Overweight +Obese
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Obese"] <- "Obese and Overweight"
+Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Overweight"] <- "Obese and Overweight"
+Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Normal"] <- "Normal"
+Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Underweight"] <- "Underweight"
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Phone_Screen_age_bmi$Outcomes[Phone_Screen_age_bmi$beachphone_pass_fail=="Fail"] <- "Screened but not Eligible"
+Phone_Screen_age_bmi$Outcomes[Phone_Screen_age_bmi$beachphone_pass_fail=="Pass" & Phone_Screen_age_bmi$Consent=="No"] <- "Eligible but not consented"
+Phone_Screen_age_bmi$Outcomes[Phone_Screen_age_bmi$Consent=="Yes" & Phone_Screen_age_bmi$Complete=="No"] <- "Consented not completed"
+Phone_Screen_age_bmi$Outcomes[Phone_Screen_age_bmi$Complete=="Yes"] <- "Completed"
+
+```
 
 ##Eligible based on Recruitment 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
@@ -218,11 +236,4 @@ Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
 Eligible_Pass= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
 ```
 
-#Overweight +Obese
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Eligible_Pass$BMI[Eligible_Pass$BMI_Type=="Obese"] <- "Obese and Overweight"
-Eligible_Pass$BMI[Eligible_Pass$BMI_Type=="Overweight"] <- "Obese and Overweight"
-Eligible_Pass$BMI[Eligible_Pass$BMI_Type=="Normal"] <- "Normal"
-
-```
 
