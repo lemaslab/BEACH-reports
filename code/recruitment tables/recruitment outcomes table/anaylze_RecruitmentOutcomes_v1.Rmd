@@ -56,8 +56,10 @@ library(readr)
 #Recruitment outcomes of individuals screened for eligibility according to recruitment channels
 recruitment_outcomes <- Phone_Screen_age_bmi %>% select(Recruitment, Outcomes) %>% na.omit() %>% filter(!str_detect(Recruitment, "Incomplete"))
 
+#v tree to make table
 vtree(recruitment_outcomes, "Recruitment Outcomes", palette=3, sortfill=TRUE, horiz=FALSE)
 
+#chi squared analysis
 contingency_table <- table(recruitment_outcomes$Recruitment, recruitment_outcomes$Outcomes)
 
 chi_squared_test <- chisq.test(contingency_table)
