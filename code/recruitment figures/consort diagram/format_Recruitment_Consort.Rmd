@@ -70,7 +70,79 @@ names(consort_raw)[5] <- "IDR"
 names(consort_raw)[6] <- "Consent"
 names(consort_raw)[7] <- "Complete"
 
+names(consort_raw)[12] <- "BMI_Diabetes"
+names(consort_raw)[13] <- "Other"
+names(consort_raw)[14] <- "Undecided"
+names(consort_raw)[15] <- "Not_Interested"
+names(consort_raw)[16] <- "Not_Pregnant"
+names(consort_raw)[17] <- "Past_36wks_Gest"
+names(consort_raw)[18] <- "Protocol"
+
+#remove idr
+consort_report <- consort_raw %>%
+  filter(!str_detect(IDR, "1")) %>% select(-IDR)
+
+#rename pass/fail/incomplete
+consort_report=consort_report %>%
+  mutate(beachphone_pass_fail=recode(beachphone_pass_fail,
+                              "1"="Pass",
+                              "2"="Fail",
+                              "3"="Incomplete"
+                            ))
 
 ```
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#phase 1 and phase 2 split
+phase1 <- consort_report[(consort_report$Phone_Screen == 1 & consort_report$Prescreen_Survey == 0) | consort_report$Random_Contact == 1 & consort_report$Prescreen_Survey == 0, ]
+
+phase2 <- consort_report[consort_report$Prescreen_Survey == 1, ]
+
+check <- consort_report[consort_report$Prescreen_Survey == 0 & consort_report$Phone_Screen == 0 & consort_report$Random_Contact == 0 , ]
+
+#exclusion reasons for phase 2
+phase2_ex <- phase2[phase2$Prescreen_Survey == 1 & phase2$Phone_Screen == 0, ]
+
+#sum(phase2_ex$prescreen_prego == 0 & phase2_ex$prescreen_gnv == 1 & phase2_ex$prescreen_ufhealth_other == 1, na.rm = TRUE)
+sum(phase2_ex$prescreen_prego == 0, na.rm = TRUE)
+sum(phase2_ex$prescreen_gnv == 0, na.rm = TRUE)
+sum(phase2_ex$prescreen_ufhealth_other == 0, na.rm = TRUE)
+
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#phone screen - confirming numbers are add up
+phase1_ps <- phase1[phase1$Phone_Screen == 1,]
+
+phase2_ps <- phase2[phase2$Phone_Screen == 1,]
+  
+ps_overall <- consort_report[consort_report$Phone_Screen == 1,] %>%
+  mutate(beachphone_pass_fail = ifelse(is.na(beachphone_pass_fail), "Incomplete", beachphone_pass_fail))
+
+
+#phone screen exclusions
+ps_ex <- ps_overall[ps_overall$beachphone_pass_fail == "Fail" | ps_overall$beachphone_pass_fail == "Incomplete", ]
+
+sum(ps_ex$BMI_Diabetes == 1, na.rm = TRUE)
+sum(ps_ex$Other == 1, na.rm = TRUE)
+sum(ps_ex$Undecided == 1, na.rm = TRUE)
+sum(ps_ex$Not_Interested == 1, na.rm = TRUE)
+sum(ps_ex$Not_Pregnant == 1, na.rm = TRUE)
+sum(ps_ex$Past_36wks_Gest == 1, na.rm = TRUE)
+sum(ps_ex$Protocol == 1, na.rm = TRUE)
+sum(ps_ex$beachphone_pass_fail == "Incomplete")
+
+#phone screen pass
+ps_pass <- ps_overall[ps_overall$beachphone_pass_fail == "Pass", ]
+  
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#look into duplicates
+duplicates <- consort_report$beachphone_new_part_id
+duplicates_count <- sum(duplicated(duplicates))
+duplicates_values <- duplicates[duplicated(duplicates)]
+print(duplicates_values)
+#039, 058, 074, 099, 104
+```

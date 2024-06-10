@@ -58,7 +58,7 @@ consort_raw=redcap_report(
   raw_or_label_headers="raw",
   guess_type=FALSE)$data
 
-save(list=c("CP_raw"),file="~/BEACH-reports/data/raw/consort_raw.RData")
+save(list=c("consort_raw"),file="~/BEACH-reports/data/raw/consort_raw.RData")
 
 ```
 
