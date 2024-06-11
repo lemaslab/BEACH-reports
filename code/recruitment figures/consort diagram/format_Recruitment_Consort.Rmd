@@ -89,6 +89,19 @@ consort_report=consort_report %>%
                               "2"="Fail",
                               "3"="Incomplete"
                             ))
+#remove participants with no data (participant 2949, 2951)
+consort_report <- consort_report[!(consort_report$Prescreen_Survey == 0 & consort_report$Phone_Screen == 0 & consort_report$Random_Contact == 0), ]
+
+#remove duplicate participants - should be (BLS) 039, 058, 074, 099, 104
+#find duplicates
+matching_rows <- consort_report %>%
+  filter(!is.na(beachphone_new_part_id)) %>%
+  filter(beachphone_new_part_id %in% consort_report$test_id) %>%
+  filter(duplicated(beachphone_new_part_id) | duplicated(beachphone_new_part_id, fromLast = TRUE)) %>%
+  filter(!grepl("BLS", test_id))
+#remove
+consort_report <- consort_report %>%
+  filter(!(test_id %in% matching_rows$test_id))
 
 ```
 
@@ -98,7 +111,7 @@ phase1 <- consort_report[(consort_report$Phone_Screen == 1 & consort_report$Pres
 
 phase2 <- consort_report[consort_report$Prescreen_Survey == 1, ]
 
-check <- consort_report[consort_report$Prescreen_Survey == 0 & consort_report$Phone_Screen == 0 & consort_report$Random_Contact == 0 , ]
+check <- consort_report[consort_report$Prescreen_Survey != 0 & consort_report$Phone_Screen != 0 & consort_report$Random_Contact != 0 , ]
 
 #exclusion reasons for phase 2
 phase2_ex <- phase2[phase2$Prescreen_Survey == 1 & phase2$Phone_Screen == 0, ]
@@ -140,9 +153,27 @@ ps_pass <- ps_overall[ps_overall$beachphone_pass_fail == "Pass", ]
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #look into duplicates
-duplicates <- consort_report$beachphone_new_part_id
+duplicates <- consort_report$beachphone_new_part_id %>% na.omit()
 duplicates_count <- sum(duplicated(duplicates))
 duplicates_values <- duplicates[duplicated(duplicates)]
 print(duplicates_values)
+
+filtered_df <- consort_report %>%
+  filter(!(beachphone_new_part_id %in% test_id))
+filtered_df1 <- consort_report %>%
+  anti_join(consort_report, by = c("beachphone_new_part_id" = "test_id"))
+
+matching_rows <- consort_report %>%
+  filter(!is.na(beachphone_new_part_id)) %>%
+  filter(beachphone_new_part_id %in% consort_report$test_id) %>%
+  filter(duplicated(beachphone_new_part_id) | duplicated(beachphone_new_part_id, fromLast = TRUE))
+
+matching_rows <- consort_report %>%
+  filter(!is.na(beachphone_new_part_id)) %>%
+  filter(beachphone_new_part_id %in% consort_report$test_id) %>%
+  filter(duplicated(beachphone_new_part_id) | duplicated(beachphone_new_part_id, fromLast = TRUE)) %>%
+  filter(!grepl("BLS", test_id))
+
+
 #039, 058, 074, 099, 104
 ```

@@ -215,8 +215,8 @@ Phone_Screen_age_bmi=Phone_Screen_age_bmi %>%
 
 #Overweight +Obese
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Obese"] <- "Obese and Overweight"
-Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Overweight"] <- "Obese and Overweight"
+Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Obese"] <- "Obese"
+Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Overweight"] <- "Overweight"
 Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Normal"] <- "Normal"
 Phone_Screen_age_bmi$BMI[Phone_Screen_age_bmi$BMI_Type=="Underweight"] <- "Underweight"
 
