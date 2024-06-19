@@ -96,8 +96,10 @@ library(graphics)
 
 ```{r echo=, message=FALSE, warning=FALSE}
 ###barplot
+#open png device to save
+png("RecruitmentOutcomes_barplotA.png", width = 1000, height = 600)
 
-barplot( data1,beside=TRUE, col = c("blue","orange", "black"), ylab = "Counts", ylim = c(0,60), legend.text = TRUE)
+bar_heights <- barplot( data1,beside=TRUE, col = c("blue","orange", "black"), ylab = "Counts", ylim = c(0,70), legend.text = TRUE, cex.axis = 1.5, cex.lab = 1.5, cex.names = 1.5)
 
 # Create the legend title and labels
 legend_title <- "Recruitment Status"
@@ -105,7 +107,16 @@ legend_labels <- c("Eligible", "Consented", "Completed")
 
 # Add the legend with the title and labels
 legend("topright", legend = legend_labels, fill = c("blue","orange", "black"),
-       title = legend_title)
+       title = legend_title, cex = 2)
+
+#add counts to the barplot
+bar_heights <- barplot(data1, beside = TRUE, col = c("blue","orange", "black"),
+                       xlab = "Recruitment Method", ylab = "Counts", ylim = c(0, 60), 
+                       legend.text = TRUE, plot = FALSE)
+text(x = bar_heights, y = data1, label = data1, pos = 3, cex = 1.5, col = "black")
+
+# Close the PNG device
+dev.off()
 
 ```
 
@@ -123,7 +134,16 @@ data3  <- data3 [-c(1, 2,3), ]
 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 ###barplot
-barplot( data3,beside=TRUE, col = c("blue","orange"), ylab = "Percentage", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE)
+png("RecruitmentOutcomes_barplotB.png", width = 1000, height = 600)
+
+
+bar_heights <- barplot( data3,beside=TRUE, col = c("blue","orange"), ylab = "Percentage", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE, cex.axis = 1.5, cex.lab = 1.5, cex.names = 1.5)
+
+#add % to the percentages
+percentages <- paste0(round(data3), "%")
+
+#add percentages to barplot
+text(x = bar_heights, y = data3, labels = percentages, pos = 3, cex = 1.5)
 
 # Create the legend title and labels
 legend_title <- "Recruitment Status"
@@ -131,7 +151,9 @@ legend_labels <- c("Consented", "Completed")
 
 # Add the legend with the title and labels
 legend("topright", legend = legend_labels, fill = c("blue","orange"),
-       title = legend_title)
+       title = legend_title, cex = 2)
 
+# Close the PNG device
+dev.off()
 
 ```

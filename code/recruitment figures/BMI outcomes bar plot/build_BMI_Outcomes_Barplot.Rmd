@@ -358,7 +358,7 @@ png("BMIOutcomes_barplotC.png", width = 1000, height = 600)
 
 # Create the barplot and store the bar heights
 bar_heights <- barplot(data3, beside = TRUE, col = c("#F8766D", "#00BFC4", "#6A3D9A"), 
-                       ylab = "Percent Consented", ylim = c(0, 150), 
+                       ylab = "Percent Completed", ylim = c(0, 150), 
                        xlab = "Recruitment Method", legend.text = TRUE, cex.axis = 1.5, cex.lab = 1.5,
                        cex.names = 1.5)  # Adjust size of x-axis labels
 
