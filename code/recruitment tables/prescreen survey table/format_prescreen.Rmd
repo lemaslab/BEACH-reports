@@ -1,0 +1,336 @@
+---
+title: "format_prescreen"
+author: "Michele Himadi"
+date: "2024-06-19"
+output: html_document
+---
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+# Author:      Dominick Lemas
+# Date:        Nov 17, 2020 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event and combine into final dataset. 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#ensure getData_Current_Participant_report.Rmd 
+#load("~/BEACH-facebook/data/raw/Current_Particpant_raw.RData")
+load("~/BEACH-reports/data/raw/Current_Particpant_raw.RData")
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+CP_raw <- CP_raw[ -c(2:4) ]
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#renaming column headers
+names(CP_raw)[2] <- "Random_Contact"
+names(CP_raw)[3] <- "Prescreen_Survey"
+names(CP_raw)[4] <- "Phone_Screen"
+names(CP_raw)[5] <- "IDR"
+names(CP_raw)[6] <- "Consent"
+names(CP_raw)[7] <- "Complete"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#recoding data
+CP_raw=CP_raw %>%
+  mutate(beachphone_hear_about_us=recode(beachphone_hear_about_us,
+                              "1"="Flyer",
+                              "2"="Radio",
+                              "3"="Social Media",
+                              "4"="Newspaper",
+                              "5"="Word-of-mouth",
+                              "6"="Other"
+                               ))
+CP_raw=CP_raw %>%
+  mutate(beach_learn_about_study=recode(beach_learn_about_study,
+                              "1"="Flyer",
+                              "2"="Physician",
+                              "3"="Social Media",
+                              "4"="Mail",
+                              "5"="Other"
+                               ))
+                              
+```
+
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns into Recruitment column for how participant found study
+CP_raw$Recruitment = coalesce(CP_raw$beachphone_hear_about_us, CP_raw$beach_learn_about_study, CP_raw$IDR)
+#recode if participant didn't complete IDR 
+Part_Dem=CP_raw %>%
+  mutate(Recruitment=recode(Recruitment,
+                              "0"="Incomplete"
+                            ))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for BMI
+Part_Dem$BMI = coalesce(Part_Dem$beach_final_bmi, Part_Dem$beachphone_prepreg_bmi, Part_Dem$prescreen_prepreg_bmi)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#remove extra columns
+Part_Dem <- Part_Dem[ -c(9,11,13,14,15) ]
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#renaming
+Part_Dem=Part_Dem%>%
+  mutate(bmi_analysis_prepregnant=recode(bmi_analysis_prepregnant,
+                              "1"="Normal",
+                              "2"="Overweight",
+                              "3"= "Obese"
+                               ))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#renaming and recoding, selecting out columns for BMI and age
+Part_Dem_age_bmi=Part_Dem %>%
+  select(test_id,
+         beachphone_age,
+         BMI,
+       bmi_analysis_prepregnant,
+       Recruitment,
+       Random_Contact,
+       Prescreen_Survey,
+       Phone_Screen,
+       IDR,
+       Consent,
+       Complete,
+       beachphone_pass_fail
+       )%>%
+  
+   mutate( age_groups =  beachphone_age) %>%
+   mutate(Age_grouping = case_when((age_groups <= 25) ~ "18-25",
+                                  (age_groups >25 & age_groups <= 30) ~ "26-30",
+                                 (age_groups >30 & age_groups <= 35) ~ "31-35",
+                                 (age_groups >35 & age_groups <= 42) ~ "36-42"))%>%
+                                  
+   mutate(prepreg_bmi = BMI)%>%
+   mutate(Bmi_grouping = case_when((prepreg_bmi >= 30) ~ "Obese",
+                                  (prepreg_bmi >= 25 & prepreg_bmi<30) ~ "Overweight",
+                                  (prepreg_bmi >= 18.5 & prepreg_bmi<25) ~ "Normal",
+                                  (prepreg_bmi < 18.5) ~ "Underweight"))%>%
+  select(test_id, Age_grouping,beachphone_age, BMI,Bmi_grouping, bmi_analysis_prepregnant, Recruitment, Consent,Complete, beachphone_pass_fail, Random_Contact,Prescreen_Survey,Phone_Screen, IDR)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for BMI group
+Part_Dem_age_bmi$BMI_Type = coalesce(Part_Dem_age_bmi$Bmi_grouping, Part_Dem_age_bmi$bmi_analysis_prepregnant)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#remove extra columns
+Part_Dem_age_bmi <- Part_Dem_age_bmi[ -c(3,4) ]
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#recoding
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
+  mutate(Consent=recode(Consent,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
+  mutate(Complete=recode(Complete,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
+  mutate(Random_Contact=recode(Random_Contact,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
+  mutate(Prescreen_Survey=recode(Prescreen_Survey,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
+  mutate(Phone_Screen=recode(Phone_Screen,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
+  mutate(IDR=recode(IDR,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+Part_Dem_age_bmi=Part_Dem_age_bmi %>%
+  mutate(beachphone_pass_fail=recode(beachphone_pass_fail,
+                              "1"="Pass",
+                              "2"="Fail",
+                              "3"="Incomplete"
+                            ))
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Part_Dem_age_bmi$Encounter_Type[Part_Dem_age_bmi$Prescreen_Survey=="No" & Part_Dem_age_bmi$Phone_Screen=="Yes" ] <- "Phone Screen"
+Part_Dem_age_bmi$Encounter_Type[Part_Dem_age_bmi$Prescreen_Survey=="Yes" & Part_Dem_age_bmi$Phone_Screen=="No" ] <- "Prescreen"
+Part_Dem_age_bmi$Encounter_Type[Part_Dem_age_bmi$Prescreen_Survey=="Yes" & Part_Dem_age_bmi$Phone_Screen=="Yes" ] <- "Both"
+```
+
+#Overweight +Obese
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Obese"] <- "Obese and Overweight"
+#Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Overweight"] <- "Obese and Overweight"
+#Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Normal"] <- "Normal"
+#Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Underweight"] <- "Underweight"
+
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+PD_raw <- PD_raw[ -c(2:4) ]
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#renaming columns
+names(PD_raw)[2] <- "Random_Contact"
+names(PD_raw)[3] <- "Prescreen_Survey"
+names(PD_raw)[4] <- "Phone_Screen"
+names(PD_raw)[5] <- "IDR"
+names(PD_raw)[6] <- "Consent"
+names(PD_raw)[7] <- "Complete"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#recoding
+PD_raw=PD_raw %>%
+  mutate(prescreen_prego=recode(prescreen_prego,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(prescreen_gnv=recode(prescreen_gnv,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(prescreen_mod=recode(prescreen_mod,
+                              "1"="Vaginal",
+                              "2"="C-Section"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(beachphone_mod=recode(beachphone_mod,
+                              "1"="Vaginal",
+                              "2"="C-Section"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(beachphone_gainesville=recode(beachphone_gainesville,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(beachphone_3rd_trimester=recode(beachphone_3rd_trimester,
+                             "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(Prescreen_Survey=recode(Prescreen_Survey,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+PD_raw=PD_raw %>%
+  mutate(Phone_Screen=recode(Phone_Screen,
+                              "0"="No",
+                              "1"="Yes"
+                            ))
+#gestation
+#edit filter
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for pregnant
+PD_raw$Prego = coalesce(PD_raw$beachphone_3rd_trimester, PD_raw$prescreen_prego)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for giving birth in GNV
+PD_raw$GNV = coalesce(PD_raw$beachphone_gainesville, PD_raw$prescreen_gnv)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for mode of delivery
+PD_raw$Mod = coalesce(PD_raw$beachphone_mod, PD_raw$prescreen_mod)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#join columns for current gestation weeks
+PD_raw$Gest_wks = coalesce(PD_raw$beachphone_prego_wks, PD_raw$prescreen_gest_wks)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+PD_raw$Encounter_Type[PD_raw$Prescreen_Survey=="No" & PD_raw$Phone_Screen=="Yes" ] <- "Phone Screen"
+PD_raw$Encounter_Type[PD_raw$Prescreen_Survey=="Yes" & PD_raw$Phone_Screen=="No" ] <- "Prescreen"
+PD_raw$Encounter_Type[PD_raw$Prescreen_Survey=="Yes" & PD_raw$Phone_Screen=="Yes" ] <- "Both"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#making gestation week code
+#recoding, selecting out columns
+PD_raw$Gest_wks = as.numeric(as.character(PD_raw$Gest_wks))
+class(PD_raw$Gest_wks)
+#should say numeric
+PD_Gest=PD_raw %>%
+  select(test_id,
+       Prescreen_Survey,
+       Phone_Screen,
+       IDR,
+       Gest_wks,
+       GNV,
+       Prego,
+       Mod,
+       Encounter_Type
+       )%>%
+  
+      mutate(gestation_wks =  Gest_wks) %>%
+   mutate(gest_wks_groups= case_when((gestation_wks <= 10) ~ "0-10",
+                                  (gestation_wks >10 & gestation_wks<= 20) ~ "11-20",
+                                 (gestation_wks >20 & gestation_wks <= 30) ~ "21-30",
+                                 (gestation_wks >30 & gestation_wks <= 40) ~ "31-40",
+                                  (gestation_wks > 40) ~ "> 40"))%>%
+  select(test_id, Prescreen_Survey,Phone_Screen, IDR, Gest_wks,gest_wks_groups, GNV, Prego, Mod, Encounter_Type)
+  
+```

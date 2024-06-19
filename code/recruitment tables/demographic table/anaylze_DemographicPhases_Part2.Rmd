@@ -54,32 +54,6 @@ library(readr)
 
 ## Make sure run format_DemographicPart2
 
-#supplmentary Table 2
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Only_PreScreen_DEM= filter(PD_Gest, Phone_Screen == "No" )
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#pregnant for prescreen 
-vtree(Only_PreScreen_DEM, "Prescreen_Survey Prego", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#delivery in GNV for prescreen
-vtree(Only_PreScreen_DEM, "Prescreen_Survey GNV", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#mode of delivery for prescreen
-vtree(Only_PreScreen_DEM, "Prescreen_Survey Mod", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#gestation weeks for prescreen survey
-vtree(Only_PreScreen_DEM, "Prescreen_Survey gest_wks_groups", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-
 #Table 1
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #filter for only phone screen

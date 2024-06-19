@@ -1,0 +1,97 @@
+---
+title: "Prescreen survey recruitment outcomes"
+author: "Michele Himadi"
+date: "2024-06-19"
+output: html_document
+---
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+# Author:      Dominick Lemas
+# Date:        Nov 17, 2020 
+# Modify:      
+# IRB:         UFHealth Early Life Exposures and Pediatric Outcomes (IRB201601899) 
+# version: R version 4.0.2 (2020-06-22)
+# version: Rstudio version Version 1.3.959 
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+# PLAN: Access redcap via API and pull/format/clean data for downstream analysis.
+# Note: vpn must be active
+# Next steps
+#- function to call the IDs and events
+#- function to batch pull EHR data by year/event and combine into final dataset. 
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(flextable)
+library(gt)
+library(formattable)
+library(gtsummary)
+library(ggplot2)
+library(ggrepel)
+library(keyringr)
+library(readxl)
+library(redcapAPI)
+library(REDCapR)
+library(vtree)
+library(vistime)
+library(labelled)
+library(plyr)
+library(plotly)
+library(tidyquant)
+library(readr)
+```
+
+## Make sure to run format_Demographic before 
+
+#supplentary Table 2
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#select out participants who only completed prescreen
+Just_Prescreen_Dem= filter(Part_Dem_age_bmi, Encounter_Type == "Prescreen")
+Just_Prescreen_Dem[is.na(Just_Prescreen_Dem)] <- "Missing"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#age grouping for prescreen only group
+vtree(Just_Prescreen_Dem, "Prescreen_Survey Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#BMI for prescreen only participants
+vtree(Just_Prescreen_Dem, "Prescreen_Survey BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+Only_PreScreen_DEM= filter(PD_Gest, Encounter_Type == "Prescreen" )
+Only_PreScreen_DEM[is.na(Only_PreScreen_DEM)] <- "Missing"
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#pregnant for prescreen 
+vtree(Only_PreScreen_DEM, "Prescreen_Survey Prego", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#delivery in GNV for prescreen
+vtree(Only_PreScreen_DEM, "Prescreen_Survey GNV", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#mode of delivery for prescreen
+vtree(Only_PreScreen_DEM, "Prescreen_Survey Mod", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+
+```{r, message=FALSE,warning=FALSE, echo = FALSE}
+#gestation weeks for prescreen survey
+vtree(Only_PreScreen_DEM, "Prescreen_Survey gest_wks_groups", palette = 3, sortfill = TRUE, horiz=FALSE)
+```
+

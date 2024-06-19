@@ -54,23 +54,6 @@ library(readr)
 
 ## Make sure to run format_Demographic before 
 
-#supplentary Table 2
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#select out participants who only completed prescreen
-Just_Prescreen_Dem= filter(Part_Dem_age_bmi, Phone_Screen == "No" & Prescreen_Survey == "Yes")
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#age grouping for prescreen only group
-vtree(Just_Prescreen_Dem, "Prescreen_Survey Age_grouping", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-```{r, message=FALSE,warning=FALSE, echo = FALSE}
-#BMI for prescreen only participants
-vtree(Just_Prescreen_Dem, "Prescreen_Survey BMI_Type", palette = 3, sortfill = TRUE, horiz=FALSE)
-```
-
-
 # Table 1
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
 #select out participants who only completed phone screen
