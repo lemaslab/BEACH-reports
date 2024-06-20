@@ -214,8 +214,8 @@ Part_Dem_age_bmi$Encounter_Type[Part_Dem_age_bmi$Prescreen_Survey=="Yes" & Part_
 
 #Overweight +Obese
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Obese"] <- "Obese and Overweight"
-Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Overweight"] <- "Obese and Overweight"
+Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Obese"] <- "Obese"
+Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Overweight"] <- "Overweight"
 Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Normal"] <- "Normal"
 Part_Dem_age_bmi$BMI[Part_Dem_age_bmi$BMI_Type=="Underweight"] <- "Underweight"
 
