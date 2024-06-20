@@ -183,7 +183,7 @@ BMI_bar_counted=BMI_bar_counted %>%
   mutate(bmi_group=recode(bmi_group,
                               "NW"="2. Normal",
                               "OW"="3. Overweight",
-                              "OB"="4. Obese",
+                              "OB"="4. Obesity",
                               "UW" = "1. Underweight"))
 
 b <- ggplot(BMI_bar_counted, aes(x = month, y = freq, fill = bmi_group)) + geom_bar(stat = "identity", position = "dodge") + geom_text(aes(label = freq), vjust = -1, position = position_dodge(width = 0.9)) + theme_light() + xlab("Month") + ylab("Counts") + guides(fill = guide_legend(title = "Obesity Status")) + theme(legend.title = element_text(size = 12), legend.text= element_text(size=12), text = element_text(size = 14)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
