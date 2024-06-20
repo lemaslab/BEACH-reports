@@ -56,22 +56,23 @@ library(stats)
 
 #Recruitment outcomes of individuals screened for eligibility according to recruitment channels and BMI
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-BMI_outcomes <- Phone_Screen_age_bmi %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(!str_detect(Recruitment, "Incomplete"))
+BMI_outcomes <- Phone_Screen_age_bmi %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(!str_detect(Recruitment, "Incomplete")) 
+BMI_outcomes <- filter(BMI_outcomes, !(BMI == "Underweight" | BMI == "Overweight"))
 
 #numbers for BMI outcomes
 vtree(BMI_outcomes, "Recruitment BMI Outcomes", palette=3, sortfill=TRUE, horiz=TRUE)
 
 #breaking them down into smaller chunks to be more readable
-BMI_outcomes_Facebook <- Phone_Screen_age_bmi %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(str_detect(Recruitment, "Facebook"))
+BMI_outcomes_Facebook <- BMI_outcomes %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(str_detect(Recruitment, "Facebook"))
 vtree(BMI_outcomes_Facebook, "BMI Outcomes", palette=3, sortfill=TRUE, horiz=TRUE)
 
-BMI_outcomes_Flyer <- Phone_Screen_age_bmi %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(str_detect(Recruitment, "Flyer"))
+BMI_outcomes_Flyer <- BMI_outcomes %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(str_detect(Recruitment, "Flyer"))
 vtree(BMI_outcomes_Flyer, "BMI Outcomes", palette=3, sortfill=TRUE, horiz=TRUE)
 
-BMI_outcomes_Wom <- Phone_Screen_age_bmi %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(str_detect(Recruitment, "Word-of-mouth"))
+BMI_outcomes_Wom <- BMI_outcomes %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(str_detect(Recruitment, "Word-of-mouth"))
 vtree(BMI_outcomes_Wom, "BMI Outcomes", palette=3, sortfill=TRUE, horiz=TRUE)
 
-BMI_outcomes_Other <- Phone_Screen_age_bmi %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(str_detect(Recruitment, "Other"))
+BMI_outcomes_Other <- BMI_outcomes %>% select(Recruitment, BMI, Outcomes) %>% na.omit() %>% filter(str_detect(Recruitment, "Other"))
 vtree(BMI_outcomes_Other, "BMI Outcomes", palette=3, sortfill=TRUE, horiz=TRUE)
 
 #analysis for X^2 and p value
@@ -87,7 +88,7 @@ result <- mantelhaen.test(table_data )
 
 # Print the result
 print(result)
-#M^2 = 8.7088
-#p-value = 0.1906
+#M^2 = 4.6383
+#p-value = 0.2003
 
 ```
