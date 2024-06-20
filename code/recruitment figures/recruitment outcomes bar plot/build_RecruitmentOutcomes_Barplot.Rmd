@@ -102,7 +102,7 @@ png("RecruitmentOutcomes_barplotA.png", width = 1000, height = 600)
 bar_heights <- barplot( data1,beside=TRUE, col = c("blue","orange", "black"), ylab = "Counts", ylim = c(0,70), legend.text = TRUE, cex.axis = 1.5, cex.lab = 1.5, cex.names = 1.5)
 
 # Create the legend title and labels
-legend_title <- "Recruitment Status"
+legend_title <- "Enrollment Outcome"
 legend_labels <- c("Eligible", "Consented", "Completed")
 
 # Add the legend with the title and labels
@@ -137,7 +137,7 @@ data3  <- data3 [-c(1, 2,3), ]
 png("RecruitmentOutcomes_barplotB.png", width = 1000, height = 600)
 
 
-bar_heights <- barplot( data3,beside=TRUE, col = c("blue","orange"), ylab = "Percentage", ylim = c(0,120), xlab = "Recruitment", legend.text = TRUE, cex.axis = 1.5, cex.lab = 1.5, cex.names = 1.5)
+bar_heights <- barplot( data3,beside=TRUE, col = c("blue","orange"), ylab = "Percentage", ylim = c(0,120), xlab = "Enrollment", legend.text = TRUE, cex.axis = 1.5, cex.lab = 1.5, cex.names = 1.5)
 
 #add % to the percentages
 percentages <- paste0(round(data3), "%")
@@ -146,7 +146,7 @@ percentages <- paste0(round(data3), "%")
 text(x = bar_heights, y = data3, labels = percentages, pos = 3, cex = 1.5)
 
 # Create the legend title and labels
-legend_title <- "Recruitment Status"
+legend_title <- "Enrollment Outcome"
 legend_labels <- c("Consented", "Completed")
 
 # Add the legend with the title and labels
