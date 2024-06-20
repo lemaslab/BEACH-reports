@@ -54,10 +54,10 @@ library(readr)
 
 #Recruitment outcomes of individuals screened for eligibility according to BMI Type 
 ```{r, message=FALSE,warning=FALSE, echo = FALSE}
-Eligible_Pass= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
+#Eligible_Pass= filter(Phone_Screen_age_bmi, beachphone_pass_fail == "Pass")
 
 outcomes_BMI <- Phone_Screen_age_bmi %>% select(BMI, Outcomes) %>% na.omit()
-outcomes_BMI = filter(outcomes_BMI, !(BMI == "Underweight"))
+outcomes_BMI = filter(outcomes_BMI, !(BMI == "Underweight" | BMI == "Overweight"))
 
 vtree(outcomes_BMI, "BMI Outcomes", palette=3, sortfill=TRUE, horiz=TRUE)
 
