@@ -1,0 +1,135 @@
+---
+title: "power analysis for cell culture"
+author: "Dominick J. Lemas"
+date: "06/24/2024"
+output: html_document
+
+---
+
+```{r, include=FALSE}
+##-------------- 
+# **************************************************************************** #
+# ***************                Project Overview              *************** #
+# **************************************************************************** #
+
+# Author:            Dominick J. Lemas
+# Start Date:        04/15/2023 
+# Date Modify:       
+# Project:           The Breastfeeding and EArly Child Health Study
+# IRB:               IRB201601034
+#                   
+#
+# R version 4.3.1 (2023-06-16 ucrt) -- "Beagle Scouts"
+# Copyright (C) 2023 The R Foundation for Statistical Computing
+# Platform: x86_64-w64-mingw32/x64 (64-bit) 
+
+# **************************************************************************** #
+# ***************                Description                   *************** #
+# **************************************************************************** #
+
+# PLAN: power analysis for cell culture experiment.
+
+project_name="The Breastfeeding and EArly Child Health Study"
+irb_number="IRB201601034"
+
+```
+
+```{r, message=FALSE, include=FALSE}
+
+# **************************************************************************** #
+# ***************                Library                       *************** #
+# **************************************************************************** #
+
+library(pwr)
+
+
+
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Extract Data                    *************** #
+# **************************************************************************** #
+
+# API & URL
+#----------
+uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
+api_token=get_API_token("beach_api")
+#api_token=""
+
+# REPORT IDS
+#-----------
+
+# Study Overview
+report_id<-45193L
+report_name= "Diet Record: Analysis Ready"
+
+
+# PULL DATA
+#-----------
+report_raw <-
+  REDCapR::redcap_report(
+    redcap_uri = uri,
+    token      = api_token,
+    report_id  = report_id
+  )$data 
+
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# complete some preliminary analysis
+
+full_day_kcals=report_raw %>%
+  filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
+  filter(food_record_nutrient=="cals_kcal") %>%
+  group_by(test_id) %>%
+  select(test_id,food_record_value) %>%
+  summarise(mean=mean(food_record_value)) %>%
+  rename(cals_kcal_average=mean) %>%
+  mutate(study_visit="third_trimester")
+  
+# next diet variable
+
+# next diet variable
+
+
+# merge into eachother
+
+
+```
+
+```{r, message=FALSE,include=FALSE}
+
+# you can find the list of diet variables in the ~/BEACH-reports/code/utils/utils.R
+
+# based on your tables, these seem like variables of interest. 
+
+            cals_kcal="Cals (kcal)",
+            fatcals_kcal="FatCals (kcal)",
+            satcals_kcal="SatCals (kcal)",
+            prot_g="Prot (g)",
+            carb_g="Carb (g)",
+            totfib_g="TotFib (g)",
+            totsolfib_g="TotSolFib (g)",
+            
+```
+
+
+```{r, message=FALSE,include=FALSE}
+
+# **************************************************************************** #
+# ***************              Save Data Local                 *************** #
+# **************************************************************************** #
+
+# # Save the data in your local laptop (Github path: /data)
+# save(list=c("report"),file="~/BEACH-reports/data/raw/report_39840.RData")
+# 
+# output_directory="~/BEACH-reports/data/processed/"
+# output_file_name="third_trimester_diet_data.RData"
+
+```
+
