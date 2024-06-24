@@ -1,9 +1,10 @@
 ---
-title: "Get RedCap Data: Diet Records Report"
+title: 'Get RedCap Data: Diet Records Report'
 author: "Dominick J. Lemas"
 date: "10/11/2023"
-output: html_document
-
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r, include=FALSE}
@@ -47,8 +48,8 @@ library(keyringr)
 library(redcapAPI)
 library(REDCapR)
 library(tidyverse)
-# source("E:/documents/BEACH-reports/code/utils/utils.R")
-# source("~/BEACH-reports/code/utils/utils.R")
+# source("E:/Documents/BEACH-reports/code/utils/utils.R")
+source("C:/Users/djlemas/Documents/BEACH-reports/code/utils/utils.R")
 
 
 
@@ -64,7 +65,6 @@ library(tidyverse)
 #----------
 uri <- "https://redcap.ctsi.ufl.edu/redcap/api/"
 api_token=get_API_token("beach_api")
-#api_token=""
 
 # REPORT IDS
 #-----------
@@ -83,48 +83,106 @@ report_raw <-
     report_id  = report_id
   )$data 
 
+length(unique(report_raw$test_id)) # 83
 
 ```
 
 ```{r, message=FALSE,include=FALSE}
 
 # complete some preliminary analysis
-
+# diet variable: calories
 full_day_kcals=report_raw %>%
   filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
   filter(food_record_nutrient=="cals_kcal") %>%
   group_by(test_id) %>%
-  select(test_id,food_record_value) %>%
+  select(test_id,food_record_day,food_record_value) %>%
   summarise(mean=mean(food_record_value)) %>%
   rename(cals_kcal_average=mean) %>%
   mutate(study_visit="third_trimester")
+  length(unique(full_day_kcals$test_id)) # 45
   
-# next diet variable
+# diet variable: protein
+full_day_prot_g=report_raw %>%
+  filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
+  filter(food_record_nutrient=="prot_g") %>%
+  group_by(test_id) %>%
+  select(test_id,food_record_day,food_record_value) %>%
+  summarise(mean=mean(food_record_value)) %>%
+  rename(prot_g_average=mean) %>%
+  mutate(study_visit="third_trimester")
 
-# next diet variable
+# diet variable: carbohydrates
+full_day_carb_g=report_raw %>%
+  filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
+  filter(food_record_nutrient=="carb_g") %>%
+  group_by(test_id) %>%
+  select(test_id,food_record_day,food_record_value) %>%
+  summarise(mean=mean(food_record_value)) %>%
+  rename(carb_g_average=mean) %>%
+  mutate(study_visit="third_trimester")
 
+# diet variable: fat
+full_day_fat_g=report_raw %>%
+  filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
+  filter(food_record_nutrient=="fat_g") %>%
+  group_by(test_id) %>%
+  select(test_id,food_record_day,food_record_value) %>%
+  summarise(mean=mean(food_record_value)) %>%
+  rename(fat_g_average=mean) %>%
+  mutate(study_visit="third_trimester")
+
+# diet variable: fiber
+full_day_totfib_g=report_raw %>%
+  filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
+  filter(food_record_nutrient=="totfib_g") %>%
+  group_by(test_id) %>%
+  select(test_id,food_record_day,food_record_value) %>%
+  summarise(mean=mean(food_record_value)) %>%
+  rename(totfib_g_average=mean) %>%
+  mutate(study_visit="third_trimester")
+
+# diet variable: saturated fat
+full_day_satfat_g=report_raw %>%
+  filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
+  filter(food_record_nutrient=="satfat_g") %>%
+  group_by(test_id) %>%
+  select(test_id,food_record_day,food_record_value) %>%
+  summarise(mean=mean(food_record_value)) %>%
+  rename(satfat_g_average=mean) %>%
+  mutate(study_visit="third_trimester")
+
+# diet variable: sugar
+full_day_sugar_g=report_raw %>%
+  filter(meal_type=="full_day" & food_record_study_visit=="third_trimester") %>%
+  filter(food_record_nutrient=="sugar_g") %>%
+  group_by(test_id) %>%
+  select(test_id,food_record_day,food_record_value) %>%
+  summarise(mean=mean(food_record_value)) %>%
+  rename(sugar_g_average=mean) %>%
+  mutate(study_visit="third_trimester")
 
 # merge into eachother
+data1=full_join(full_day_carb_g,full_day_fat_g) %>%
+  select(test_id,study_visit,everything())
 
+data2=full_join(data1,full_day_kcals) %>%
+  select(test_id,study_visit,everything())
+
+data3=full_join(data2,full_day_prot_g) %>%
+  select(test_id,study_visit,everything())
+
+data4=full_join(data3,full_day_satfat_g) %>%
+  select(test_id,study_visit,everything())
+
+data5=full_join(data4,full_day_sugar_g) %>%
+  select(test_id,study_visit,everything())
+
+data6=full_join(data5,full_day_totfib_g) %>%
+  select(test_id,study_visit,everything())
+
+beach_3rdtri_diet=data6
 
 ```
-
-```{r, message=FALSE,include=FALSE}
-
-# you can find the list of diet variables in the ~/BEACH-reports/code/utils/utils.R
-
-# based on your tables, these seem like variables of interest. 
-
-            cals_kcal="Cals (kcal)",
-            fatcals_kcal="FatCals (kcal)",
-            satcals_kcal="SatCals (kcal)",
-            prot_g="Prot (g)",
-            carb_g="Carb (g)",
-            totfib_g="TotFib (g)",
-            totsolfib_g="TotSolFib (g)",
-            
-```
-
 
 ```{r, message=FALSE,include=FALSE}
 
@@ -133,10 +191,7 @@ full_day_kcals=report_raw %>%
 # **************************************************************************** #
 
 # # Save the data in your local laptop (Github path: /data)
-# save(list=c("report"),file="~/BEACH-reports/data/raw/report_39840.RData")
-# 
-# output_directory="~/BEACH-reports/data/processed/"
-# output_file_name="third_trimester_diet_data.RData"
+save(list=c("beach_3rdtri_diet"),file="~/BEACH-reports/data/raw/beach_3rdtri_diet.RData")
+
 
 ```
-
